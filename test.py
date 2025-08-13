@@ -1,11 +1,10 @@
 from OpenRA_Copilot_Library.game_api import GameAPI
 from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
-
 api = GameAPI('127.0.0.1', 7445)
 
 print(api.player_base_info_query())
 print(api.deploy_mcv_and_wait())
-print(api.query_actor(TargetsQueryParam(type=[], faction=["任意"], range="screen", restrain=[{"visible": True}])))
+print(api.query_actor(TargetsQueryParam(type=[], faction=['己方'], range="", restrain=[{"visible": True}])))
 api.move_camera_by_location(Location(30, 25))
 # 部署基地车
 if api.can_produce('电厂'):
