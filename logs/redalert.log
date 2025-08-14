@@ -512,3 +512,11 @@
 - 建造 **1个** 雷达站
 - 建造 **1个** 核电厂
         ], state: completed
+2025-08-14 19:51:34 - main - INFO - 启动 MCP Server + Client
+2025-08-14 19:54:05 - main - INFO - 启动 MCP Server + Client
+2025-08-14 19:54:05 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 19:54:22 - classify - INFO - next_task: 生产管理
+2025-08-14 19:54:22 - production - INFO - 执行生产管理
+2025-08-14 19:54:22 - graph - INFO - cmd: [建造一个兵营], state: completed
+2025-08-14 19:58:33 - main - INFO - 启动 MCP Server + Client
+2025-08-14 19:58:34 - graph - INFO - 运行 stdio 模式，输入 /bye 退出

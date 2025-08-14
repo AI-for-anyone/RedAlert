@@ -2,7 +2,7 @@ import asyncio
 import socket
 import threading
 import time
-from mcp_tools import mcp_server
+from mcp_tools import unit_mcp_server, info_mcp_server, camera_mcp_server, fight_mcp_server, produce_mcp_server
 from graph import Graph
 from logs import get_logger, setup_logging, LogConfig, LogLevel
 
@@ -17,13 +17,23 @@ main.py - 一键启动 MCP Server + Client 的入口脚本
 用法:
     python main.py
 
-- 自动启动本地服务（端口 8000）
+- 自动启动本地服务
 - 启动 SSE 客户端连接服务
 """
 
 def run_server():
     print("[启动] MCP Server")
-    mcp_server.main()
+    unit_thread = threading.Thread(target=unit_mcp_server.main, daemon=True)
+    info_thread = threading.Thread(target=info_mcp_server.main, daemon=True)
+    camera_thread = threading.Thread(target=camera_mcp_server.main, daemon=True)
+    fight_thread = threading.Thread(target=fight_mcp_server.main, daemon=True)
+    produce_thread = threading.Thread(target=produce_mcp_server.main, daemon=True)
+    unit_thread.start()
+    info_thread.start()
+    camera_thread.start()
+    fight_thread.start()
+    produce_thread.start()
+
 
 def _init_logger(level):
     setup_logging(LogConfig(level=LogLevel(level)))
@@ -39,9 +49,8 @@ if __name__ == "__main__":
     _init_logger(args.log_level)
     
     logger.info("启动 MCP Server + Client")
-    # 启动 server 的线程
-    # server_thread = threading.Thread(target=run_server, daemon=True)
-    # server_thread.start()
+    
+    run_server()
 
     # 启动 graph
     graph = Graph(mode=args.mode)
