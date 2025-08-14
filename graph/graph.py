@@ -8,7 +8,9 @@ from .camera import CameraNode
 from .production import ProductionNode
 from .unit_control import UnitControlNode
 from .intelligence import IntelligenceNode
+from logs import get_logger
 
+logger = get_logger("graph")
 class Graph:
     def __init__(self, mode="stdio"):
         self._mode = mode
@@ -51,20 +53,20 @@ class Graph:
                 raise ValueError(f"不支持的模式: {self._mode}")
     
     def _run_stdio(self):
-        print("运行 stdio 模式，输入 /bye 退出")
+        logger.info("运行 stdio 模式，输入 /bye 退出")
         while True:
             user_input = input("User: ")
             if user_input == "/bye":
                 break
             result = self._compiled_graph.invoke({"input_cmd": user_input})
-            print("Assistant: ", result)
+            logger.info(f"cmd: [{user_input}], state: {result['state'].value}")
     
     def _run_sse(self):
-        print("运行 sse 模式")
+        logger.info("运行 sse 模式")
         pass
     
     def _run_http(self):
-        print("运行 http 模式")
+        logger.info("运行 http 模式")
         pass
 
 def main(mode="stdio"):

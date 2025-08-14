@@ -1,0 +1,27 @@
+[2025-08-14 10:24:55] custom_example.info:134 - INFO - 使用自定义配置的日志
+[2025-08-14 10:24:55] performance.debug:130 - DEBUG - 调用函数: slow_function()
+[2025-08-14 10:24:55] performance.info:134 - INFO - 性能统计: slow_function 耗时 0.100s status=success
+[2025-08-14 10:24:55] context_example.info:134 - INFO - 开始执行: 数据处理操作
+[2025-08-14 10:24:55] context_example.info:134 - INFO - 正在处理数据...
+[2025-08-14 10:24:55] context_example.info:134 - INFO - 数据处理中...
+[2025-08-14 10:24:55] context_example.info:134 - INFO - 完成执行: 数据处理操作 (耗时: 0.052s)
+[2025-08-14 10:24:55] exception_example.exception:150 - ERROR - 发生了除零错误
+Traceback (most recent call last):
+  File "D:\projects\RedAlert\logs\examples.py", line 65, in exception_handling_example
+    result = 1 / 0
+             ~~^~~
+ZeroDivisionError: division by zero
+[2025-08-14 10:24:55] exception_example.error:142 - ERROR - 错误详情: division by zero
+[2025-08-14 10:24:55] __main__.info:134 - INFO - 这是模块专用的日志记录器
+[2025-08-14 10:24:55] __main__.debug:130 - DEBUG - 模块调试信息
+[2025-08-14 10:24:55] ExampleClass.info:134 - INFO - ExampleClass 实例已创建
+[2025-08-14 10:24:55] ExampleClass.info:134 - INFO - 开始执行操作
+[2025-08-14 10:24:55] ExampleClass.debug:130 - DEBUG - 操作步骤1完成
+[2025-08-14 10:24:55] ExampleClass.debug:130 - DEBUG - 操作步骤2完成
+[2025-08-14 10:24:55] ExampleClass.info:134 - INFO - 操作成功完成
+[2025-08-14 10:24:55] graph.info:134 - INFO - Graph模块初始化
+[2025-08-14 10:24:55] graph.debug:130 - DEBUG - 加载图节点配置
+[2025-08-14 10:24:55] graph.info:134 - INFO - Graph模块启动完成
+[2025-08-14 10:24:55] mcp_server.info:134 - INFO - MCP Server启动
+[2025-08-14 10:24:55] mcp_server.debug:130 - DEBUG - 监听端口: 8000
+[2025-08-14 10:24:55] mcp_server.info:134 - INFO - MCP Server就绪

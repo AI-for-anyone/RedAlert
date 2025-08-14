@@ -8,14 +8,21 @@ from .state import GlobalState, WorkflowState, WorkflowType, NextCommand
 from langchain_openai import ChatOpenAI
 from langgraph.types import Command
 from langgraph.graph import END
+from logs import get_logger
 
+logger = get_logger("classify")
 
 class ClassifyNode:
     def __init__(self):
         self._llm = ChatOpenAI(
             model=os.getenv("CLASSIFY_MODEL"), 
             api_key=os.getenv("CLASSIFY_API_KEY"), 
-            base_url=os.getenv("CLASSIFY_API_BASE")
+            base_url=os.getenv("CLASSIFY_API_BASE"),
+            extra_body={
+                "thinking": {
+                    "type": "disabled"  # 关闭深度思考
+                }
+            }
         )
         self._prompt = classify_prompt
 
@@ -60,7 +67,7 @@ class ClassifyNode:
 
     def classify_node(self, global_state: GlobalState) -> Command:
         global_state["classify_plan_cmds"] = global_state.get("classify_plan_cmds", [])
-        print("global_state: ", global_state)
+        logger.debug(f"global_state: {global_state}")
         if len(global_state["classify_plan_cmds"]) == 0:
             # 第一次进入分类规划
             global_state["classify_plan_index"] = 0
@@ -77,7 +84,7 @@ class ClassifyNode:
             end_time = time.time()
             
             elapsed_time = end_time - start_time
-            print(f"LLM 分类耗时: {elapsed_time:.2f} 秒，response: {response}")
+            logger.debug(f"LLM 分类耗时: {elapsed_time:.2f} 秒，response: {response}")
             
             # 解析 JSON 响应
             try:
@@ -87,13 +94,13 @@ class ClassifyNode:
                 task_list = [NextCommand(assistant=task["assistant"], task=task["task"]) for task in tasks]
                 global_state["classify_plan_cmds"] = task_list
                 
-                print(f"分类结果: {len(tasks)} 个任务")
+                logger.debug(f"分类结果: {len(tasks)} 个任务")
                 for i, task in enumerate(tasks):
-                    print(f"  {i+1}. [{task['assistant']}] {task['task']}")
+                    logger.debug(f"  {i+1}. [{task['assistant']}] {task['task']}")
                 
             except ValueError as e:
-                print(f"分类解析错误: {e}")
-                print(f"原始响应: {response.content}")
+                logger.error(f"分类解析错误: {e}")
+                logger.debug(f"原始响应: {response.content}")
                 raise e
 
         global_state["classify_plan_index"] = global_state.get("classify_plan_index", 0)
@@ -106,7 +113,7 @@ class ClassifyNode:
                 goto=END
             )
         next_task = global_state["classify_plan_cmds"][global_state["classify_plan_index"]].assistant
-        print("next_task: ", next_task)
+        logger.info(f"next_task: {next_task}")
         
         # 这里应该根据任务内容确定工作流类型
         # 简化处理，可以根据任务内容关键词判断
@@ -133,6 +140,6 @@ class ClassifyNode:
             case "信息查询":
                 return WorkflowType.INTELLIGENCE.value
             case _:
-                print(f"无法识别的任务类型: {task}")
+                logger.error(f"无法识别的任务类型: {task}")
                 return END
         

@@ -1,0 +1,514 @@
+2025-08-14 10:24:55 - example - INFO - 这是一般信息
+2025-08-14 10:24:55 - example - WARNING - 这是警告信息
+2025-08-14 10:24:55 - example - ERROR - 这是错误信息
+2025-08-14 10:24:55 - example - CRITICAL - 这是严重错误信息
+2025-08-14 10:58:42 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:05:56 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:05:57 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:06:04 - classify - INFO - global_state: 
+2025-08-14 11:06:13 - classify - INFO - LLM 分类耗时: 8.70 秒，response: content='[{"assistant": "单位控制", "task": "部署基地车"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 1009, 'prompt_tokens': 882, 'total_tokens': 1891, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 992, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755140765280e3332eec59924c0343795d954de21857ec7029', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--54b54bed-d708-4964-b51b-0e06f658fcec-0' usage_metadata={'input_tokens': 882, 'output_tokens': 1009, 'total_tokens': 1891, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 992}}
+2025-08-14 11:06:13 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:06:13 - classify - INFO -   1. [单位控制] 部署基地车
+2025-08-14 11:06:13 - unit_control - INFO - 执行单位控制,当前GlobalState:
+2025-08-14 11:06:13 - classify - INFO - global_state: 
+2025-08-14 11:06:13 - graph - INFO - Assistant: 
+2025-08-14 11:06:13 - classify - INFO - global_state: 
+2025-08-14 11:06:15 - classify - INFO - LLM 分类耗时: 2.17 秒，response: content='[{"assistant": "生产管理", "task": "建造1个电厂"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 273, 'prompt_tokens': 886, 'total_tokens': 1159, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 255, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755140773769e3332eec59924c0343795d954de218577cd6fd', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--1ea21a36-200a-4333-9384-04c1f92e06e8-0' usage_metadata={'input_tokens': 886, 'output_tokens': 273, 'total_tokens': 1159, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 255}}
+2025-08-14 11:06:15 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:06:15 - classify - INFO -   1. [生产管理] 建造1个电厂
+2025-08-14 11:06:15 - production - INFO - 执行生产管理,当前GlobalState:
+2025-08-14 11:06:15 - classify - INFO - global_state: 
+2025-08-14 11:06:15 - graph - INFO - Assistant: 
+2025-08-14 11:06:15 - classify - INFO - global_state: 
+2025-08-14 11:06:17 - classify - INFO - LLM 分类耗时: 2.14 秒，response: content='[{"assistant": "生产管理", "task": "建造1个矿场"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 265, 'prompt_tokens': 887, 'total_tokens': 1152, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 246, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755140775941e3332eec59924c0343795d954de218571c9b69', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--83214184-de4b-47fd-a554-fee060be2f04-0' usage_metadata={'input_tokens': 887, 'output_tokens': 265, 'total_tokens': 1152, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 246}}
+2025-08-14 11:06:17 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:06:17 - classify - INFO -   1. [生产管理] 建造1个矿场
+2025-08-14 11:06:17 - production - INFO - 执行生产管理,当前GlobalState:
+2025-08-14 11:06:17 - classify - INFO - global_state: 
+2025-08-14 11:06:17 - graph - INFO - Assistant: 
+2025-08-14 11:06:17 - classify - INFO - global_state: 
+2025-08-14 11:06:20 - classify - INFO - LLM 分类耗时: 2.28 秒，response: content='[{"assistant": "生产管理", "task": "生产3个步兵"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 258, 'prompt_tokens': 886, 'total_tokens': 1144, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 240, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755140778088e3332eec59924c0343795d954de21857fd1f31', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--3adc4d6e-1a5a-4dd1-8014-6e7f4ddcdfe0-0' usage_metadata={'input_tokens': 886, 'output_tokens': 258, 'total_tokens': 1144, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 240}}
+2025-08-14 11:06:20 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:06:20 - classify - INFO -   1. [生产管理] 生产3个步兵
+2025-08-14 11:06:20 - production - INFO - 执行生产管理,当前GlobalState:
+2025-08-14 11:06:20 - classify - INFO - global_state: 
+2025-08-14 11:06:20 - graph - INFO - Assistant: 
+2025-08-14 11:06:20 - classify - INFO - global_state: 
+2025-08-14 11:06:22 - classify - INFO - LLM 分类耗时: 2.15 秒，response: content='[{"assistant": "生产管理", "task": "建造1个战车工厂"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 250, 'prompt_tokens': 887, 'total_tokens': 1137, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 231, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755140780371e3332eec59924c0343795d954de21857449b0c', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--f2512d37-01ca-4c14-b4d6-1b7b6cf7cd86-0' usage_metadata={'input_tokens': 887, 'output_tokens': 250, 'total_tokens': 1137, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 231}}
+2025-08-14 11:06:22 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:06:22 - classify - INFO -   1. [生产管理] 建造1个战车工厂
+2025-08-14 11:06:22 - production - INFO - 执行生产管理,当前GlobalState:
+2025-08-14 11:06:22 - classify - INFO - global_state: 
+2025-08-14 11:06:22 - graph - INFO - Assistant: 
+2025-08-14 11:06:22 - classify - INFO - global_state: 
+2025-08-14 11:06:24 - classify - INFO - LLM 分类耗时: 2.14 秒，response: content='[{"assistant": "生产管理", "task": "生产2个移动防空车"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 285, 'prompt_tokens': 888, 'total_tokens': 1173, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 265, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755140782521e3332eec59924c0343795d954de21857d0abcd', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--02c07cc8-63b1-442b-919c-f6aaae0d778b-0' usage_metadata={'input_tokens': 888, 'output_tokens': 285, 'total_tokens': 1173, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 265}}
+2025-08-14 11:06:24 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:06:24 - classify - INFO -   1. [生产管理] 生产2个移动防空车
+2025-08-14 11:06:24 - production - INFO - 执行生产管理,当前GlobalState:
+2025-08-14 11:06:24 - classify - INFO - global_state: 
+2025-08-14 11:06:24 - graph - INFO - Assistant: 
+2025-08-14 11:06:24 - classify - INFO - global_state: 
+2025-08-14 11:06:26 - classify - INFO - LLM 分类耗时: 2.14 秒，response: content='[{"assistant": "生产管理", "task": "建造1个雷达站"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 265, 'prompt_tokens': 887, 'total_tokens': 1152, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 246, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755140784673e3332eec59924c0343795d954de21857c0269d', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--b7f16a68-fcd1-47e9-8b50-3e20dc5b2d32-0' usage_metadata={'input_tokens': 887, 'output_tokens': 265, 'total_tokens': 1152, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 246}}
+2025-08-14 11:06:26 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:06:26 - classify - INFO -   1. [生产管理] 建造1个雷达站
+2025-08-14 11:06:26 - production - INFO - 执行生产管理,当前GlobalState:
+2025-08-14 11:06:26 - classify - INFO - global_state: 
+2025-08-14 11:06:26 - graph - INFO - Assistant: 
+2025-08-14 11:35:06 - classify - INFO - global_state: 
+2025-08-14 11:35:09 - classify - INFO - LLM 分类耗时: 2.26 秒，response: content='[{"assistant": "生产管理", "task": "建造1个雷达站"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 249, 'prompt_tokens': 887, 'total_tokens': 1136, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 230, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '0217551425071150b5206b6c0f3bb2682a16c13f4ce95f3d79a46', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--d1fd0a3f-26a9-4421-9372-88efe3f42695-0' usage_metadata={'input_tokens': 887, 'output_tokens': 249, 'total_tokens': 1136, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 230}}
+2025-08-14 11:35:09 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:09 - classify - INFO -   1. [生产管理] 建造1个雷达站
+2025-08-14 11:35:09 - production - INFO - 执行生产管理,当前GlobalState:
+2025-08-14 11:35:09 - classify - INFO - global_state: 
+2025-08-14 11:35:09 - graph - INFO - Assistant: 
+2025-08-14 11:35:19 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:35:20 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:35:22 - classify - INFO - global_state: {'input_cmd': '- 部署基地车', 'classify_plan_cmds': []}
+2025-08-14 11:35:24 - classify - INFO - LLM 分类耗时: 2.22 秒，response: content='[{"assistant": "生产管理", "task": "部署基地车"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 212, 'prompt_tokens': 882, 'total_tokens': 1094, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 195, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142522842ef31a83ef7c7ecf7de17ef5cb46e44e2acd798', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--7674a5d6-f641-4a46-a5eb-1ae6ac0cf643-0' usage_metadata={'input_tokens': 882, 'output_tokens': 212, 'total_tokens': 1094, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 195}}
+2025-08-14 11:35:24 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:24 - classify - INFO -   1. [生产管理] 部署基地车
+2025-08-14 11:35:24 - classify - INFO - next_task: 生产管理
+2025-08-14 11:35:24 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9963C0>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:24 - classify - INFO - global_state: {'input_cmd': '- 部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9963C0>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:24 - graph - INFO - Assistant: {'input_cmd': '- 部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9963C0>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:35:24 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 电厂', 'classify_plan_cmds': []}
+2025-08-14 11:35:26 - classify - INFO - LLM 分类耗时: 2.11 秒，response: content='[{"assistant": "生产管理", "task": "建造1个电厂"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 246, 'prompt_tokens': 886, 'total_tokens': 1132, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 228, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142524778ef31a83ef7c7ecf7de17ef5cb46e44e243c0ad', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--dbb60846-4969-4174-92f7-ecdaccf23191-0' usage_metadata={'input_tokens': 886, 'output_tokens': 246, 'total_tokens': 1132, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 228}}
+2025-08-14 11:35:26 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:26 - classify - INFO -   1. [生产管理] 建造1个电厂
+2025-08-14 11:35:26 - classify - INFO - next_task: 生产管理
+2025-08-14 11:35:26 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9E0190>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:26 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9E0190>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:26 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9E0190>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:35:26 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 矿场', 'classify_plan_cmds': []}
+2025-08-14 11:35:28 - classify - INFO - LLM 分类耗时: 2.20 秒，response: content='[{"assistant": "生产管理", "task": "建造1个矿场"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 256, 'prompt_tokens': 887, 'total_tokens': 1143, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 237, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142526883ef31a83ef7c7ecf7de17ef5cb46e44e2e7100d', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--469be064-ea6a-44c3-a0fa-738555b8a56a-0' usage_metadata={'input_tokens': 887, 'output_tokens': 256, 'total_tokens': 1143, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 237}}
+2025-08-14 11:35:28 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:28 - classify - INFO -   1. [生产管理] 建造1个矿场
+2025-08-14 11:35:28 - classify - INFO - next_task: 生产管理
+2025-08-14 11:35:28 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 矿场', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C8DA990>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:28 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 矿场', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C8DA990>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:28 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 矿场', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C8DA990>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:35:28 - classify - INFO - global_state: {'input_cmd': '- 生产 **3个** 步兵', 'classify_plan_cmds': []}
+2025-08-14 11:35:30 - classify - INFO - LLM 分类耗时: 1.82 秒，response: content='[{"assistant": "生产管理", "task": "生产3个步兵"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 206, 'prompt_tokens': 886, 'total_tokens': 1092, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 188, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142529089ef31a83ef7c7ecf7de17ef5cb46e44e2c503ff', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--d5331ca2-fc4a-4ac6-aa6b-c8f9bb6865f4-0' usage_metadata={'input_tokens': 886, 'output_tokens': 206, 'total_tokens': 1092, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 188}}
+2025-08-14 11:35:30 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:30 - classify - INFO -   1. [生产管理] 生产3个步兵
+2025-08-14 11:35:30 - classify - INFO - next_task: 生产管理
+2025-08-14 11:35:30 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 生产 **3个** 步兵', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C623360>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:30 - classify - INFO - global_state: {'input_cmd': '- 生产 **3个** 步兵', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C623360>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:30 - graph - INFO - Assistant: {'input_cmd': '- 生产 **3个** 步兵', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C623360>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:35:30 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 战车工厂', 'classify_plan_cmds': []}
+2025-08-14 11:35:32 - classify - INFO - LLM 分类耗时: 1.93 秒，response: content='[{"assistant": "生产管理", "task": "建造1个战车工厂"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 257, 'prompt_tokens': 887, 'total_tokens': 1144, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 238, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142530921ef31a83ef7c7ecf7de17ef5cb46e44e27a331a', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--972cbc4f-30d3-4fe0-b073-b6888f64aa17-0' usage_metadata={'input_tokens': 887, 'output_tokens': 257, 'total_tokens': 1144, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 238}}
+2025-08-14 11:35:32 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:32 - classify - INFO -   1. [生产管理] 建造1个战车工厂
+2025-08-14 11:35:32 - classify - INFO - next_task: 生产管理
+2025-08-14 11:35:32 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 战车工厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C623230>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:32 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 战车工厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C623230>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:32 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 战车工厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C623230>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:35:32 - classify - INFO - global_state: {'input_cmd': '- 生产 **2个** 移动防空车', 'classify_plan_cmds': []}
+2025-08-14 11:35:34 - classify - INFO - LLM 分类耗时: 2.12 秒，response: content='[{"assistant": "生产管理", "task": "生产2个移动防空车"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 250, 'prompt_tokens': 888, 'total_tokens': 1138, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 230, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142532857ef31a83ef7c7ecf7de17ef5cb46e44e2aaa561', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--8f6732b5-b3fe-47ac-919e-b335bf7d811d-0' usage_metadata={'input_tokens': 888, 'output_tokens': 250, 'total_tokens': 1138, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 230}}
+2025-08-14 11:35:34 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:34 - classify - INFO -   1. [生产管理] 生产2个移动防空车
+2025-08-14 11:35:34 - classify - INFO - next_task: 生产管理
+2025-08-14 11:35:34 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 生产 **2个** 移动防空车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9C0A70>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:34 - classify - INFO - global_state: {'input_cmd': '- 生产 **2个** 移动防空车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9C0A70>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:34 - graph - INFO - Assistant: {'input_cmd': '- 生产 **2个** 移动防空车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C9C0A70>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:35:34 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 雷达站', 'classify_plan_cmds': []}
+2025-08-14 11:35:37 - classify - INFO - LLM 分类耗时: 2.30 秒，response: content='[{"assistant": "生产管理", "task": "建造1个雷达站"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 243, 'prompt_tokens': 887, 'total_tokens': 1130, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 224, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142534973ef31a83ef7c7ecf7de17ef5cb46e44e2b627c4', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--bb03e592-e506-405f-bc57-7e3e796ba264-0' usage_metadata={'input_tokens': 887, 'output_tokens': 243, 'total_tokens': 1130, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 224}}
+2025-08-14 11:35:37 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:35:37 - classify - INFO -   1. [生产管理] 建造1个雷达站
+2025-08-14 11:35:37 - classify - INFO - next_task: 生产管理
+2025-08-14 11:35:37 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 雷达站', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C965E10>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:37 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 雷达站', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C965E10>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:35:37 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 雷达站', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C965E10>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:36:18 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 核电厂', 'classify_plan_cmds': []}
+2025-08-14 11:36:20 - classify - INFO - LLM 分类耗时: 2.12 秒，response: content='[{"assistant": "生产管理", "task": "建造1个核电厂"}]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 212, 'prompt_tokens': 887, 'total_tokens': 1099, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 193, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-flash-250715', 'system_fingerprint': None, 'id': '021755142578537ec963d5993fde85ff706a8094e8755bdfa9ec6', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--9742e9cf-0fda-4150-a87f-e6bd65e873eb-0' usage_metadata={'input_tokens': 887, 'output_tokens': 212, 'total_tokens': 1099, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 193}}
+2025-08-14 11:36:20 - classify - INFO - 分类结果: 1 个任务
+2025-08-14 11:36:20 - classify - INFO -   1. [生产管理] 建造1个核电厂
+2025-08-14 11:36:20 - classify - INFO - next_task: 生产管理
+2025-08-14 11:36:20 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 核电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C965D00>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:36:20 - classify - INFO - global_state: {'input_cmd': '- 建造 **1个** 核电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C965D00>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:36:20 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 核电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021B5C965D00>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:37:54 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:37:56 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:38:00 - classify - INFO - next_task: 生产管理
+2025-08-14 11:38:00 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B8963C0>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:38:00 - graph - INFO - Assistant: {'input_cmd': '- 部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B8963C0>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:38:02 - classify - INFO - next_task: 生产管理
+2025-08-14 11:38:02 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B8E0190>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:38:02 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 电厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B8E0190>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:38:04 - classify - INFO - next_task: 生产管理
+2025-08-14 11:38:04 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 矿场', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B7DE990>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:38:04 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 矿场', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B7DE990>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:38:05 - classify - INFO - next_task: 生产管理
+2025-08-14 11:38:05 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 生产 **3个** 步兵', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B523360>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:38:06 - graph - INFO - Assistant: {'input_cmd': '- 生产 **3个** 步兵', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B523360>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:38:08 - classify - INFO - next_task: 生产管理
+2025-08-14 11:38:08 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 战车工厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B523230>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:38:08 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 战车工厂', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B523230>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:38:10 - classify - INFO - next_task: 生产管理
+2025-08-14 11:38:10 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 生产 **2个** 移动防空车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B8C0A70>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:38:10 - graph - INFO - Assistant: {'input_cmd': '- 生产 **2个** 移动防空车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B8C0A70>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:38:12 - classify - INFO - next_task: 生产管理
+2025-08-14 11:38:12 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 建造 **1个** 雷达站', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B865E10>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:38:12 - graph - INFO - Assistant: {'input_cmd': '- 建造 **1个** 雷达站', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002336B865E10>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:39:49 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:39:50 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:39:55 - classify - INFO - next_task: 生产管理
+2025-08-14 11:39:55 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000001FE4C3963C0>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:40:03 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:40:04 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:40:08 - classify - INFO - next_task: 生产管理
+2025-08-14 11:40:08 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '- 部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002106A8963C0>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:41:45 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:41:47 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:42:00 - classify - INFO - next_task: 生产管理
+2025-08-14 11:42:00 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000001426342C1A0>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:42:32 - graph - INFO - Assistant: {'input_cmd': '部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000001426342C1A0>], 'state': <WorkflowState.COMPLETED: 'completed'>}
+2025-08-14 11:42:41 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:42:43 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:42:54 - classify - INFO - next_task: 生产管理
+2025-08-14 11:42:54 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000001674555C1A0>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 11:42:55 - graph - INFO - Assistant: completed
+2025-08-14 11:50:57 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:50:58 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 11:51:35 - main - INFO - 启动 MCP Server + Client
+2025-08-14 11:51:35 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:06:54 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:06:55 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:07:06 - classify - INFO - next_task: 生产管理
+2025-08-14 12:07:06 - production - INFO - 执行生产管理,当前GlobalState: {'input_cmd': '部署基地车', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000299CDD0FE00>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:07:06 - graph - INFO - cmd: [部署基地车], state: completed
+2025-08-14 12:08:02 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:08:02 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:08:04 - classify - DEBUG - global_state: {'input_cmd': ' 建造 **1个** 雷达站', 'classify_plan_cmds': []}
+2025-08-14 12:08:04 - classify - DEBUG - LLM 分类耗时: 0.57 秒，response: ChatCompletion(id='02175514448434884cbe6f816d4bab63be81fcd25f0e715572ffd', choices=[Choice(finish_reason='stop', moderation_hit_type=None, index=0, logprobs=None, message=ChatCompletionMessage(content='[{"assistant": "生产管理", "task": "建造1个雷达站"}]', role='assistant', function_call=None, tool_calls=None, audio=None, reasoning_content=None))], created=1755144484, model='doubao-seed-1-6-flash-250715', service_tier='default', object='chat.completion', usage=CompletionUsage(completion_tokens=19, prompt_tokens=837, total_tokens=856, prompt_tokens_details=PromptTokensDetails(cached_tokens=0), completion_tokens_details=CompletionTokensDetails(reasoning_tokens=0)))
+2025-08-14 12:08:04 - classify - DEBUG - 分类结果: 1 个任务
+2025-08-14 12:08:04 - classify - DEBUG -   1. [生产管理] 建造1个雷达站
+2025-08-14 12:08:04 - classify - INFO - next_task: 生产管理
+2025-08-14 12:08:04 - production - INFO - 执行生产管理
+2025-08-14 12:08:04 - classify - DEBUG - global_state: {'input_cmd': ' 建造 **1个** 雷达站', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000027EB980BE00>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:08:04 - graph - INFO - cmd: [ 建造 **1个** 雷达站], state: completed
+2025-08-14 12:09:09 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:09:09 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:09:09 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_cmds': []}
+2025-08-14 12:09:11 - classify - DEBUG - LLM 分类耗时: 1.44 秒，response: ChatCompletion(id='02175514455013704509495719a4477dddcbfc8a2bc1fc8f42ec4', choices=[Choice(finish_reason='stop', moderation_hit_type=None, index=0, logprobs=None, message=ChatCompletionMessage(content='[\n  {"assistant": "生产管理", "task": "部署基地车"},\n  {"assistant": "生产管理", "task": "建造1个电厂"},\n  {"assistant": "生产管理", "task": "建造1个矿场"},\n  {"assistant": "生产管理", "task": "生产3个步兵"},\n  {"assistant": "生产管理", "task": "建造1个战车工厂"},\n  {"assistant": "生产管理", "task": "生产2个移动防空车"},\n  {"assistant": "生产管理", "task": "建造1个雷达站"},\n  {"assistant": "生产管理", "task": "建造1个核电厂"}\n]', role='assistant', function_call=None, tool_calls=None, audio=None, reasoning_content=None))], created=1755144551, model='doubao-seed-1-6-flash-250715', service_tier='default', object='chat.completion', usage=CompletionUsage(completion_tokens=160, prompt_tokens=911, total_tokens=1071, prompt_tokens_details=PromptTokensDetails(cached_tokens=0), completion_tokens_details=CompletionTokensDetails(reasoning_tokens=0)))
+2025-08-14 12:09:11 - classify - DEBUG - 分类结果: 8 个任务
+2025-08-14 12:09:11 - classify - DEBUG -   1. [生产管理] 部署基地车
+2025-08-14 12:09:11 - classify - DEBUG -   2. [生产管理] 建造1个电厂
+2025-08-14 12:09:11 - classify - DEBUG -   3. [生产管理] 建造1个矿场
+2025-08-14 12:09:11 - classify - DEBUG -   4. [生产管理] 生产3个步兵
+2025-08-14 12:09:11 - classify - DEBUG -   5. [生产管理] 建造1个战车工厂
+2025-08-14 12:09:11 - classify - DEBUG -   6. [生产管理] 生产2个移动防空车
+2025-08-14 12:09:11 - classify - DEBUG -   7. [生产管理] 建造1个雷达站
+2025-08-14 12:09:11 - classify - DEBUG -   8. [生产管理] 建造1个核电厂
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 2, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 3, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 4, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 5, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 6, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 7, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - classify - INFO - next_task: 生产管理
+2025-08-14 12:09:11 - production - INFO - 执行生产管理
+2025-08-14 12:09:11 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 8, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000285E750BE00>, <graph.state.NextCommand object at 0x00000285E74939D0>, <graph.state.NextCommand object at 0x00000285E7493C50>, <graph.state.NextCommand object at 0x00000285E74E23F0>, <graph.state.NextCommand object at 0x00000285E74E2780>, <graph.state.NextCommand object at 0x00000285E753CB90>, <graph.state.NextCommand object at 0x00000285E75245A0>, <graph.state.NextCommand object at 0x00000285E7524490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:09:11 - graph - INFO - cmd: [- 部署基地车
+- 建造 **1个** 电厂
+- 建造 **1个** 矿场
+- 生产 **3个** 步兵
+- 建造 **1个** 战车工厂
+- 生产 **2个** 移动防空车
+- 建造 **1个** 雷达站
+- 建造 **1个** 核电厂
+        ], state: completed
+2025-08-14 12:09:33 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:09:34 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:09:34 - classify - DEBUG - global_state: {'input_cmd': <built-in function input>, 'classify_plan_cmds': []}
+2025-08-14 12:10:10 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:10:10 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:10:10 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_cmds': []}
+2025-08-14 12:10:12 - classify - DEBUG - LLM 分类耗时: 1.37 秒，response: ChatCompletion(id='021755144611235c59910ec3d8eaaf1708ceaaf801a01ac84f7ef', choices=[Choice(finish_reason='stop', moderation_hit_type=None, index=0, logprobs=None, message=ChatCompletionMessage(content='[\n  {"assistant": "生产管理", "task": "部署基地车"},\n  {"assistant": "生产管理", "task": "建造1个电厂"},\n  {"assistant": "生产管理", "task": "建造1个矿场"},\n  {"assistant": "生产管理", "task": "生产3个步兵"},\n  {"assistant": "生产管理", "task": "建造1个战车工厂"},\n  {"assistant": "生产管理", "task": "生产2个移动防空车"},\n  {"assistant": "生产管理", "task": "建造1个雷达站"},\n  {"assistant": "生产管理", "task": "建造1个核电厂"}\n]', role='assistant', function_call=None, tool_calls=None, audio=None, reasoning_content=None))], created=1755144612, model='doubao-seed-1-6-flash-250715', service_tier='default', object='chat.completion', usage=CompletionUsage(completion_tokens=160, prompt_tokens=911, total_tokens=1071, prompt_tokens_details=PromptTokensDetails(cached_tokens=0), completion_tokens_details=CompletionTokensDetails(reasoning_tokens=0)))
+2025-08-14 12:10:12 - classify - DEBUG - 分类结果: 8 个任务
+2025-08-14 12:10:12 - classify - DEBUG -   1. [生产管理] 部署基地车
+2025-08-14 12:10:12 - classify - DEBUG -   2. [生产管理] 建造1个电厂
+2025-08-14 12:10:12 - classify - DEBUG -   3. [生产管理] 建造1个矿场
+2025-08-14 12:10:12 - classify - DEBUG -   4. [生产管理] 生产3个步兵
+2025-08-14 12:10:12 - classify - DEBUG -   5. [生产管理] 建造1个战车工厂
+2025-08-14 12:10:12 - classify - DEBUG -   6. [生产管理] 生产2个移动防空车
+2025-08-14 12:10:12 - classify - DEBUG -   7. [生产管理] 建造1个雷达站
+2025-08-14 12:10:12 - classify - DEBUG -   8. [生产管理] 建造1个核电厂
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 2, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 3, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 4, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 5, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 6, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 7, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - classify - INFO - next_task: 生产管理
+2025-08-14 12:10:12 - production - INFO - 执行生产管理
+2025-08-14 12:10:12 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 8, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000280F040BE00>, <graph.state.NextCommand object at 0x00000280F03939D0>, <graph.state.NextCommand object at 0x00000280F0393C50>, <graph.state.NextCommand object at 0x00000280F03E23F0>, <graph.state.NextCommand object at 0x00000280F03E2780>, <graph.state.NextCommand object at 0x00000280F043CB90>, <graph.state.NextCommand object at 0x00000280F04245A0>, <graph.state.NextCommand object at 0x00000280F0424490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:10:12 - graph - INFO - cmd: [- 部署基地车
+- 建造 **1个** 电厂
+- 建造 **1个** 矿场
+- 生产 **3个** 步兵
+- 建造 **1个** 战车工厂
+- 生产 **2个** 移动防空车
+- 建造 **1个** 雷达站
+- 建造 **1个** 核电厂
+        ], state: completed
+2025-08-14 12:32:35 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:32:36 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:32:36 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_cmds': []}
+2025-08-14 12:32:40 - classify - DEBUG - LLM 分类耗时: 3.26 秒，response: content='```json\n[\n  {"assistant": "生产管理", "task": "部署基地车"},\n  {"assistant": "生产管理", "task": "建造1个电厂"},\n  {"assistant": "生产管理", "task": "建造1个矿场"},\n  {"assistant": "生产管理", "task": "生产3个步兵"},\n  {"assistant": "生产管理", "task": "建造1个战车工厂"},\n  {"assistant": "生产管理", "task": "生产2个移动防空车"},\n  {"assistant": "生产管理", "task": "建造1个雷达站"},\n  {"assistant": "生产管理", "task": "建造1个核电厂"}\n]\n```' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 165, 'prompt_tokens': 885, 'total_tokens': 1050, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 0, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-1-5-pro-256k-250115', 'system_fingerprint': None, 'id': '021755145957271096fce02f344d1557d64e35a80bc1dfdcc1d32', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--7b296ba6-3e24-4720-b9a9-392c9a4812cc-0' usage_metadata={'input_tokens': 885, 'output_tokens': 165, 'total_tokens': 1050, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 0}}
+2025-08-14 12:32:40 - classify - DEBUG - 分类结果: 8 个任务
+2025-08-14 12:32:40 - classify - DEBUG -   1. [生产管理] 部署基地车
+2025-08-14 12:32:40 - classify - DEBUG -   2. [生产管理] 建造1个电厂
+2025-08-14 12:32:40 - classify - DEBUG -   3. [生产管理] 建造1个矿场
+2025-08-14 12:32:40 - classify - DEBUG -   4. [生产管理] 生产3个步兵
+2025-08-14 12:32:40 - classify - DEBUG -   5. [生产管理] 建造1个战车工厂
+2025-08-14 12:32:40 - classify - DEBUG -   6. [生产管理] 生产2个移动防空车
+2025-08-14 12:32:40 - classify - DEBUG -   7. [生产管理] 建造1个雷达站
+2025-08-14 12:32:40 - classify - DEBUG -   8. [生产管理] 建造1个核电厂
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 2, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 3, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 4, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 5, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 6, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 7, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - classify - INFO - next_task: 生产管理
+2025-08-14 12:32:40 - production - INFO - 执行生产管理
+2025-08-14 12:32:40 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 8, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000205D53963C0>, <graph.state.NextCommand object at 0x00000205D52DF4D0>, <graph.state.NextCommand object at 0x00000205D52DF750>, <graph.state.NextCommand object at 0x00000205D5022650>, <graph.state.NextCommand object at 0x00000205D5022C40>, <graph.state.NextCommand object at 0x00000205D518BD10>, <graph.state.NextCommand object at 0x00000205D5365150>, <graph.state.NextCommand object at 0x00000205D5364490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:32:40 - graph - INFO - cmd: [- 部署基地车
+- 建造 **1个** 电厂
+- 建造 **1个** 矿场
+- 生产 **3个** 步兵
+- 建造 **1个** 战车工厂
+- 生产 **2个** 移动防空车
+- 建造 **1个** 雷达站
+- 建造 **1个** 核电厂
+        ], state: completed
+2025-08-14 12:35:43 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:35:45 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:35:45 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_cmds': []}
+2025-08-14 12:35:48 - classify - DEBUG - LLM 分类耗时: 3.47 秒，response: content='```json\n[\n  {"assistant": "生产管理", "task": "部署基地车"},\n  {"assistant": "生产管理", "task": "建造1个电厂"},\n  {"assistant": "生产管理", "task": "建造1个矿场"},\n  {"assistant": "生产管理", "task": "生产3个步兵"},\n  {"assistant": "生产管理", "task": "建造1个战车工厂"},\n  {"assistant": "生产管理", "task": "生产2个移动防空车"},\n  {"assistant": "生产管理", "task": "建造1个雷达站"},\n  {"assistant": "生产管理", "task": "建造1个核电厂"}\n]\n```' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 157, 'prompt_tokens': 854, 'total_tokens': 1011, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 0, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'deepseek-v3-241226', 'system_fingerprint': None, 'id': '0217551461454387138a542453d3541a0fa6e6da0df71129fbc21', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--30dfd79b-7a6a-42c9-a8ea-4931bde3d1f4-0' usage_metadata={'input_tokens': 854, 'output_tokens': 157, 'total_tokens': 1011, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 0}}
+2025-08-14 12:35:48 - classify - DEBUG - 分类结果: 8 个任务
+2025-08-14 12:35:48 - classify - DEBUG -   1. [生产管理] 部署基地车
+2025-08-14 12:35:48 - classify - DEBUG -   2. [生产管理] 建造1个电厂
+2025-08-14 12:35:48 - classify - DEBUG -   3. [生产管理] 建造1个矿场
+2025-08-14 12:35:48 - classify - DEBUG -   4. [生产管理] 生产3个步兵
+2025-08-14 12:35:48 - classify - DEBUG -   5. [生产管理] 建造1个战车工厂
+2025-08-14 12:35:48 - classify - DEBUG -   6. [生产管理] 生产2个移动防空车
+2025-08-14 12:35:48 - classify - DEBUG -   7. [生产管理] 建造1个雷达站
+2025-08-14 12:35:48 - classify - DEBUG -   8. [生产管理] 建造1个核电厂
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 2, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 3, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 4, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 5, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 6, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 7, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - classify - INFO - next_task: 生产管理
+2025-08-14 12:35:48 - production - INFO - 执行生产管理
+2025-08-14 12:35:48 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 8, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x0000021F42F963C0>, <graph.state.NextCommand object at 0x0000021F42EE34D0>, <graph.state.NextCommand object at 0x0000021F42EE3750>, <graph.state.NextCommand object at 0x0000021F42C22650>, <graph.state.NextCommand object at 0x0000021F42C22C40>, <graph.state.NextCommand object at 0x0000021F42D8BD10>, <graph.state.NextCommand object at 0x0000021F42F65150>, <graph.state.NextCommand object at 0x0000021F42F64490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:35:48 - graph - INFO - cmd: [- 部署基地车
+- 建造 **1个** 电厂
+- 建造 **1个** 矿场
+- 生产 **3个** 步兵
+- 建造 **1个** 战车工厂
+- 生产 **2个** 移动防空车
+- 建造 **1个** 雷达站
+- 建造 **1个** 核电厂
+        ], state: completed
+2025-08-14 12:36:19 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:36:20 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:36:20 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_cmds': []}
+2025-08-14 12:36:24 - classify - DEBUG - LLM 分类耗时: 4.48 秒，response: content='```json\n[\n  {"assistant": "生产管理", "task": "部署基地车"},\n  {"assistant": "生产管理", "task": "建造1个电厂"},\n  {"assistant": "生产管理", "task": "建造1个矿场"},\n  {"assistant": "生产管理", "task": "生产3个步兵"},\n  {"assistant": "生产管理", "task": "建造1个战车工厂"},\n  {"assistant": "生产管理", "task": "生产2个移动防空车"},\n  {"assistant": "生产管理", "task": "建造1个雷达站"},\n  {"assistant": "生产管理", "task": "建造1个核电厂"}\n]\n```' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 165, 'prompt_tokens': 885, 'total_tokens': 1050, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 0, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-1-5-pro-32k-250115', 'system_fingerprint': None, 'id': '0217551461808426c538cdb85280b87fd1d855e8af4abb8f9ca3b', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--82679f38-beb7-42f6-8ff0-01ef58339723-0' usage_metadata={'input_tokens': 885, 'output_tokens': 165, 'total_tokens': 1050, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 0}}
+2025-08-14 12:36:24 - classify - DEBUG - 分类结果: 8 个任务
+2025-08-14 12:36:24 - classify - DEBUG -   1. [生产管理] 部署基地车
+2025-08-14 12:36:24 - classify - DEBUG -   2. [生产管理] 建造1个电厂
+2025-08-14 12:36:24 - classify - DEBUG -   3. [生产管理] 建造1个矿场
+2025-08-14 12:36:24 - classify - DEBUG -   4. [生产管理] 生产3个步兵
+2025-08-14 12:36:24 - classify - DEBUG -   5. [生产管理] 建造1个战车工厂
+2025-08-14 12:36:24 - classify - DEBUG -   6. [生产管理] 生产2个移动防空车
+2025-08-14 12:36:24 - classify - DEBUG -   7. [生产管理] 建造1个雷达站
+2025-08-14 12:36:24 - classify - DEBUG -   8. [生产管理] 建造1个核电厂
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 2, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 3, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 4, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 5, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 6, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 7, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - classify - INFO - next_task: 生产管理
+2025-08-14 12:36:24 - production - INFO - 执行生产管理
+2025-08-14 12:36:24 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 8, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002AA1DDB63C0>, <graph.state.NextCommand object at 0x000002AA1DD034D0>, <graph.state.NextCommand object at 0x000002AA1DD03750>, <graph.state.NextCommand object at 0x000002AA1DA42650>, <graph.state.NextCommand object at 0x000002AA1DA42C40>, <graph.state.NextCommand object at 0x000002AA1DBABD10>, <graph.state.NextCommand object at 0x000002AA1DD85150>, <graph.state.NextCommand object at 0x000002AA1DD84490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:36:24 - graph - INFO - cmd: [- 部署基地车
+- 建造 **1个** 电厂
+- 建造 **1个** 矿场
+- 生产 **3个** 步兵
+- 建造 **1个** 战车工厂
+- 生产 **2个** 移动防空车
+- 建造 **1个** 雷达站
+- 建造 **1个** 核电厂
+        ], state: completed
+2025-08-14 12:38:56 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:38:57 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:38:57 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_cmds': []}
+2025-08-14 12:39:01 - classify - DEBUG - LLM 分类耗时: 3.91 秒，response: content='[\n  {"assistant": "生产管理", "task": "部署基地车"},\n  {"assistant": "生产管理", "task": "建造1个电厂"},\n  {"assistant": "生产管理", "task": "建造1个矿场"},\n  {"assistant": "生产管理", "task": "生产3个步兵"},\n  {"assistant": "生产管理", "task": "建造1个战车工厂"},\n  {"assistant": "生产管理", "task": "生产2个移动防空车"},\n  {"assistant": "生产管理", "task": "建造1个雷达站"},\n  {"assistant": "生产管理", "task": "建造1个核电厂"}\n]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 160, 'prompt_tokens': 912, 'total_tokens': 1072, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 0, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-250615', 'system_fingerprint': None, 'id': '021755146337593472b6d1fbda1b6afdc8beaf9e8f97c72c6b47f', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--fd9cca95-49de-4423-8299-be2c0f6c3740-0' usage_metadata={'input_tokens': 912, 'output_tokens': 160, 'total_tokens': 1072, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 0}}
+2025-08-14 12:39:01 - classify - DEBUG - 分类结果: 8 个任务
+2025-08-14 12:39:01 - classify - DEBUG -   1. [生产管理] 部署基地车
+2025-08-14 12:39:01 - classify - DEBUG -   2. [生产管理] 建造1个电厂
+2025-08-14 12:39:01 - classify - DEBUG -   3. [生产管理] 建造1个矿场
+2025-08-14 12:39:01 - classify - DEBUG -   4. [生产管理] 生产3个步兵
+2025-08-14 12:39:01 - classify - DEBUG -   5. [生产管理] 建造1个战车工厂
+2025-08-14 12:39:01 - classify - DEBUG -   6. [生产管理] 生产2个移动防空车
+2025-08-14 12:39:01 - classify - DEBUG -   7. [生产管理] 建造1个雷达站
+2025-08-14 12:39:01 - classify - DEBUG -   8. [生产管理] 建造1个核电厂
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 2, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 3, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 4, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 5, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 6, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 7, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - classify - INFO - next_task: 生产管理
+2025-08-14 12:39:01 - production - INFO - 执行生产管理
+2025-08-14 12:39:01 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 8, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x00000186156963C0>, <graph.state.NextCommand object at 0x00000186155DF4D0>, <graph.state.NextCommand object at 0x00000186155DF750>, <graph.state.NextCommand object at 0x0000018615322650>, <graph.state.NextCommand object at 0x0000018615322C40>, <graph.state.NextCommand object at 0x000001861548FD10>, <graph.state.NextCommand object at 0x0000018615665150>, <graph.state.NextCommand object at 0x0000018615664490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:39:01 - graph - INFO - cmd: [- 部署基地车
+- 建造 **1个** 电厂
+- 建造 **1个** 矿场
+- 生产 **3个** 步兵
+- 建造 **1个** 战车工厂
+- 生产 **2个** 移动防空车
+- 建造 **1个** 雷达站
+- 建造 **1个** 核电厂
+        ], state: completed
+2025-08-14 12:40:01 - main - INFO - 启动 MCP Server + Client
+2025-08-14 12:40:02 - graph - INFO - 运行 stdio 模式，输入 /bye 退出
+2025-08-14 12:40:02 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_cmds': []}
+2025-08-14 12:40:16 - classify - DEBUG - LLM 分类耗时: 14.16 秒，response: content='[\n  {"assistant": "生产管理", "task": "部署基地车"},\n  {"assistant": "生产管理", "task": "建造1个电厂"},\n  {"assistant": "生产管理", "task": "建造1个矿场"},\n  {"assistant": "生产管理", "task": "生产3个步兵"},\n  {"assistant": "生产管理", "task": "建造1个战车工厂"},\n  {"assistant": "生产管理", "task": "生产2个移动防空车"},\n  {"assistant": "生产管理", "task": "建造1个雷达站"},\n  {"assistant": "生产管理", "task": "建造1个核电厂"}\n]' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 601, 'prompt_tokens': 961, 'total_tokens': 1562, 'completion_tokens_details': {'accepted_prediction_tokens': None, 'audio_tokens': None, 'reasoning_tokens': 441, 'rejected_prediction_tokens': None}, 'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}}, 'model_name': 'doubao-seed-1-6-250615', 'system_fingerprint': None, 'id': '021755146402797e8f3da03500d081b9e801fb8e4b34c62882ea1', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='run--e78a71ff-d903-4480-9d24-09d6fa62d0ab-0' usage_metadata={'input_tokens': 961, 'output_tokens': 601, 'total_tokens': 1562, 'input_token_details': {'cache_read': 0}, 'output_token_details': {'reasoning': 441}}
+2025-08-14 12:40:16 - classify - DEBUG - 分类结果: 8 个任务
+2025-08-14 12:40:16 - classify - DEBUG -   1. [生产管理] 部署基地车
+2025-08-14 12:40:16 - classify - DEBUG -   2. [生产管理] 建造1个电厂
+2025-08-14 12:40:16 - classify - DEBUG -   3. [生产管理] 建造1个矿场
+2025-08-14 12:40:16 - classify - DEBUG -   4. [生产管理] 生产3个步兵
+2025-08-14 12:40:16 - classify - DEBUG -   5. [生产管理] 建造1个战车工厂
+2025-08-14 12:40:16 - classify - DEBUG -   6. [生产管理] 生产2个移动防空车
+2025-08-14 12:40:16 - classify - DEBUG -   7. [生产管理] 建造1个雷达站
+2025-08-14 12:40:16 - classify - DEBUG -   8. [生产管理] 建造1个核电厂
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 1, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 2, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 3, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 4, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 5, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 6, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 7, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - classify - INFO - next_task: 生产管理
+2025-08-14 12:40:16 - production - INFO - 执行生产管理
+2025-08-14 12:40:16 - classify - DEBUG - global_state: {'input_cmd': '- 部署基地车\n- 建造 **1个** 电厂\n- 建造 **1个** 矿场\n- 生产 **3个** 步兵\n- 建造 **1个** 战车工厂\n- 生产 **2个** 移动防空车\n- 建造 **1个** 雷达站\n- 建造 **1个** 核电厂\n        ', 'classify_plan_index': 8, 'classify_plan_cmds': [<graph.state.NextCommand object at 0x000002CD878A63C0>, <graph.state.NextCommand object at 0x000002CD877EF4D0>, <graph.state.NextCommand object at 0x000002CD877EF750>, <graph.state.NextCommand object at 0x000002CD87532650>, <graph.state.NextCommand object at 0x000002CD87532C40>, <graph.state.NextCommand object at 0x000002CD8769FD10>, <graph.state.NextCommand object at 0x000002CD87875150>, <graph.state.NextCommand object at 0x000002CD87874490>], 'state': <WorkflowState.CLASSIFYING: 'classifying'>}
+2025-08-14 12:40:16 - graph - INFO - cmd: [- 部署基地车
+- 建造 **1个** 电厂
+- 建造 **1个** 矿场
+- 生产 **3个** 步兵
+- 建造 **1个** 战车工厂
+- 生产 **2个** 移动防空车
+- 建造 **1个** 雷达站
+- 建造 **1个** 核电厂
+        ], state: completed

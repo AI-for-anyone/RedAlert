@@ -4,10 +4,13 @@ import threading
 import time
 from mcp_tools import mcp_server
 from graph import Graph
+from logs import get_logger, setup_logging, LogConfig, LogLevel
 
 #将.env导入环境变量
 from dotenv import load_dotenv
 load_dotenv()
+
+logger = get_logger("main")
 
 """
 main.py - 一键启动 MCP Server + Client 的入口脚本
@@ -22,13 +25,26 @@ def run_server():
     print("[启动] MCP Server")
     mcp_server.main()
 
+def _init_logger(level):
+    setup_logging(LogConfig(level=LogLevel(level)))
+
 if __name__ == "__main__":
+    #处理命令行参数
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", type=str, default="stdio", help="运行模式: stdio, sse, http")
+    parser.add_argument("--log-level", type=str, default="INFO", help="日志级别: DEBUG, INFO, WARNING, ERROR, CRITICAL")
+    args = parser.parse_args()
+
+    _init_logger(args.log_level)
+    
+    logger.info("启动 MCP Server + Client")
     # 启动 server 的线程
     # server_thread = threading.Thread(target=run_server, daemon=True)
     # server_thread.start()
 
     # 启动 graph
-    graph = Graph()
+    graph = Graph(mode=args.mode)
     graph.run()
 
     # 主线程等待子线程
