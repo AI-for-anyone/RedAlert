@@ -56,6 +56,37 @@ class TargetsQueryParam:
             "range": self.range
         }
 
+# 原来的不好用，自己写个新的
+@dataclass
+class NewTargetsQueryParam:
+    actor_id: Optional[List[int]] = None  # Actor ID
+    range: Optional[str] = None  # 从哪些Actor中筛选，取值为 {"screen", "selected", "all"} 中的一个，默认为all，selected表示只在选中的单位中筛选。
+    group_id: Optional[List[int]] = None  # {ALL_GROUPS} 列表或 None。
+    type: Optional[List[str]] = None  # 目标类型，值为 {ALL_UNITS} 列表或 None。
+    faction: Optional[str] = None  # 阵营，值为 {ALL_ACTORS} 中的一个或 None。
+    restrain: Optional[List[dict]] = None  # 约束条件。
+    ''' 约束条件是一个字典，可以为空，也包含以下键值对：
+    {"distance": int}   # 距离（只选中距离小于等于distance的单位）
+    {"visible": bool}  # 是否可见
+    {"maxnum": int}  # 最大数量（如果direction有值，会选择最靠近direction的maxnum个单位，否则随机选择maxnum个单位）
+    '''
+    location: Optional[Location] = None  # 位置，仅用于配合distance约束使用，会判断这个点和目标的距离。
+    direction: Optional[str] = None  # {ALL_DIRECTIONS} 中的一个或 None，仅用于配合maxnum使用，会选择所有满足条件的单位，最靠近direction的maxnum个单位。
+    
+    def to_dict(self):
+        # 将查询参数转换为字典表示。
+        return {
+            "actorId": self.actor_id,
+            "range": self.range,
+            "groupId": self.group_id,
+            "type": self.type,
+            "faction": self.faction,
+            "restrain": self.restrain,
+            "location": self.location.to_dict() if self.location else None,
+            "direction": self.direction,
+        }
+
+
 @dataclass
 class Actor:
     actor_id: int  # 单位 ID。
@@ -63,6 +94,9 @@ class Actor:
     faction: Optional[str] = None  # 阵营，值为 {ALL_ACTORS} 中的一个。
     position: Optional[Location] = None  # 单位的位置。
     hppercent: Optional[int] = None
+
+    def __format__(self, format_spec: str, /) -> str:
+        return "actor[{0}:{1}]({2},{3})=[{4}]".format(self.actor_id, self.type, self.faction, self.position, self.hppercent)
 
     def __hash__(self):
         #actor_id 作为哈希值
