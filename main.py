@@ -2,8 +2,8 @@ import asyncio
 import socket
 import threading
 import time
-from mcp_tools import unit_mcp_server, info_mcp_server, camera_mcp_server, fight_mcp_server, produce_mcp_server
-from graph import Graph
+# from mcp_tools import unit_mcp_server, info_mcp_server, camera_mcp_server, fight_mcp_server, produce_mcp_server
+from graph.graph import main as graph_main
 from logs import get_logger, setup_logging, LogConfig, LogLevel
 
 #将.env导入环境变量
@@ -18,27 +18,28 @@ main.py - 一键启动 MCP Server + Client 的入口脚本
     python main.py
 
 - 自动启动本地服务
+- 自动启动本地服务
 - 启动 SSE 客户端连接服务
 """
 
-def run_server():
-    print("[启动] MCP Server")
-    unit_thread = threading.Thread(target=unit_mcp_server.main, daemon=True)
-    info_thread = threading.Thread(target=info_mcp_server.main, daemon=True)
-    camera_thread = threading.Thread(target=camera_mcp_server.main, daemon=True)
-    fight_thread = threading.Thread(target=fight_mcp_server.main, daemon=True)
-    produce_thread = threading.Thread(target=produce_mcp_server.main, daemon=True)
-    unit_thread.start()
-    info_thread.start()
-    camera_thread.start()
-    fight_thread.start()
-    produce_thread.start()
+# def run_server():
+#     print("[启动] MCP Server")
+#     unit_thread = threading.Thread(target=unit_mcp_server.main, daemon=True)
+#     info_thread = threading.Thread(target=info_mcp_server.main, daemon=True)
+#     camera_thread = threading.Thread(target=camera_mcp_server.main, daemon=True)
+#     fight_thread = threading.Thread(target=fight_mcp_server.main, daemon=True)
+#     produce_thread = threading.Thread(target=produce_mcp_server.main, daemon=True)
+#     unit_thread.start()
+#     info_thread.start()
+#     camera_thread.start()
+#     fight_thread.start()
+#     produce_thread.start()
 
 
 def _init_logger(level):
     setup_logging(LogConfig(level=LogLevel(level)))
 
-if __name__ == "__main__":
+async def main_async():
     #处理命令行参数
     import argparse
     parser = argparse.ArgumentParser()
@@ -50,11 +51,18 @@ if __name__ == "__main__":
     
     logger.info("启动 MCP Server + Client")
     
-    run_server()
+    # run_server()
+    
+    # 等待MCP服务器启动
+    # await asyncio.sleep(2)
 
-    # 启动 graph
-    graph = Graph(mode=args.mode)
-    graph.run()
+    # 启动 graph (异步)
+    await graph_main(mode=args.mode)
 
-    # 主线程等待子线程
-    # server_thread.join()
+if __name__ == "__main__":
+    try:
+        asyncio.run(main_async())
+    except KeyboardInterrupt:
+        logger.info("程序被用户中断")
+    except Exception as e:
+        logger.error(f"程序运行出错: {e}")

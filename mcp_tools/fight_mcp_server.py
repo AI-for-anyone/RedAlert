@@ -109,7 +109,7 @@ def main():
     fight_mcp.settings.log_level = "critical"
     fight_mcp.settings.host = "0.0.0.0"
     fight_mcp.settings.port = 8001
-    fight_mcp.run(transport="sse")
+    fight_mcp.run(transport="streamable-http")
 
 async def main_async():
     m = get_monitor()
@@ -131,5 +131,6 @@ async def main_async():
     await wait_for_task(task)
 
 if __name__ == "__main__":
-    asyncio.run(main_async())    
+    main()
+    # asyncio.run(main_async())    
     

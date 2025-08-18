@@ -38,7 +38,7 @@ def main():
     camera_mcp.settings.log_level = "critical"
     camera_mcp.settings.host = "0.0.0.0"
     camera_mcp.settings.port = 8000
-    camera_mcp.run(transport="sse")
+    camera_mcp.run(transport="streamable-http")
 
 if __name__ == "__main__":
     main()

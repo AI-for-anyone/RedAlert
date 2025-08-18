@@ -236,7 +236,7 @@ def main():
     info_mcp.settings.log_level = "critical"
     info_mcp.settings.host = "0.0.0.0"
     info_mcp.settings.port = 8002
-    info_mcp.run(transport="sse")
+    info_mcp.run(transport="streamable-http")
 
 if __name__ == "__main__":
     main()

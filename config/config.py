@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 # 项目根目录
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -79,7 +80,6 @@ class Config:
         self.llm_configs: Dict[WorkflowType, LLMConfig] = {
             # 任务分类 - 使用快速响应的模型
             WorkflowType.CLASSIFY: LLMConfig(
-                name="classify_llm",
                 base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
                 api_key=os.getenv("OPENAI_API_KEY", ""),
                 model=os.getenv("CLASSIFY_MODEL", "deepseek-chat"),
@@ -89,7 +89,6 @@ class Config:
             
             # 地图视角控制 - 需要精确的空间理解
             WorkflowType.CAMERA_CONTROL: LLMConfig(
-                name="camera_llm",
                 base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
                 api_key=os.getenv("OPENAI_API_KEY", ""),
                 model=os.getenv("CAMERA_MODEL", "deepseek-chat"),
@@ -99,7 +98,6 @@ class Config:
             
             # 生产管理 - 需要逻辑推理
             WorkflowType.PRODUCTION: LLMConfig(
-                name="production_llm",
                 base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
                 api_key=os.getenv("OPENAI_API_KEY", ""),
                 model=os.getenv("PRODUCTION_MODEL", "deepseek-chat"),
@@ -109,32 +107,20 @@ class Config:
             
             # 单位控制 - 需要实时决策
             WorkflowType.UNIT_CONTROL: LLMConfig(
-                name="unit_llm",
                 base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
                 api_key=os.getenv("OPENAI_API_KEY", ""),
-                model=os.getenv("UNIT_MODEL", "deepseek-chat"),
+                model=os.getenv("UNIT_CONTROL_MODEL", "deepseek-chat"),
                 temperature=0.4,
                 max_tokens=2048
             ),
             
-            # 战斗管理 - 需要快速反应
-            WorkflowType.COMBAT: LLMConfig(
-                name="combat_llm",
+            # 信息管理 - 需要准确的信息处理
+            WorkflowType.INTELLIGENCE: LLMConfig(
                 base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
                 api_key=os.getenv("OPENAI_API_KEY", ""),
-                model=os.getenv("COMBAT_MODEL", "deepseek-chat"),
-                temperature=0.6,
+                model=os.getenv("INTELLIGENCE_MODEL", "deepseek-chat"),
+                temperature=0.2,
                 max_tokens=2048
-            ),
-            
-            # 战略规划 - 需要深度思考
-            WorkflowType.STRATEGY: LLMConfig(
-                name="strategy_llm",
-                base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
-                api_key=os.getenv("OPENAI_API_KEY", ""),
-                model=os.getenv("STRATEGY_MODEL", "deepseek-chat"),
-                temperature=0.8,  # 高温度，鼓励创新策略
-                max_tokens=4096
             )
         }
     
@@ -171,63 +157,63 @@ class Config:
                 workflow_type=WorkflowType.UNIT_CONTROL
             ),
             
-            WorkflowType.COMBAT: PromptConfig(
-                name="combat_prompt",
-                file_path=prompt_dir / "combat_prompt.md",
-                description="战斗管理提示词",
-                workflow_type=WorkflowType.COMBAT
-            ),
-            
-            WorkflowType.STRATEGY: PromptConfig(
-                name="strategy_prompt",
-                file_path=prompt_dir / "strategy_prompt.md",
-                description="战略规划提示词",
-                workflow_type=WorkflowType.STRATEGY
+            WorkflowType.INTELLIGENCE: PromptConfig(
+                name="intelligence_prompt",
+                file_path=prompt_dir / "intelligence_prompt.md",
+                description="信息管理提示词",
+                workflow_type=WorkflowType.INTELLIGENCE
             )
         }
     
     def _setup_mcp_servers(self):
         """设置 MCP 服务器配置"""
         self.mcp_servers: Dict[str, MCPServerConfig] = {
-            # 主游戏 API 服务器
-            "game_api": MCPServerConfig(
-                name="game_api",
+
+            # 相机控制 MCP 服务器
+            "camera": MCPServerConfig(
+                name="camera",
                 host="127.0.0.1",
                 port=8000,
-                path="/sse",
-                transport="sse",
-                description="红警游戏 API 服务器"
+                path="/mcp",
+                transport="streamable_http",
+                description="相机控制服务器"
             ),
-            
-            # 地图分析服务器
-            "map_analysis": MCPServerConfig(
-                name="map_analysis",
+            # 战斗控制 MCP 服务器
+            "fight": MCPServerConfig(
+                name="fight",
                 host="127.0.0.1",
                 port=8001,
-                path="/sse",
-                transport="sse",
-                description="地图分析服务器"
+                path="/mcp",
+                transport="streamable_http",
+                description="战斗控制服务器"
             ),
-            
-            # 战略分析服务器
-            "strategy_analysis": MCPServerConfig(
-                name="strategy_analysis",
+            # 信息查询 MCP 服务器
+            "info": MCPServerConfig(
+                name="info",
                 host="127.0.0.1",
                 port=8002,
-                path="/sse",
-                transport="sse",
-                description="战略分析服务器"
+                path="/mcp",
+                transport="streamable_http",
+                description="游戏信息查询服务器"
             ),
-            
-            # 资源管理服务器
-            "resource_manager": MCPServerConfig(
-                name="resource_manager",
+            # 生产管理 MCP 服务器
+            "produce": MCPServerConfig(
+                name="produce",
                 host="127.0.0.1",
                 port=8003,
-                path="/sse",
-                transport="sse",
-                description="资源管理服务器"
-            )
+                path="/mcp",
+                transport="streamable_http",
+                description="生产管理服务器"
+            ),
+            # 单位控制 MCP 服务器
+            "unit": MCPServerConfig(
+                name="unit",
+                host="127.0.0.1",
+                port=8004,
+                path="/mcp",
+                transport="streamable_http",
+                description="单位控制服务器"
+            ),
         }
     
     def get_llm_config(self, workflow_type: WorkflowType) -> Optional[LLMConfig]:
@@ -289,6 +275,45 @@ def get_mcp_server(server_name: str) -> Optional[MCPServerConfig]:
 def list_mcp_servers() -> Dict[str, str]:
     """列出所有 MCP 服务器"""
     return {name: server.url for name, server in config.mcp_servers.items()}
+
+def get_mcp_server_status() -> Dict[str, Dict[str, Any]]:
+    """获取所有MCP服务器状态信息"""
+    import requests
+    status_info = {}
+    
+    for name, server in config.mcp_servers.items():
+        try:
+            response = requests.get(f"http://{server.host}:{server.port}/health", timeout=3)
+            is_online = response.status_code == 200
+        except:
+            is_online = False
+            
+        status_info[name] = {
+            "url": server.url,
+            "host": server.host,
+            "port": server.port,
+            "description": server.description,
+            "online": is_online
+        }
+    
+    return status_info
+
+def check_mcp_servers() -> List[str]:
+    """检查所有MCP服务器连接状态，返回离线服务器列表"""
+    offline_servers = []
+    
+    for name, server in config.mcp_servers.items():
+        try:
+            pass
+            # TODO: 检查MCP服务器连接状态
+            # import requests
+            # response = requests.get(f"http://{server.host}:{server.port}/health", timeout=3)
+            # if response.status_code != 200:
+            #     offline_servers.append(f"{name} ({server.url})")
+        except Exception as e:
+            offline_servers.append(f"{name} ({server.url}) - {str(e)}")
+    
+    return offline_servers
 
 if __name__ == "__main__":
     # 配置验证

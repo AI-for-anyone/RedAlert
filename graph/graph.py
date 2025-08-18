@@ -1,3 +1,4 @@
+import asyncio
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, Annotated, Literal
 from enum import Enum
@@ -8,18 +9,55 @@ from .camera import CameraNode
 from .production import ProductionNode
 from .unit_control import UnitControlNode
 from .intelligence import IntelligenceNode
+from .mcp_manager import mcp_manager
 from logs import get_logger
+from config.config import check_mcp_servers
 
 logger = get_logger("graph")
+
 class Graph:
     def __init__(self, mode="stdio"):
-        self._mode = mode
+        self._mode : str = mode
+        self._check_dependencies()
         self._classify_node = ClassifyNode()
         self._camera_node = CameraNode()
         self._production_node = ProductionNode()
         self._unit_control_node = UnitControlNode()
         self._intelligence_node = IntelligenceNode()
+        self._initialized = False
         self._init_graph()
+    
+    async def initialize(self):
+        """异步初始化MCP管理器和所有节点"""
+        if self._initialized:
+            return
+        
+        try:
+            # 初始化MCP管理器
+            await mcp_manager.initialize()
+            logger.info("MCP管理器初始化完成")
+            
+            # 初始化所有节点
+            await self._classify_node.initialize()
+            await self._camera_node.initialize()
+            await self._production_node.initialize()
+            await self._unit_control_node.initialize()
+            await self._intelligence_node.initialize()
+            
+            self._initialized = True
+            logger.info("所有节点初始化完成")
+            
+        except Exception as e:
+            logger.error(f"图初始化失败: {e}")
+            raise
+    
+    def _check_dependencies(self):
+        """检查MCP服务器依赖"""
+        offline_servers = check_mcp_servers()
+        if offline_servers:
+            logger.warning(f"以下MCP服务器离线: {', '.join(offline_servers)}")
+        else:
+            logger.info("所有MCP服务器连接正常")
 
     def _init_graph(self):
         self._graph = StateGraph(GlobalState)
@@ -41,37 +79,56 @@ class Graph:
         self._compiled_graph = self._graph.compile()
         
     
-    def run(self):
+    async def run(self):
+        # 确保初始化完成
+        await self.initialize()
+        
         match self._mode:
             case "stdio":
-                self._run_stdio()
+                await self._run_stdio()
             case "sse":
-                self._run_sse()
+                await self._run_sse()
             case "http":
-                self._run_http()
+                await self._run_http()
             case _:
                 raise ValueError(f"不支持的模式: {self._mode}")
     
-    def _run_stdio(self):
+    async def _run_stdio(self):
         logger.info("运行 stdio 模式，输入 /bye 退出")
         while True:
             user_input = input("User: ")
             if user_input == "/bye":
                 break
-            result = self._compiled_graph.invoke({"input_cmd": user_input})
-            logger.info(f"cmd: [{user_input}], state: {result['state'].value}")
+            try:
+                result = await self._compiled_graph.ainvoke({"input_cmd": user_input})
+                logger.info(f"cmd: [{user_input}], state: {result.get('state', 'unknown')}")
+                if 'result' in result:
+                    logger.info(f"result: {result['result']}")
+            except Exception as e:
+                logger.error(f"执行命令失败: {e}")
     
-    def _run_sse(self):
+    async def _run_sse(self):
         logger.info("运行 sse 模式")
         pass
     
-    def _run_http(self):
+    async def _run_http(self):
         logger.info("运行 http 模式")
         pass
+    
+    async def close(self):
+        """关闭资源"""
+        try:
+            await mcp_manager.close()
+            logger.info("图资源已关闭")
+        except Exception as e:
+            logger.error(f"关闭图资源失败: {e}")
 
-def main(mode="stdio"):
+async def main(mode="stdio"):
     graph = Graph(mode)
-    graph.run()
+    try:
+        await graph.run()
+    finally:
+        await graph.close()
 
 if __name__ == "__main__":
     main()

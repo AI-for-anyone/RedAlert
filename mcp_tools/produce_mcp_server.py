@@ -187,20 +187,21 @@ def ensure_can_produce_unit(unit_name: str) -> bool:
     return produce_api.ensure_can_produce_unit(unit_name)
 
 
-if __name__ == "__main__":
-    produce_mcp.settings.log_level = "critical"
-    produce_mcp.run(transport="sse")
-
-def main():
-    produce_mcp.settings.log_level = "critical"
-    produce_mcp.run(transport="sse")
+@produce_mcp.tool(name="deploy_mcv_and_wait",description="展开自己的基地车并等待指定时间")
+def deploy_mcv_and_wait(wait_time: float = 1.0) -> str:
+    """
+    Args:
+        wait_time (float): 展开后的等待时间（秒），默认 1.0
+    """
+    produce_api.deploy_mcv_and_wait(wait_time)
+    return "ok"
 
 
 def main():
     produce_mcp.settings.log_level = "critical"
     produce_mcp.settings.host = "0.0.0.0"
     produce_mcp.settings.port = 8003
-    produce_mcp.run(transport="sse")
+    produce_mcp.run(transport="streamable-http")
 
 if __name__ == "__main__":
     main()
