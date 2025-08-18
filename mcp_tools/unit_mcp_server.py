@@ -1,18 +1,18 @@
-from OpenRA_Copilot_Library import GameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from OpenRA_Copilot_Library import AsyncGameAPI
+from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTargetsQueryParam, Actor
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
 
 
 # 单例 GameAPI 客户端
-unit_api = GameAPI(host="localhost", port=7445, language="zh")
+unit_api = AsyncGameAPI(host="localhost", port=7445, language="zh")
 #mcp实例
 unit_mcp = FastMCP()
 
 
 @unit_mcp.tool(name="visible_units", description="根据条件查询可见单位")
-def visible_units(type: List[str],faction: str,range: str,restrain: List[dict]) -> List[Dict[str, Any]]:
+async def visible_units(type: List[str],faction: List[str],range: str,restrain: List[dict]) -> List[Dict[str, Any]]:
     # 修复单值传入错误
     if isinstance(type, str):
         type = [type]
@@ -21,8 +21,8 @@ def visible_units(type: List[str],faction: str,range: str,restrain: List[dict]) 
     elif isinstance(restrain, bool):  # LLM 有时会给布尔值
         restrain = []
 
-    params = TargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
-    units = unit_api.query_actor(params)
+    params = NewTargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
+    units = await unit_api.query_actor(params)
     return [
         {
             "actor_id": u.actor_id,
@@ -35,20 +35,20 @@ def visible_units(type: List[str],faction: str,range: str,restrain: List[dict]) 
     ]
 
 @unit_mcp.tool(name="move_units",description="移动一批单位到指定坐标")
-def move_units(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
+async def move_units(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
     #     Args:
     #     actors(List[Actor]): 要移动的Actor列表
     #     location(Location): 目标位置
     #     attack_move(bool): 是否为攻击性移动
-    actors = [Actor(i) for i in actor_ids]
+    target = NewTargetsQueryParam(actor_id=actor_ids)
     loc = Location(x, y)
-    unit_api.move_units_by_location(actors, loc, attack_move=attack_move)
+    await unit_api.move_units_by_location(target=target, location=loc, attack_move=attack_move)
     return "ok"
 
 
 # —— 单位移动 ——
 @unit_mcp.tool(name="move_units_by_location", description="把一批单位移动到指定坐标")
-def move_units_by_location(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
+async def move_units_by_location(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
     '''移动单位到指定位置
 
     Args:
@@ -59,18 +59,18 @@ def move_units_by_location(actor_ids: List[int], x: int, y: int, attack_move: bo
     Raises:
         GameAPIError: 当移动命令执行失败时
     '''
-    actors = [Actor(i) for i in actor_ids]
-    unit_api.move_units_by_location(actors, Location(x, y), attack_move)
+    target = NewTargetsQueryParam(actor_id=actor_ids)
+    await unit_api.move_units_by_location(target=target, location=Location(x, y), attack_move=attack_move)
     return "ok"
 
 @unit_mcp.tool(name="move_units_by_direction", description="按方向移动一批单位")
-def move_units_by_direction(actor_ids: List[int], direction: str, distance: int) -> str:
+async def move_units_by_direction(actor_ids: List[int], direction: str, distance: int) -> str:
     actors = [Actor(i) for i in actor_ids]
-    unit_api.move_units_by_direction(actors, direction, distance)
+    await unit_api.move_units_by_direction(actors, direction, distance)
     return "ok"
 
 @unit_mcp.tool(name="move_units_by_path", description="沿指定路径移动一批单位")
-def move_units_by_path(actor_ids: List[int], path: List[Dict[str, int]]) -> str:
+async def move_units_by_path(actor_ids: List[int], path: List[Dict[str, int]]) -> str:
     '''
     沿指定路径移动一批单位。
 
@@ -86,13 +86,13 @@ def move_units_by_path(actor_ids: List[int], path: List[Dict[str, int]]) -> str:
     '''
     actors = [Actor(i) for i in actor_ids]
     locs = [Location(p["x"], p["y"]) for p in path]
-    unit_api.move_units_by_path(actors, locs)
+    await unit_api.move_units_by_path(actors, locs)
     return "ok"
 
 
 # —— 查询与选择 ——
 @unit_mcp.tool(name="select_units", description="选中符合条件的单位")
-def select_units(type: List[str], faction: str, range: str, restrain: List[dict]) -> str:
+async def select_units(type: List[str], faction: str, range: str, restrain: List[dict]) -> str:
     '''选中符合条件的Actor，指的是游戏中的选中操作
 
     Args:
@@ -101,11 +101,11 @@ def select_units(type: List[str], faction: str, range: str, restrain: List[dict]
     Raises:
         GameAPIError: 当选择单位失败时
     '''
-    unit_api.select_units(TargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain))
+    await unit_api.select_units(TargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain))
     return "ok"
 
 @unit_mcp.tool(name="form_group", description="为一批单位编组")
-def form_group(actor_ids: List[int], group_id: int) -> str:
+async def form_group(actor_ids: List[int], group_id: int) -> str:
     '''将Actor编成编组
 
             Args:
@@ -116,11 +116,11 @@ def form_group(actor_ids: List[int], group_id: int) -> str:
                 GameAPIError: 当编组失败时
             '''
     actors = [Actor(i) for i in actor_ids]
-    unit_api.form_group(actors, group_id)
+    await unit_api.form_group(actors, group_id)
     return "ok"
 
 @unit_mcp.tool(name="query_actor", description="查询单位列表")
-def query_actor(type: List[str], faction: str, range: str, restrain: List[dict]) -> List[Dict[str, Any]]:
+async def query_actor(type: List[str], faction: List[str], range: str, restrain: List[dict]) -> List[Dict[str, Any]]:
     '''查询符合条件的Actor，获取Actor应该使用的接口
 
     Args:
@@ -132,8 +132,8 @@ def query_actor(type: List[str], faction: str, range: str, restrain: List[dict])
     Raises:
         GameAPIError: 当查询Actor失败时
     '''
-    params = TargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
-    actors = unit_api.query_actor(params)
+    params = NewTargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
+    actors = await unit_api.query_actor(params)
     return [
         {
             "actor_id": u.actor_id,
@@ -147,7 +147,7 @@ def query_actor(type: List[str], faction: str, range: str, restrain: List[dict])
 
 
 @unit_mcp.tool(name="deploy_units",description="展开或部署指定单位列表")
-def deploy_units(actor_ids: List[int]) -> str:
+async def deploy_units(actor_ids: List[int]) -> str:
     """
     Args:
         actor_ids (List[int]): 要展开的单位 ID 列表
@@ -155,12 +155,12 @@ def deploy_units(actor_ids: List[int]) -> str:
         str: 操作完成返回 "ok"
     """
     actors = [Actor(i) for i in actor_ids]
-    unit_api.deploy_units(actors)
+    await unit_api.deploy_units(actors)
     return "ok"
 
 
 @unit_mcp.tool(name="move_units_and_wait",description="移动一批单位到指定位置并等待到达或超时")
-def move_units_and_wait(
+async def move_units_and_wait(
     actor_ids: List[int],
     x: int,
     y: int,
@@ -178,11 +178,11 @@ def move_units_and_wait(
         bool: 是否在 max_wait_time 内全部到达（False 表示超时或卡住）
     """
     actors = [Actor(i) for i in actor_ids]
-    return unit_api.move_units_by_location_and_wait(actors, Location(x, y), max_wait_time, tolerance_dis)
+    return await unit_api.move_units_by_location_and_wait(actors, Location(x, y), max_wait_time, tolerance_dis)
 
 
 @unit_mcp.tool(name="set_rally_point",description="为指定建筑设置集结点")
-def set_rally_point(actor_ids: List[int], x: int, y: int) -> str:
+async def set_rally_point(actor_ids: List[int], x: int, y: int) -> str:
     """
     Args:
         actor_ids (List[int]): 要设置集结点的建筑 ID 列表
@@ -192,7 +192,7 @@ def set_rally_point(actor_ids: List[int], x: int, y: int) -> str:
         str: 操作完成返回 "ok"
     """
     actors = [Actor(i) for i in actor_ids]
-    unit_api.set_rally_point(actors, Location(x, y))
+    await unit_api.set_rally_point(actors, Location(x, y))
     return "ok"
 
 

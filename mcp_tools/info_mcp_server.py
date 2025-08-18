@@ -1,21 +1,21 @@
-from OpenRA_Copilot_Library import GameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from OpenRA_Copilot_Library import AsyncGameAPI
+from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTargetsQueryParam, Actor,MapQueryResult
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
 
 # 单例 GameAPI 客户端
-info_api = GameAPI(host="localhost", port=7445, language="zh")
+info_api = AsyncGameAPI(host="localhost", port=7445, language="zh")
 #mcp实例
 info_mcp = FastMCP()
 
 @info_mcp.tool(name="get_game_state", description="返回玩家资源、电力和可见单位列表")
-def get_game_state() -> Dict[str, Any]:
+async def get_game_state() -> Dict[str, Any]:
     # 1) 玩家基础信息
-    info = info_api.player_base_info_query()
+    info = await info_api.player_base_info_query()
     # 2) 屏幕内可见单位
-    units = info_api.query_actor(
-        TargetsQueryParam(
+    units = await info_api.query_actor(
+        NewTargetsQueryParam(
             type=[], faction=["任意"], range="screen", restrain=[{"visible": True}]
         )
     )
@@ -39,7 +39,7 @@ def get_game_state() -> Dict[str, Any]:
 
 # —— 路径寻路 ——
 @info_mcp.tool(name="find_path", description="为单位寻找路径")
-def find_path(actor_ids: List[int], dest_x: int, dest_y: int, method: str) -> List[Dict[str,int]]:
+async def find_path(actor_ids: List[int], dest_x: int, dest_y: int, method: str) -> List[Dict[str,int]]:
     '''为Actor找到到目标的路径
     Args:
         actors (List[Actor]): 要移动的Actor列表
@@ -53,12 +53,12 @@ def find_path(actor_ids: List[int], dest_x: int, dest_y: int, method: str) -> Li
         GameAPIError: 当寻路失败时
     '''
     actors = [Actor(i) for i in actor_ids]
-    path = info_api.find_path(actors, Location(dest_x, dest_y), method)
+    path = await info_api.find_path(actors, Location(dest_x, dest_y), method)
     return [{"x": p.x, "y": p.y} for p in path]
 
 @info_mcp.tool(name="get_actor_by_id",description="根据 Actor ID 获取单个单位的信息，如果不存在则返回 None"
 )
-def get_actor_by_id(actor_id: int) -> Optional[Dict[str, Any]]:
+async def get_actor_by_id(actor_id: int) -> Optional[Dict[str, Any]]:
     """
     Args:
         actor_id (int): 要查询的 Actor ID
@@ -66,7 +66,7 @@ def get_actor_by_id(actor_id: int) -> Optional[Dict[str, Any]]:
         Dict: 包含 actor_id, type, faction, position, hpPercent 的字典
         None: 如果该 ID 对应的 Actor 不存在
     """
-    actor = info_api.get_actor_by_id(actor_id)
+    actor = await info_api.get_actor_by_id(actor_id)
     if actor is None:
         return None
 
@@ -79,7 +79,7 @@ def get_actor_by_id(actor_id: int) -> Optional[Dict[str, Any]]:
     }
 
 @info_mcp.tool(name="update_actor",description="根据 actor_id 更新该单位的信息，并返回其最新状态")
-def update_actor(actor_id: int) -> Optional[Dict[str, Any]]:
+async def update_actor(actor_id: int) -> Optional[Dict[str, Any]]:
     """
     Args:
         actor_id (int): 要更新的 Actor ID
@@ -87,7 +87,7 @@ def update_actor(actor_id: int) -> Optional[Dict[str, Any]]:
         Dict: 最新的 Actor 信息（如果成功），否则 None
     """
     actor = Actor(actor_id)
-    success = info_api.update_actor(actor)
+    success = await info_api.update_actor(actor)
     if not success:
         return None
 
@@ -101,7 +101,7 @@ def update_actor(actor_id: int) -> Optional[Dict[str, Any]]:
 
 
 @info_mcp.tool(name="visible_query",description="查询指定坐标是否在视野中")
-def visible_query(x: int, y: int) -> bool:
+async def visible_query(x: int, y: int) -> bool:
     """
     Args:
         x (int): 地图坐标 X
@@ -109,12 +109,12 @@ def visible_query(x: int, y: int) -> bool:
     Returns:
         bool: 如果该点可见返回 True，否则 False
     """
-    return info_api.visible_query(Location(x, y))
+    return await info_api.visible_query(Location(x, y))
 
 
 
 @info_mcp.tool(name="explorer_query",description="查询指定坐标是否已探索")
-def explorer_query(x: int, y: int) -> bool:
+async def explorer_query(x: int, y: int) -> bool:
     """
     Args:
         x (int): 地图坐标 X
@@ -122,11 +122,11 @@ def explorer_query(x: int, y: int) -> bool:
     Returns:
         bool: 如果该点已探索返回 True，否则 False
     """
-    return info_api.explorer_query(Location(x, y))
+    return await info_api.explorer_query(Location(x, y))
 
 
 @info_mcp.tool(name="get_unexplored_nearby_positions",description="获取当前位置附近尚未探索的坐标列表")
-def get_unexplored_nearby_positions(
+async def get_unexplored_nearby_positions(
     map_result: Dict[str, Any],
     current_x: int,
     current_y: int,
@@ -163,24 +163,24 @@ def get_unexplored_nearby_positions(
 
 
 @info_mcp.tool(name="unit_attribute_query",description="查询指定单位的属性及其攻击范围内的目标")
-def unit_attribute_query(actor_ids: List[int]) -> Dict[str, Any]:
+async def unit_attribute_query(actor_ids: List[int]) -> Dict[str, Any]:
     """
     Args:
         actor_ids (List[int]): 要查询的单位 ID 列表
     Returns:
         dict: 每个单位的属性信息，包括其攻击范围内的目标列表
     """
-    actors = [Actor(i) for i in actor_ids]
-    return info_api.unit_attribute_query(actors)
+    target = NewTargetsQueryParam(actor_id=actor_ids)
+    return await info_api.unit_attribute_query(target)
 
 
 @info_mcp.tool(name="map_query",description="查询地图信息并返回序列化数据")
-def map_query() -> Dict[str, Any]:
+async def map_query() -> Dict[str, Any]:
     """
     Returns:
         dict: 包含地图宽度、高度、高程、可见性、探索状态、地形、资源类型和资源量的字典
     """
-    result = info_api.map_query()
+    result = await info_api.map_query()
     return {
         "width": result.MapWidth,
         "height": result.MapHeight,
@@ -194,7 +194,7 @@ def map_query() -> Dict[str, Any]:
 
 
 @info_mcp.tool(name="player_base_info_query",description="查询玩家基地的资源、电力等基础信息")
-def player_base_info_query() -> Dict[str, Any]:
+async def player_base_info_query() -> Dict[str, Any]:
     """
     Returns:
         dict: 包含以下字段的玩家基地信息
@@ -204,7 +204,7 @@ def player_base_info_query() -> Dict[str, Any]:
             - powerDrained: 已用电量
             - powerProvided: 可用电量
     """
-    info = info_api.player_base_info_query()
+    info = await info_api.player_base_info_query()
     return {
         "cash": info.Cash,
         "resources": info.Resources,
@@ -214,7 +214,7 @@ def player_base_info_query() -> Dict[str, Any]:
     }
 
 @info_mcp.tool(name="screen_info_query",description="查询当前屏幕信息")
-def screen_info_query() -> Dict[str, Any]:
+async def screen_info_query() -> Dict[str, Any]:
     """
     Returns:
         dict: 包含以下字段的屏幕信息
@@ -223,7 +223,7 @@ def screen_info_query() -> Dict[str, Any]:
             - isMouseOnScreen: bool
             - mousePosition: {x, y}
     """
-    info = info_api.screen_info_query()
+    info = await info_api.screen_info_query()
     return {
         "screenMin": {"x": info.ScreenMin.x, "y": info.ScreenMin.y},
         "screenMax": {"x": info.ScreenMax.x, "y": info.ScreenMax.y},
