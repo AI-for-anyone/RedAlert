@@ -2,4 +2,5 @@
 .env
 .vscode
 *.pyc
-logs/*.log
+*.log
+redalert.log

@@ -18,6 +18,7 @@ main.py - 一键启动 MCP Server + Client 的入口脚本
     python main.py
 
 - 自动启动本地服务
+- 自动启动本地服务
 - 启动 SSE 客户端连接服务
 """
 
