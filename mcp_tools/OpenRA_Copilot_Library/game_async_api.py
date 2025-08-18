@@ -796,12 +796,7 @@ class AsyncGameAPI:
         return False
 
     async def ensure_can_produce_unit(self, unit_name: str) -> bool:
-        '''确保能生产某个Actor(会自动生产其所需建筑并等待完成)
-        Args:
-            unit_name (str): Actor名称(中文)
-        Returns:
-            bool: 是否成功准备好生产该Actor
-        '''
+        '''确保能生产某个Actor(会自动生产其所需建筑并等待完成)'''
         if await self.can_produce(unit_name):
             return True
         needed_buildings = self.UNIT_DEPENDENCIES.get(unit_name, [])
