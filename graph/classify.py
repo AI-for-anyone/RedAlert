@@ -14,17 +14,31 @@ logger = get_logger("classify")
 
 class ClassifyNode:
     def __init__(self):
-        self._llm = ChatOpenAI(
-            model=os.getenv("CLASSIFY_MODEL"), 
-            api_key=os.getenv("CLASSIFY_API_KEY"), 
-            base_url=os.getenv("CLASSIFY_API_BASE"),
-            extra_body={
-                "thinking": {
-                    "type": "disabled"  # 关闭深度思考
-                }
-            }
-        )
+        self._llm = None
         self._prompt = classify_prompt
+        self._initialized = False
+    
+    async def initialize(self):
+        """异步初始化分类节点"""
+        if self._initialized:
+            return
+        
+        try:
+            self._llm = ChatOpenAI(
+                model=os.getenv("CLASSIFY_MODEL"), 
+                api_key=os.getenv("CLASSIFY_API_KEY"), 
+                base_url=os.getenv("CLASSIFY_API_BASE"),
+                extra_body={
+                    "thinking": {
+                        "type": "disabled"  # 关闭深度思考
+                    }
+                }
+            )
+            self._initialized = True
+            logger.info("分类节点初始化完成")
+        except Exception as e:
+            logger.error(f"分类节点初始化失败: {e}")
+            raise
 
     def _parse_classify_response(self, response_content: str) -> List[Dict[str, str]]:
         """解析分类响应的 JSON 格式"""

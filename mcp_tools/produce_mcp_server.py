@@ -1,5 +1,5 @@
-from .OpenRA_Copilot_Library import GameAPI
-from .OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from OpenRA_Copilot_Library import GameAPI
+from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
@@ -197,20 +197,11 @@ def deploy_mcv_and_wait(wait_time: float = 1.0) -> str:
     return "ok"
 
 
-if __name__ == "__main__":
-    produce_mcp.settings.log_level = "critical"
-    produce_mcp.run(transport="sse")
-
-def main():
-    produce_mcp.settings.log_level = "critical"
-    produce_mcp.run(transport="sse")
-
-
 def main():
     produce_mcp.settings.log_level = "critical"
     produce_mcp.settings.host = "0.0.0.0"
     produce_mcp.settings.port = 8003
-    produce_mcp.run(transport="sse")
+    produce_mcp.run(transport="streamable-http")
 
 if __name__ == "__main__":
     main()

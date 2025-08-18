@@ -109,7 +109,7 @@ class Config:
             WorkflowType.UNIT_CONTROL: LLMConfig(
                 base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
                 api_key=os.getenv("OPENAI_API_KEY", ""),
-                model=os.getenv("UNIT_MODEL", "deepseek-chat"),
+                model=os.getenv("UNIT_CONTROL_MODEL", "deepseek-chat"),
                 temperature=0.4,
                 max_tokens=2048
             ),
@@ -174,8 +174,8 @@ class Config:
                 name="camera",
                 host="127.0.0.1",
                 port=8000,
-                path="/sse",
-                transport="sse",
+                path="/mcp",
+                transport="streamable_http",
                 description="相机控制服务器"
             ),
             # 战斗控制 MCP 服务器
@@ -183,8 +183,8 @@ class Config:
                 name="fight",
                 host="127.0.0.1",
                 port=8001,
-                path="/sse",
-                transport="sse",
+                path="/mcp",
+                transport="streamable_http",
                 description="战斗控制服务器"
             ),
             # 信息查询 MCP 服务器
@@ -192,8 +192,8 @@ class Config:
                 name="info",
                 host="127.0.0.1",
                 port=8002,
-                path="/sse",
-                transport="sse",
+                path="/mcp",
+                transport="streamable_http",
                 description="游戏信息查询服务器"
             ),
             # 生产管理 MCP 服务器
@@ -201,8 +201,8 @@ class Config:
                 name="produce",
                 host="127.0.0.1",
                 port=8003,
-                path="/sse",
-                transport="sse",
+                path="/mcp",
+                transport="streamable_http",
                 description="生产管理服务器"
             ),
             # 单位控制 MCP 服务器
@@ -210,8 +210,8 @@ class Config:
                 name="unit",
                 host="127.0.0.1",
                 port=8004,
-                path="/sse",
-                transport="sse",
+                path="/mcp",
+                transport="streamable_http",
                 description="单位控制服务器"
             ),
         }

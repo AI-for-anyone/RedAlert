@@ -1,5 +1,5 @@
-from .OpenRA_Copilot_Library import GameAPI
-from .OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from OpenRA_Copilot_Library import GameAPI
+from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
@@ -38,7 +38,7 @@ def main():
     camera_mcp.settings.log_level = "critical"
     camera_mcp.settings.host = "0.0.0.0"
     camera_mcp.settings.port = 8000
-    camera_mcp.run(transport="sse")
+    camera_mcp.run(transport="streamable-http")
 
 if __name__ == "__main__":
     main()
