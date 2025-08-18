@@ -1,5 +1,5 @@
-from OpenRA_Copilot_Library import GameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from .OpenRA_Copilot_Library import GameAPI
+from .OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
@@ -194,16 +194,6 @@ def set_rally_point(actor_ids: List[int], x: int, y: int) -> str:
     actors = [Actor(i) for i in actor_ids]
     unit_api.set_rally_point(actors, Location(x, y))
     return "ok"
-
-
-# @RAMCP.tool(name="deploy_mcv_and_wait",description="展开自己的基地车并等待指定时间")
-# def deploy_mcv_and_wait(wait_time: float = 1.0) -> str:
-#     """
-#     Args:
-#         wait_time (float): 展开后的等待时间（秒），默认 1.0
-#     """
-#     api.deploy_mcv_and_wait(wait_time)
-#     return "ok"
 
 
 def main():

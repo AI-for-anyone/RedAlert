@@ -9,17 +9,28 @@ from .production import ProductionNode
 from .unit_control import UnitControlNode
 from .intelligence import IntelligenceNode
 from logs import get_logger
+from config.config import check_mcp_servers
 
 logger = get_logger("graph")
+
 class Graph:
     def __init__(self, mode="stdio"):
-        self._mode = mode
+        self._mode : str = mode
+        self._check_dependencies()
         self._classify_node = ClassifyNode()
         self._camera_node = CameraNode()
         self._production_node = ProductionNode()
         self._unit_control_node = UnitControlNode()
         self._intelligence_node = IntelligenceNode()
         self._init_graph()
+    
+    def _check_dependencies(self):
+        """检查MCP服务器依赖"""
+        offline_servers = check_mcp_servers()
+        if offline_servers:
+            logger.warning(f"以下MCP服务器离线: {', '.join(offline_servers)}")
+        else:
+            logger.info("所有MCP服务器连接正常")
 
     def _init_graph(self):
         self._graph = StateGraph(GlobalState)

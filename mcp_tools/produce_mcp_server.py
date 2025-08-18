@@ -1,5 +1,5 @@
-from OpenRA_Copilot_Library import GameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from .OpenRA_Copilot_Library import GameAPI
+from .OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
@@ -185,6 +185,16 @@ def ensure_can_produce_unit(unit_name: str) -> bool:
         bool: 是否已准备好生产该单位
     """
     return produce_api.ensure_can_produce_unit(unit_name)
+
+
+@produce_mcp.tool(name="deploy_mcv_and_wait",description="展开自己的基地车并等待指定时间")
+def deploy_mcv_and_wait(wait_time: float = 1.0) -> str:
+    """
+    Args:
+        wait_time (float): 展开后的等待时间（秒），默认 1.0
+    """
+    produce_api.deploy_mcv_and_wait(wait_time)
+    return "ok"
 
 
 if __name__ == "__main__":

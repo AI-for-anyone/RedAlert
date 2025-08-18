@@ -1,5 +1,5 @@
-from OpenRA_Copilot_Library import GameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from .OpenRA_Copilot_Library import GameAPI
+from .OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
