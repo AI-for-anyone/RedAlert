@@ -7,8 +7,6 @@ from .base_node import BaseNode
 from .mcp_manager import mcp_manager
 from config.config import WorkflowType
 from logs import get_logger
-from mcp_tools.OpenRA_Copilot_Library.game_api import GameAPI
-from mcp_tools.OpenRA_Copilot_Library.models import PlayerBaseInfo
 
 
 logger = get_logger("production")
@@ -16,15 +14,12 @@ logger = get_logger("production")
 class ProductionNode(BaseNode):
     def __init__(self):
         super().__init__("production", WorkflowType.PRODUCTION)
-        self.api = GameAPI(host="localhost", port=7445, language="zh")
 
     def _get_node_tools(self) -> List:
         """获取生产相关的MCP工具"""
         return mcp_manager.get_tools_by_server("produce")
     
     def _get_system_prompt(self) -> str:
-        player_info: PlayerBaseInfo = self.api.player_base_info_query()
-
         """获取生产管理系统提示词"""
         return f"""你是红色警戒游戏的生产管理助手。你可以使用以下工具来管理单位和建筑的生产：
 
@@ -53,8 +48,6 @@ class ProductionNode(BaseNode):
 | 雅克 | 675 | 9 | 0 |
 | 米格 | 1000 | 12 | 0 |
 
-当前玩家的资源信息: {player_info.Cash} 金钱, {player_info.Power} 电力
-
 主要功能：
 1. 生产单位和建筑
 2. 查询生产队列状态
@@ -63,7 +56,7 @@ class ProductionNode(BaseNode):
 5. 确保建筑存在后再生产
 6. 查询当前资源信息
 
-请根据用户的指令，自主选择合适的工具来完成生产管理任务。如果生产任务会导致金钱或者电力短缺请及时告知。
+请根据用户的指令，自主选择合适的工具来完成生产管理任务。
 例如：
 - "生产5个步兵" -> 使用produce工具
 - "查询步兵队列" -> 使用query_production_queue工具
