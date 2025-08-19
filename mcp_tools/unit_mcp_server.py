@@ -54,22 +54,22 @@ async def move_units(actor_ids: List[int], x: int, y: int, attack_move: bool = F
     return "ok"
 
 
-# —— 单位移动 ——
-@unit_mcp.tool(name="move_units_by_location", description="把一批单位移动到指定坐标")
-async def move_units_by_location(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
-    '''移动单位到指定位置
+# # —— 单位移动 ——
+# @unit_mcp.tool(name="move_units_by_location", description="把一批单位移动到指定坐标")
+# async def move_units_by_location(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
+#     '''移动单位到指定位置
 
 #     Args:
 #         actors (List[Actor]): 要移动的Actor列表
 #         location (Location): 目标位置
 #         attack_move (bool): 是否为攻击性移动
 
-    Raises:
-        GameAPIError: 当移动命令执行失败时
-    '''
-    target = NewTargetsQueryParam(actor_id=actor_ids)
-    await unit_api.move_units_by_location(target=target, location=Location(x, y), attack_move=attack_move)
-    return "ok"
+#     Raises:
+#         GameAPIError: 当移动命令执行失败时
+#     '''
+#     target = NewTargetsQueryParam(actor_id=actor_ids)
+#     await unit_api.move_units_by_location(target=target, location=Location(x, y), attack_move=attack_move)
+#     return "ok"
 
 @unit_mcp.tool(name="move_units_by_direction", description="按方向移动一批单位")
 async def move_units_by_direction(actor_ids: List[int], direction: str, distance: int) -> str:
