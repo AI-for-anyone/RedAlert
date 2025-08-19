@@ -173,7 +173,8 @@ class Config:
             "fight": ["attack", "occupy", "repair", "stop", "战斗", "army"],
             "info": ["get_game_state", "map_query", "find_path", "player_base", "screen_info", "visible", "explorer"],
             "produce": ["produce", "can_produce", "query_production", "manage_production", "ensure_can_produce", "ensure_can_build", "生产", "deploy_mcv", "get_resource_info"],
-            "unit": ["move_units", "query_actor", "select_units", "form_group", "deploy_units", "单位"]
+            "unit": ["move_units", "query_actor", "select_units", "form_group", "deploy_units", "单位"],
+            "base": ["map_query", "unit_info_query"],
         }
         
         self.mcp_servers: Dict[str, MCPServerConfig] = {
