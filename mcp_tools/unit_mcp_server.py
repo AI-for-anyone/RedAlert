@@ -12,7 +12,15 @@ unit_mcp = FastMCP()
 
 
 @unit_mcp.tool(name="visible_units", description="根据条件查询可见单位")
-async def visible_units(type: List[str],faction: List[str],range: str,restrain: List[dict]) -> List[Dict[str, Any]]:
+async def visible_units(type: List[str],faction: str, restrain: List[dict]) -> List[Dict[str, Any]]:
+    """
+    Args:
+        type (List[str]): 单位类型列表
+        faction (str): {"敌方", "己方", "全部"}
+        restrain (List[dict]): 限制条件
+    Returns:
+        List[Dict[str, Any]]: 符合条件的单位列表
+    """
     # 修复单值传入错误
     if isinstance(type, str):
         type = [type]
@@ -21,7 +29,7 @@ async def visible_units(type: List[str],faction: List[str],range: str,restrain: 
     elif isinstance(restrain, bool):  # LLM 有时会给布尔值
         restrain = []
 
-    params = NewTargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
+    params = NewTargetsQueryParam(type=type, faction=faction, restrain=restrain)
     units = await unit_api.query_actor(params)
     return [
         {
@@ -46,22 +54,22 @@ async def move_units(actor_ids: List[int], x: int, y: int, attack_move: bool = F
     return "ok"
 
 
-# —— 单位移动 ——
-@unit_mcp.tool(name="move_units_by_location", description="把一批单位移动到指定坐标")
-async def move_units_by_location(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
-    '''移动单位到指定位置
+# # —— 单位移动 ——
+# @unit_mcp.tool(name="move_units_by_location", description="把一批单位移动到指定坐标")
+# async def move_units_by_location(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
+#     '''移动单位到指定位置
 
-    Args:
-        actors (List[Actor]): 要移动的Actor列表
-        location (Location): 目标位置
-        attack_move (bool): 是否为攻击性移动
+#     Args:
+#         actors (List[Actor]): 要移动的Actor列表
+#         location (Location): 目标位置
+#         attack_move (bool): 是否为攻击性移动
 
-    Raises:
-        GameAPIError: 当移动命令执行失败时
-    '''
-    target = NewTargetsQueryParam(actor_id=actor_ids)
-    await unit_api.move_units_by_location(target=target, location=Location(x, y), attack_move=attack_move)
-    return "ok"
+#     Raises:
+#         GameAPIError: 当移动命令执行失败时
+#     '''
+#     target = NewTargetsQueryParam(actor_id=actor_ids)
+#     await unit_api.move_units_by_location(target=target, location=Location(x, y), attack_move=attack_move)
+#     return "ok"
 
 @unit_mcp.tool(name="move_units_by_direction", description="按方向移动一批单位")
 async def move_units_by_direction(actor_ids: List[int], direction: str, distance: int) -> str:
@@ -104,23 +112,23 @@ async def select_units(type: List[str], faction: str, range: str, restrain: List
     await unit_api.select_units(TargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain))
     return "ok"
 
-@unit_mcp.tool(name="form_group", description="为一批单位编组")
-async def form_group(actor_ids: List[int], group_id: int) -> str:
-    '''将Actor编成编组
+# @unit_mcp.tool(name="form_group", description="为一批单位编组")
+# async def form_group(actor_ids: List[int], group_id: int) -> str:
+#     '''将Actor编成编组
 
-            Args:
-                actors (List[Actor]): 要分组的Actor列表
-                group_id (int): 群组 ID
+#             Args:
+#                 actors (List[Actor]): 要分组的Actor列表
+#                 group_id (int): 群组 ID
 
-            Raises:
-                GameAPIError: 当编组失败时
-            '''
-    actors = [Actor(i) for i in actor_ids]
-    await unit_api.form_group(actors, group_id)
-    return "ok"
+#             Raises:
+#                 GameAPIError: 当编组失败时
+#             '''
+#     actors = [Actor(i) for i in actor_ids]
+#     await unit_api.form_group(actors, group_id)
+#     return "ok"
 
 @unit_mcp.tool(name="query_actor", description="查询单位列表")
-async def query_actor(type: List[str], faction: List[str], range: str, restrain: List[dict]) -> List[Dict[str, Any]]:
+async def query_actor(type: List[str], faction: str, range: str, restrain: List[dict]) -> List[Dict[str, Any]]:
     '''查询符合条件的Actor，获取Actor应该使用的接口
 
     Args:
@@ -146,39 +154,39 @@ async def query_actor(type: List[str], faction: List[str], range: str, restrain:
     ]
 
 
-@unit_mcp.tool(name="deploy_units",description="展开或部署指定单位列表")
-async def deploy_units(actor_ids: List[int]) -> str:
-    """
-    Args:
-        actor_ids (List[int]): 要展开的单位 ID 列表
-    Returns:
-        str: 操作完成返回 "ok"
-    """
-    actors = [Actor(i) for i in actor_ids]
-    await unit_api.deploy_units(actors)
-    return "ok"
+# @unit_mcp.tool(name="deploy_units",description="展开或部署指定单位列表")
+# async def deploy_units(actor_ids: List[int]) -> str:
+#     """
+#     Args:
+#         actor_ids (List[int]): 要展开的单位 ID 列表
+#     Returns:
+#         str: 操作完成返回 "ok"
+#     """
+#     actors = [Actor(i) for i in actor_ids]
+#     await unit_api.deploy_units(actors)
+#     return "ok"
 
 
-@unit_mcp.tool(name="move_units_and_wait",description="移动一批单位到指定位置并等待到达或超时")
-async def move_units_and_wait(
-    actor_ids: List[int],
-    x: int,
-    y: int,
-    max_wait_time: float = 10.0,
-    tolerance_dis: int = 1
-) -> bool:
-    """
-    Args:
-        actor_ids (List[int]): 要移动的单位 ID 列表
-        x (int): 目标 X 坐标
-        y (int): 目标 Y 坐标
-        max_wait_time (float): 最大等待时间（秒），默认 10.0
-        tolerance_dis (int): 到达判定的曼哈顿距离容差，默认 1
-    Returns:
-        bool: 是否在 max_wait_time 内全部到达（False 表示超时或卡住）
-    """
-    actors = [Actor(i) for i in actor_ids]
-    return await unit_api.move_units_by_location_and_wait(actors, Location(x, y), max_wait_time, tolerance_dis)
+# @unit_mcp.tool(name="move_units_and_wait",description="移动一批单位到指定位置并等待到达或超时")
+# async def move_units_and_wait(
+#     actor_ids: List[int],
+#     x: int,
+#     y: int,
+#     max_wait_time: float = 10.0,
+#     tolerance_dis: int = 1
+# ) -> bool:
+#     """
+#     Args:
+#         actor_ids (List[int]): 要移动的单位 ID 列表
+#         x (int): 目标 X 坐标
+#         y (int): 目标 Y 坐标
+#         max_wait_time (float): 最大等待时间（秒），默认 10.0
+#         tolerance_dis (int): 到达判定的曼哈顿距离容差，默认 1
+#     Returns:
+#         bool: 是否在 max_wait_time 内全部到达（False 表示超时或卡住）
+#     """
+#     actors = [Actor(i) for i in actor_ids]
+#     return await unit_api.move_units_by_location_and_wait(actors, Location(x, y), max_wait_time, tolerance_dis)
 
 
 @unit_mcp.tool(name="set_rally_point",description="为指定建筑设置集结点")

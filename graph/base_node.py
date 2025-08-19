@@ -104,6 +104,7 @@ class BaseNode(ABC):
         
         # 构建消息状态
         state = {"messages": messages}
+        logger.info(f"调用工具: {messages[-1].tool_calls}")
         result = await self._tool_node.ainvoke(state)
         return result
     

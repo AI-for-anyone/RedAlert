@@ -23,7 +23,7 @@ fight_mcp = FastMCP()
 
 from model import ALL_INFANTRIES, ALL_TANKS, ALL_AIR
 
-@fight_mcp.tool(name="army_attack", description="控制己方战斗单位攻击指定地点")
+@fight_mcp.tool(name="army_attack", description="控制己方到指定地点攻击指定目标")
 async def army_attack(
     source: NewTargetsQueryParam, 
     target: Location,
@@ -37,6 +37,8 @@ async def army_attack(
     Raises:
         GameAPIError: 当攻击命令执行失败时
     """
+    print("army_attack-print")
+    logger.debug("army_attack-logger")
     try:
         actors = await fight_api.query_actor(source)
         logger.debug("army_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
@@ -60,13 +62,13 @@ async def army_attack(
                 
                 query = NewTargetsQueryParam(
                     type=[perfer_attack_target], 
-                    faction=["敌方"], 
+                    faction="敌方", 
                     restrain=[{"visible": True}]
                 )
                 logger.debug("army_attack-查询目标: {0}".format(str(query)))
                 # 查询目标
                 targets = await fight_api.query_actor(query)
-                logger.debug("army_attack-敌方目标: {0}".format(str([ac.actor_id for ac in targets])))
+                logger.debug("army_attack-敌方目标: {0}".format(str([[ac.actor_id, ac.type] for ac in targets])))
                 if targets is None or len(targets) == 0:
                     logger.debug("army_attack-没有找到敌方目标: {0}".format(str(perfer_attack_target)))
                     break
@@ -89,7 +91,7 @@ def get_center_location(actors: List[Actor]) -> Location:
     return Location(center_x, center_y)
 
 # 军队聚团
-@fight_mcp.tool(name="army_gather", description="军队聚团")
+@fight_mcp.tool(name="army_gather", description="控制军队聚集到一起")
 async def army_gather(source: NewTargetsQueryParam) -> None:
     # 查看所有单位
     units = await fight_api.query_actor(source)
@@ -110,27 +112,15 @@ def main():
     fight_mcp.settings.host = "0.0.0.0"
     fight_mcp.settings.port = 8001
     fight_mcp.run(transport="streamable-http")
+# 所有雅克战机攻击0,40坐标，攻击时优先攻击发电厂和建造厂
 
-async def main_async():
-    m = get_monitor()
-    await m.start(show=False)
 
+if __name__ == "__main__":
     """主异步函数"""
     setup_logging(LogConfig(level=LogLevel.DEBUG))
 
-    map_query = await fight_api.map_query()
-    print(map_query.MapHeight, map_query.MapWidth)
-    left = Location(x=0, y=map_query.MapWidth/2)
-
-    task = await submit_task(army_attack,
-        source=NewTargetsQueryParam(type=["雅克战机"], faction=["己方"], restrain=[{"visible": True}]),
-        target=left,
-        perfer_attack_target=["发电厂", "建造厂"]
-    )
-
-    await wait_for_task(task)
-
-if __name__ == "__main__":
+    logger.debug("before 启动 Fight MCP 服务器")
     main()
+    logger.debug("after 启动 Fight MCP 服务器")
     # asyncio.run(main_async())    
     

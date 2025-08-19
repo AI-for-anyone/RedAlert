@@ -125,24 +125,27 @@ class Monitor:
         while True:
             try:
                 # 先获取数据，减少锁持有时间
-                actors = await self.monitor_api.query_actor(NewTargetsQueryParam(faction=["己方","敌方"], restrain=[{"visible": True}]))
-                units = await self.monitor_api.unit_attribute_query(NewTargetsQueryParam(faction=["己方"], restrain=[{"visible": True}]))
+                our_actors = await self.monitor_api.query_actor(NewTargetsQueryParam(faction="己方", restrain=[{"visible": True}]))
+                enemy_actors = await self.monitor_api.query_actor(NewTargetsQueryParam(faction="敌方", restrain=[{"visible": True}]))
+                our_units = await self.monitor_api.unit_attribute_query(NewTargetsQueryParam(faction="己方", restrain=[{"visible": True}]))
+                try:
+                    enemy_units = await self.monitor_api.unit_attribute_query(NewTargetsQueryParam(faction="敌方", restrain=[{"visible": True}]))
+                except Exception as e:
+                    logger.warning("collect_actors_info-获取敌方单位属性失败: {e}")
+                    enemy_units = []
                 
                 # 获取锁进行写操作
                 async with self._lock:
-                    for actor in actors:
-                        if actor.faction == "己方":
-                            if actor.actor_id not in self.our_actors:
-                                self.our_actors[actor.actor_id] = ActorItems(actor=actor)
-                            self.our_actors[actor.actor_id].add_location(actor.position)
-                        elif actor.faction == "敌方":
-                            if actor.actor_id not in self.enemy_actors:
-                                self.enemy_actors[actor.actor_id] = ActorItems(actor=actor)
+                    for actor in our_actors:
+                        if actor.actor_id not in self.our_actors:
+                            self.our_actors[actor.actor_id] = ActorItems(actor=actor)
+                        self.our_actors[actor.actor_id].add_location(actor.position)
+                    for actor in enemy_actors:
+                        if actor.actor_id not in self.enemy_actors:
+                            self.enemy_actors[actor.actor_id] = ActorItems(actor=actor)
                             self.enemy_actors[actor.actor_id].add_location(actor.position)
-                        else:
-                            raise ValueError(f"未知阵营: {actor.faction}")
                     
-                    for unit in units:
+                    for unit in our_units:
                         if unit is not None and unit.get("id") in self.our_actors.keys():
                             self.our_actors[unit.get("id")].target = unit.get("target")
                             target_type = []
@@ -150,6 +153,15 @@ class Monitor:
                                 target_type.append(self.enemy_actors[target_id].type)
                             self.our_actors[unit.get("id")].target_type = target_type
                             self.our_actors[unit.get("id")].update_free_state()
+
+                    for unit in enemy_units:
+                        if unit is not None and unit.get("id") in self.enemy_actors.keys():
+                            self.enemy_actors[unit.get("id")].target = unit.get("target")
+                            target_type = []
+                            for target_id in unit.get("target", []):
+                                target_type.append(self.our_actors[target_id].type)
+                            self.enemy_actors[unit.get("id")].target_type = target_type
+                            self.enemy_actors[unit.get("id")].update_free_state()
             except Exception as e:
                 logger.error(f"collect_actors_info发生错误: {e}")
             await asyncio.sleep(self.collection_interval)

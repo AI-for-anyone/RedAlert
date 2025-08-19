@@ -9,6 +9,7 @@ def load_classify_prompt(path: str) -> str:
         return ""
 
 classify_prompt = load_classify_prompt("classify_prompt.md")
+unit_control_prompt = load_classify_prompt("unit_control_prompt.md")
 
 if __name__ == "__main__":
     print(classify_prompt)
