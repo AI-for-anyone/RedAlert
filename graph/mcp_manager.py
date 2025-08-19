@@ -82,13 +82,8 @@ class MCPManager:
     def _is_tool_from_server(self, tool_name: str, server_name: str) -> bool:
         """判断工具是否属于指定服务器"""
         # 根据工具名称模式匹配服务器
-        server_tool_patterns = {
-            "camera": ["camera", "move_camera", "视角"],
-            "fight": ["attack", "occupy", "repair", "stop", "战斗"],
-            "info": ["get_game_state", "map_query", "find_path", "player_base", "screen_info", "visible", "explorer"],
-            "produce": ["produce", "can_produce", "query_production", "manage_production", "ensure_can_build", "生产"],
-            "unit": ["move_units", "query_actor", "select_units", "form_group", "deploy_units", "单位"]
-        }
+        # 从配置文件获取工具模式配置
+        server_tool_patterns = config.server_tool_patterns
         
         patterns = server_tool_patterns.get(server_name, [])
         return any(pattern in tool_name.lower() for pattern in patterns)

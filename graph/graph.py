@@ -3,6 +3,8 @@ from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, Annotated, Literal
 from enum import Enum
 
+from task_scheduler.task_scheduler import submit_task, wait_for_task
+
 from .state import GlobalState, WorkflowType
 from .classify import ClassifyNode
 from .camera import CameraNode
@@ -12,6 +14,7 @@ from .intelligence import IntelligenceNode
 from .mcp_manager import mcp_manager
 from logs import get_logger
 from config.config import check_mcp_servers
+from aioconsole import ainput
 
 logger = get_logger("graph")
 
@@ -96,14 +99,15 @@ class Graph:
     async def _run_stdio(self):
         logger.info("运行 stdio 模式，输入 /bye 退出")
         while True:
-            user_input = input("User: ")
+            user_input = await ainput("User: ")
             if user_input == "/bye":
                 break
             try:
-                result = await self._compiled_graph.ainvoke({"input_cmd": user_input})
-                logger.info(f"cmd: [{user_input}], state: {result.get('state', 'unknown')}")
-                if 'result' in result:
-                    logger.info(f"result: {result['result']}")
+                task_id = await submit_task(self._compiled_graph.ainvoke, {"input_cmd": user_input})
+                # result = await wait_for_task(task_id)
+                logger.info(f"cmd: [{user_input}], task_id: {task_id}")
+                # if 'result' in result:
+                #     logger.info(f"result: {result['result']}")
             except Exception as e:
                 logger.error(f"执行命令失败: {e}")
     
