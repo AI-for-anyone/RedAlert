@@ -4,3 +4,4 @@
 *.pyc
 *.log
 redalert.log
+.mcp_servers.pids
