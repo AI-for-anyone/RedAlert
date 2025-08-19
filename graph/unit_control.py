@@ -1,4 +1,5 @@
 from typing import List
+from langchain_core.tools import BaseTool, StructuredTool
 from langgraph.types import Command
 from langgraph.graph import END
 from .state import GlobalState, WorkflowState
@@ -9,6 +10,8 @@ from logs import get_logger
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import ToolNode
 from prompt import unit_control_prompt
+from typing import Any
+import json
 
 logger = get_logger("unit_control")
 
@@ -58,14 +61,68 @@ class UnitControlNode(BaseNode):
         """获取单位控制和战斗相关的MCP工具"""
         unit_tools = mcp_manager.get_tools_by_server("unit")
         fight_tools = mcp_manager.get_tools_by_server("fight")
-        return unit_tools + fight_tools
+        base_tools = mcp_manager.get_tools_by_server("base")
+        return unit_tools + fight_tools + base_tools
     
     def _get_system_prompt(self) -> str:
         """获取单位控制系统提示词"""
-        return unit_control_prompt.format(
-            map_info = "",
-            unit_status = ""
+        return ""
+
+    async def _get_system_prompt_async(self) -> str:
+        """异步获取包含实时信息的系统提示词"""
+        def _get_tool(name: str) -> BaseTool:
+            for tool in self._tools:
+                if tool.name == name:
+                    return tool
+            return None
+        
+        map_tool, unit_tool = _get_tool("map_query"), _get_tool("unit_info_query")
+        if map_tool is None or unit_tool is None:
+            logger.warning("未找到 map_query 或 unit_info_query 工具，使用默认提示词")
+            return self._get_system_prompt()
+        
+        try:
+            map_info = await map_tool.ainvoke({})
+            unit_status = await unit_tool.ainvoke({})
+        except Exception as e:
+            logger.error(f"获取工具信息失败: {e}")
+            return self._get_system_prompt()
+
+        prompt = unit_control_prompt.format(
+            map_info = map_info,
+            unit_status = unit_status
         )
+        
+        logger.debug(f"单位控制系统提示词: {prompt}")   
+        return prompt
+    
+    async def execute_with_tools_with_base_info(self, user_input: str, max_iterations: int = 5) -> str:
+        """使用工具执行任务"""
+        _sys_prompt = await self._get_system_prompt_async()
+        # 构建初始消息
+        messages = [
+            {"role": "system", "content": _sys_prompt},
+            {"role": "user", "content": user_input}
+        ]
+        
+        iteration = 0
+        while iteration < max_iterations:
+            # 调用模型
+            model_result = await self._call_model(messages)
+            messages.extend(model_result["messages"])
+            
+            # 检查是否需要调用工具
+            if self._should_continue(messages) == "tools":
+                # 调用工具
+                tool_result = await self._call_tools(messages)
+                messages.extend(tool_result.get("messages", []))
+                iteration += 1
+            else:
+                break
+        
+        # 返回最后的响应
+        return messages[-1].content if messages else "执行完成"
+
 
     async def unit_control_node(self, global_state: GlobalState) -> GlobalState:
         """单位控制节点"""
@@ -81,7 +138,7 @@ class UnitControlNode(BaseNode):
             logger.info(f"单位控制任务: {current_task}")
             
             # 使用LLM和工具执行任务
-            result = await self.execute_with_tools(current_task)
+            result = await self.execute_with_tools_with_base_info(current_task)
             logger.info(f"单位控制执行结果: {result}")
             
             return Command(

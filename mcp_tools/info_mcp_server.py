@@ -4,6 +4,13 @@ from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from logs import get_logger, setup_logging, LogConfig, LogLevel
+
+logger = get_logger("info_mcp_server")
+
 # 单例 GameAPI 客户端
 info_api = AsyncGameAPI(host="localhost", port=7445, language="zh")
 #mcp实例
@@ -173,6 +180,33 @@ async def unit_attribute_query(actor_ids: List[int]) -> Dict[str, Any]:
     target = NewTargetsQueryParam(actor_id=actor_ids)
     return await info_api.unit_attribute_query(target)
 
+@info_mcp.tool(name="unit_info_query",description="查询所有可见单位的信息")
+async def unit_info_query() -> Dict[str, Any]:  
+    logger.info("查询所有可见单位的信息")
+    info = await info_api.query_actor(NewTargetsQueryParam(restrain=[{"visible": True}]))
+    logger.debug(f"unit_info_query- {info}")
+    our_dict:Dict[str, {List[Location], int}] = {}
+    enemy_dict:Dict[str, {List[Location], int}] = {}
+    for unit in info:
+        if unit.type == "mpspawn":
+            continue
+
+        if unit.faction == "己方":
+            if unit.type not in our_dict.keys():
+                our_dict[unit.type] = {"locations": [], "count": 0}
+            our_dict[unit.type]["locations"].append(unit.position)
+            our_dict[unit.type]["count"] += 1
+        elif unit.faction == "敌方":
+            if unit.type not in enemy_dict.keys():
+                enemy_dict[unit.type] = {"locations": [], "count": 0}
+            enemy_dict[unit.type]["locations"].append(unit.position)
+            enemy_dict[unit.type]["count"] += 1
+
+    result = {"our": our_dict, "enemy": enemy_dict}
+    logger.debug(f"unit_info_query- {result}")
+    # 将列表结果包装为字典格式
+    return result
+
 
 @info_mcp.tool(name="map_query",description="查询地图信息并返回序列化数据")
 async def map_query() -> Dict[str, Any]:
@@ -182,14 +216,10 @@ async def map_query() -> Dict[str, Any]:
     """
     result = await info_api.map_query()
     return {
-        "width": result.MapWidth,
-        "height": result.MapHeight,
-        "heightMap": result.Height,
-        "visible": result.IsVisible,
-        "explored": result.IsExplored,
-        "terrain": result.Terrain,
-        "resourcesType": result.ResourcesType,
-        "resources": result.Resources
+        "左上角坐标": Location(0, 0),
+        "右下角坐标": Location(result.MapWidth, result.MapHeight),
+        "地图宽度": result.MapWidth,
+        "地图高度": result.MapHeight
     }
 
 
