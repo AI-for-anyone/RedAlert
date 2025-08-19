@@ -2,6 +2,7 @@
 Base node class for LLM-powered nodes with MCP tool integration
 """
 import os
+import time
 from typing import Dict, Any, List
 from abc import ABC, abstractmethod
 from langchain.chat_models import init_chat_model
@@ -10,6 +11,7 @@ from langgraph.types import Command
 from langgraph.graph import MessagesState
 from .mcp_manager import mcp_manager
 from .state import GlobalState, WorkflowState
+from .token_logger import token_logger
 from config.config import config, WorkflowType
 from logs import get_logger
 
@@ -94,7 +96,18 @@ class BaseNode(ABC):
         if self._model_with_tools is None:
             raise RuntimeError(f"{self.node_name} 节点未初始化")
         
+        start_time = time.time()
         response = await self._model_with_tools.ainvoke(messages)
+        duration_ms = (time.time() - start_time) * 1000
+        
+        # 简单记录token使用
+        try:
+            tokens = response.response_metadata.get("token_usage").get("total_tokens")
+        except Exception as e:
+            logger.error(f"记录token使用失败: {e}")
+            tokens = 0
+        
+        token_logger.log_usage(self.node_name, "llm", tokens, duration_ms)
         return {"messages": [response]}
     
     async def _call_tools(self, messages: List[Dict[str, Any]]) -> Dict[str, Any]:
