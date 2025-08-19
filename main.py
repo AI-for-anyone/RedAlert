@@ -12,32 +12,9 @@ load_dotenv()
 
 logger = get_logger("main")
 
-"""
-main.py - 一键启动 MCP Server + Client 的入口脚本
-用法:
-    python main.py
-
-- 自动启动本地服务
-- 自动启动本地服务
-- 启动 SSE 客户端连接服务
-"""
-
-# def run_server():
-#     print("[启动] MCP Server")
-#     unit_thread = threading.Thread(target=unit_mcp_server.main, daemon=True)
-#     info_thread = threading.Thread(target=info_mcp_server.main, daemon=True)
-#     camera_thread = threading.Thread(target=camera_mcp_server.main, daemon=True)
-#     fight_thread = threading.Thread(target=fight_mcp_server.main, daemon=True)
-#     produce_thread = threading.Thread(target=produce_mcp_server.main, daemon=True)
-#     unit_thread.start()
-#     info_thread.start()
-#     camera_thread.start()
-#     fight_thread.start()
-#     produce_thread.start()
-
 
 def _init_logger(level):
-    setup_logging(LogConfig(level=LogLevel(level)))
+    setup_logging(LogConfig(level=LogLevel(level), enable_console_logging=False))
 
 async def main_async():
     #处理命令行参数
@@ -49,13 +26,8 @@ async def main_async():
 
     _init_logger(args.log_level)
     
-    logger.info("启动 MCP Server + Client")
+    logger.info("启动AI")
     
-    # run_server()
-    
-    # 等待MCP服务器启动
-    # await asyncio.sleep(2)
-
     # 启动 graph (异步)
     await graph_main(mode=args.mode)
 
