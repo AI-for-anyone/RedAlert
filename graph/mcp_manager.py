@@ -81,7 +81,6 @@ class MCPManager:
     
     def _is_tool_from_server(self, tool_name: str, server_name: str) -> bool:
         """判断工具是否属于指定服务器"""
-        # 根据工具名称模式匹配服务器
         # 从配置文件获取工具模式配置
         server_tool_patterns = config.server_tool_patterns
         

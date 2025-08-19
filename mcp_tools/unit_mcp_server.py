@@ -112,6 +112,7 @@ async def select_units(type: List[str], faction: str, range: str, restrain: List
     await unit_api.select_units(TargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain))
     return "ok"
 
+
 # @unit_mcp.tool(name="form_group", description="为一批单位编组")
 # async def form_group(actor_ids: List[int], group_id: int) -> str:
 #     '''将Actor编成编组
