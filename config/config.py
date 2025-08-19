@@ -80,8 +80,8 @@ class Config:
         self.llm_configs: Dict[WorkflowType, LLMConfig] = {
             # 任务分类 - 使用快速响应的模型
             WorkflowType.CLASSIFY: LLMConfig(
-                base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
-                api_key=os.getenv("OPENAI_API_KEY", ""),
+                base_url=os.getenv("CLASSIFY_API_BASE", "https://api.deepseek.com"),
+                api_key=os.getenv("CLASSIFY_API_KEY", ""),
                 model=os.getenv("CLASSIFY_MODEL", "deepseek-chat"),
                 temperature=0.1,  # 低温度，确保分类准确
                 max_tokens=1024
@@ -89,8 +89,8 @@ class Config:
             
             # 地图视角控制 - 需要精确的空间理解
             WorkflowType.CAMERA_CONTROL: LLMConfig(
-                base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
-                api_key=os.getenv("OPENAI_API_KEY", ""),
+                base_url=os.getenv("CAMERA_API_BASE", "https://api.deepseek.com"),
+                api_key=os.getenv("CAMERA_API_KEY", ""),
                 model=os.getenv("CAMERA_MODEL", "deepseek-chat"),
                 temperature=0.3,
                 max_tokens=2048
@@ -98,8 +98,8 @@ class Config:
             
             # 生产管理 - 需要逻辑推理
             WorkflowType.PRODUCTION: LLMConfig(
-                base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
-                api_key=os.getenv("OPENAI_API_KEY", ""),
+                base_url=os.getenv("PRODUCTION_API_BASE", "https://api.deepseek.com"),
+                api_key=os.getenv("PRODUCTION_API_KEY", ""),
                 model=os.getenv("PRODUCTION_MODEL", "deepseek-chat"),
                 temperature=0.5,
                 max_tokens=3072
@@ -107,17 +107,17 @@ class Config:
             
             # 单位控制 - 需要实时决策
             WorkflowType.UNIT_CONTROL: LLMConfig(
-                base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
-                api_key=os.getenv("OPENAI_API_KEY", ""),
+                base_url=os.getenv("UNIT_CONTROL_API_BASE", "https://api.deepseek.com"),
+                api_key=os.getenv("UNIT_CONTROL_API_KEY", ""),
                 model=os.getenv("UNIT_CONTROL_MODEL", "deepseek-chat"),
-                temperature=0.4,
-                max_tokens=2048
+                temperature=0.0,
+                max_tokens=8192
             ),
             
             # 信息管理 - 需要准确的信息处理
             WorkflowType.INTELLIGENCE: LLMConfig(
-                base_url=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com"),
-                api_key=os.getenv("OPENAI_API_KEY", ""),
+                base_url=os.getenv("INTELLIGENCE_API_BASE", "https://api.deepseek.com"),
+                api_key=os.getenv("INTELLIGENCE_API_KEY", ""),
                 model=os.getenv("INTELLIGENCE_MODEL", "deepseek-chat"),
                 temperature=0.2,
                 max_tokens=2048
@@ -167,6 +167,15 @@ class Config:
     
     def _setup_mcp_servers(self):
         """设置 MCP 服务器配置"""
+        # MCP 服务器工具模式配置
+        self.server_tool_patterns: Dict[str, List[str]] = {
+            "camera": ["camera", "move_camera", "视角"],
+            "fight": ["attack", "occupy", "repair", "stop", "战斗", "army"],
+            "info": ["get_game_state", "map_query", "find_path", "player_base", "screen_info", "visible", "explorer"],
+            "produce": ["produce", "can_produce", "query_production", "manage_production", "ensure_can_build", "生产"],
+            "unit": ["move_units", "query_actor", "select_units", "form_group", "deploy_units", "单位"]
+        }
+        
         self.mcp_servers: Dict[str, MCPServerConfig] = {
 
             # 相机控制 MCP 服务器
@@ -271,6 +280,10 @@ def get_prompt(workflow_type: WorkflowType) -> str:
 def get_mcp_server(server_name: str) -> Optional[MCPServerConfig]:
     """获取 MCP 服务器配置"""
     return config.get_mcp_server(server_name)
+
+def get_server_tool_patterns() -> Dict[str, List[str]]:
+    """获取服务器工具模式配置"""
+    return config.server_tool_patterns
 
 def list_mcp_servers() -> Dict[str, str]:
     """列出所有 MCP 服务器"""
