@@ -39,6 +39,7 @@ cost_map = {
 def get_produce_cost(unit_type: str) -> (Dict[str, Any],bool):
     '''获取生产单位的成本信息
 
+
     Args:
         unit_type (str): Actor类型
     Returns:
@@ -69,6 +70,7 @@ async def produce(unit_type: str, quantity: int) -> int:
         int: 生产任务的 waitId
         None: 如果任务创建失败
     '''
+
     wait_id = await produce_api.produce(unify_unit_name(unit_type), quantity, auto_place_building=True)
     return wait_id or -1
 
@@ -169,7 +171,6 @@ async def query_production_queue(queue_type: str) -> Dict[str, Any]:
         GameAPIError: 当查询生产队列失败时
     '''
     return await produce_api.query_production_queue(unify_queue_name(queue_type))
-
 
 @produce_mcp.tool(name="place_building",description="放置生产队列中已就绪的建筑")
 async def place_building(queue_type: str, x: Optional[int] = None, y: Optional[int] = None) -> str:
