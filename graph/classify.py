@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 
 from prompt import classify_prompt
 from .state import GlobalState, WorkflowState, WorkflowType, NextCommand
+from .token_logger import token_logger
 from langchain_openai import ChatOpenAI
 from langgraph.types import Command
 from langgraph.graph import END
@@ -98,6 +99,16 @@ class ClassifyNode:
             end_time = time.time()
             
             elapsed_time = end_time - start_time
+            duration_ms = elapsed_time * 1000
+            
+            # 简单记录token使用
+            try:
+                tokens = response.response_metadata.get("token_usage").get("total_tokens")
+            except Exception as e:
+                logger.error(f"记录token使用失败: {e}")
+                tokens = 0
+            
+            token_logger.log_usage("classify", "llm", tokens, duration_ms)
             logger.debug(f"LLM 分类耗时: {elapsed_time:.2f} 秒，response: {response}")
             
             # 解析 JSON 响应
