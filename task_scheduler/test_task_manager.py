@@ -16,7 +16,7 @@ class TestTaskManager:
     async def test_single_task(self) -> None:
         """测试单个任务的创建和执行"""
         print("\n=== 测试单个任务 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建一个简单的协程任务
         async def simple_task() -> str:
@@ -45,7 +45,7 @@ class TestTaskManager:
     async def test_multiple_tasks(self) -> None:
         """测试多个任务并发执行"""
         print("\n=== 测试多任务并发 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         async def task_func(task_id: int, delay: float) -> str:
             await asyncio.sleep(delay)
@@ -77,7 +77,7 @@ class TestTaskManager:
     async def test_task_group(self) -> None:
         """测试任务组功能"""
         print("\n=== 测试任务组 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建任务组
         group = await manager.create_group(name="MainGroup")
@@ -113,7 +113,7 @@ class TestTaskManager:
     async def test_nested_groups(self) -> None:
         """测试嵌套任务组"""
         print("\n=== 测试嵌套任务组 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建父任务组
         parent_group = await manager.create_group(name="ParentGroup")
@@ -173,7 +173,7 @@ class TestTaskManager:
     async def test_task_cancellation(self) -> None:
         """测试任务取消功能"""
         print("\n=== 测试任务取消 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建一个长时间运行的任务
         async def long_running_task() -> str:
@@ -215,7 +215,7 @@ class TestTaskManager:
     async def test_group_cancellation(self) -> None:
         """测试任务组取消功能"""
         print("\n=== 测试任务组取消 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建任务组
         group = await manager.create_group(name="CancelGroup")
@@ -262,7 +262,7 @@ class TestTaskManager:
     async def test_task_failure_handling(self) -> None:
         """测试任务失败处理"""
         print("\n=== 测试任务失败处理 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建会失败的任务
         async def failing_task() -> None:
@@ -299,7 +299,7 @@ class TestTaskManager:
     async def test_status_query(self) -> None:
         """测试任务状态查询功能"""
         print("\n=== 测试状态查询 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建任务，跟踪状态变化
         status_changes = []
@@ -334,7 +334,7 @@ class TestTaskManager:
     async def test_running_tasks_tracking(self) -> None:
         """测试运行中任务的跟踪"""
         print("\n=== 测试运行任务跟踪 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建多个任务
         async def tracked_task(task_num: int, delay: float) -> str:
@@ -382,7 +382,7 @@ class TestTaskManager:
     async def test_concurrent_operations(self) -> None:
         """测试并发操作的线程安全性"""
         print("\n=== 测试并发操作安全性 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建多个协程同时创建任务
         async def create_task_concurrently(worker_id: int) -> List[Task]:
@@ -427,7 +427,7 @@ class TestTaskManager:
     async def test_cancel_task_removes_from_running_list(self) -> None:
         """测试取消任务后立即从运行列表中移除"""
         print("\n=== 测试取消任务后从运行列表移除 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         async def long_task() -> None:
             await asyncio.sleep(5)
@@ -445,7 +445,7 @@ class TestTaskManager:
     async def test_cancel_group_removes_from_running_list(self) -> None:
         """测试取消任务组后其内所有任务立即从运行列表中移除"""
         print("\n=== 测试取消任务组后从运行列表移除 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         group = await manager.create_group(name="CancellableGroup")
 
         async def long_task() -> None:
@@ -473,7 +473,7 @@ class TestTaskManager:
     async def test_nested_group_failure_propagates_status(self) -> None:
         """测试子组中任务失败会传播到父组状态"""
         print("\n=== 测试子组失败状态传播 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         parent_group = await manager.create_group(name="ParentFailureGroup")
         child_group = await manager.create_group(name="ChildFailureGroup", parent_group_id=parent_group.id)
 
@@ -504,7 +504,7 @@ class TestTaskManager:
     async def test_nested_group_cancellation_propagates_status(self) -> None:
         """测试子组中任务取消会传播到父组状态"""
         print("\n=== 测试子组取消状态传播 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         parent_group = await manager.create_group(name="ParentCancelGroup")
         child_group = await manager.create_group(name="ChildCancelGroup", parent_group_id=parent_group.id)
 
@@ -535,7 +535,7 @@ class TestTaskManager:
     async def test_empty_task_group(self) -> None:
         """测试空任务组的执行情况"""
         print("\n=== 测试空任务组 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建一个不包含任何任务的任务组
         empty_group = await manager.create_group(name="EmptyGroup")
@@ -552,7 +552,7 @@ class TestTaskManager:
     async def test_task_group_with_mixed_results(self) -> None:
         """测试包含成功和失败任务的任务组"""
         print("\n=== 测试混合结果任务组 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建任务组
         mixed_group = await manager.create_group(name="MixedResultGroup")
@@ -640,7 +640,7 @@ class TestTaskManager:
     async def test_deeply_nested_group_exception(self) -> None:
         """测试深度嵌套任务组中的异常传播"""
         print("\n=== 测试深度嵌套任务组异常传播 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建多层嵌套的任务组
         level1 = await manager.create_group(name="Level1")
@@ -704,7 +704,7 @@ class TestTaskManager:
     async def test_task_group_exception_in_run(self) -> None:
         """测试任务组run方法中的异常处理"""
         print("\n=== 测试任务组run方法异常处理 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建一个常规任务组
         group = await manager.create_group(name="ExceptionGroup")
@@ -738,7 +738,7 @@ class TestTaskManager:
     async def test_task_group_with_long_running_task(self) -> None:
         """测试包含长时间运行任务的任务组"""
         print("\n=== 测试长时间运行任务的任务组 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建任务组
         long_task_group = await manager.create_group(name="LongTaskGroup")
@@ -799,7 +799,7 @@ class TestTaskManager:
     async def test_debug_info(self) -> None:
         """测试调试信息功能"""
         print("\n=== 测试调试信息功能 ===")
-        manager = TaskManager()
+        manager = await TaskManager.get_instance()
         
         # 创建一些任务和任务组进行测试
         group = await manager.create_group(name="DebugTestGroup")
@@ -924,9 +924,10 @@ async def run_all_tests() -> None:
         test_suite.test_debug_info()
     ]
     
-    # 逐个运行测试
+    # 逐个运行测试，每次测试前重置单例
     for test in tests:
         try:
+            TaskManager.reset_instance()
             await test
         except Exception as e:
             print(f"✗ 测试失败: {e}")
@@ -944,7 +945,7 @@ async def demo_usage() -> None:
     print("任务管理器使用演示")
     print("=" * 50)
     
-    manager = TaskManager()
+    manager = await TaskManager.get_instance()
     
     # 1. 简单任务示例
     print("\n### 1. 创建并执行简单任务")

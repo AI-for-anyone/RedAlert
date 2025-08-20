@@ -98,7 +98,7 @@ class Graph:
     
     async def _run_stdio(self):
         logger.info("运行 stdio 模式，输入 /bye 退出")
-        task_manager = TaskManager()
+        task_manager = await TaskManager.get_instance()
         while True:
             user_input = await ainput("\n-------------\nUser: ")
             if user_input == "/bye":
