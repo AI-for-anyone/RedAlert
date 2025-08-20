@@ -8,7 +8,7 @@ from logs import get_logger
 import asyncio
 from collections import deque
 from model import ALL_INFANTRIES, ALL_TANKS, ALL_AIR
-from task_scheduler import submit_task, wait_for_task
+from task_scheduler import TaskManager, Task
 
 logger = get_logger("monitor")
 
@@ -86,13 +86,14 @@ class Monitor:
             self.collection_interval = collection_interval
             self.show_interval = show_interval
             self._lock = asyncio.Lock()  # 添加异步锁保护共享数据
+            self.task_manager = TaskManager()
             Monitor._initialized = True
     
     async def start(self, show: bool = True):
         logger.info("Monitor-开始监控")
-        self.collect_actors_task = await submit_task(self.collect_actors_info)
+        self.collect_actors_task = await self.task_manager.submit_task(self.collect_actors_info)
         if show:
-            self.show_task = await submit_task(self.show)
+            self.show_task = await self.task_manager.submit_task(self.show)
 
     def get_enemy_actors_status(self) -> List[Actor]:
         return [actor.actor for actor in self.enemy_actors.values()]

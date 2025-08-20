@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, Annotated, Literal
 from enum import Enum
 
-from task_scheduler.task_scheduler import submit_task, wait_for_task
+from task_scheduler import Task, TaskManager, TaskGroup, TaskStatus
 
 from .state import GlobalState, WorkflowType
 from .classify import ClassifyNode
@@ -98,16 +98,16 @@ class Graph:
     
     async def _run_stdio(self):
         logger.info("运行 stdio 模式，输入 /bye 退出")
+        task_manager = TaskManager()
         while True:
-            user_input = await ainput("User: ")
+            user_input = await ainput("\n-------------\nUser: ")
             if user_input == "/bye":
                 break
             try:
-                task_id = await submit_task(self._compiled_graph.ainvoke, {"input_cmd": user_input})
-                # result = await wait_for_task(task_id)
-                logger.info(f"cmd: [{user_input}], task_id: {task_id}")
-                # if 'result' in result:
-                #     logger.info(f"result: {result['result']}")
+                # task = asyncio.create_task(self._compiled_graph.ainvoke({"input_cmd": user_input}), name=user_input)
+                task = await task_manager.create_task(self._compiled_graph.ainvoke({"input_cmd": user_input}), name=user_input)
+                task_handle = await task_manager.submit_task(task.id)
+                logger.info(f"cmd: [{user_input}] | task: {task.name}")
             except Exception as e:
                 logger.error(f"执行命令失败: {e}")
     
