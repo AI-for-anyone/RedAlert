@@ -12,7 +12,6 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from logs import logger, get_logger, setup_logging, LogConfig, LogLevel
-from task_scheduler import submit_task, wait_for_task
 
 logger = get_logger("fight_mcp_server")
 
