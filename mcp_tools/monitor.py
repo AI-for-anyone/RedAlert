@@ -86,7 +86,7 @@ class Monitor:
             self.collection_interval = collection_interval
             self.show_interval = show_interval
             self._lock = asyncio.Lock()  # 添加异步锁保护共享数据
-            self.task_manager = TaskManager()
+            self.task_manager = TaskManager.get_instance()
             Monitor._initialized = True
     
     async def start(self, show: bool = True):

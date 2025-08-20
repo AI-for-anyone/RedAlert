@@ -82,6 +82,14 @@ class Task:
     def get_asyncio_task(self) -> Optional[asyncio.Task]:
         """获取内部asyncio任务对象"""
         return self._asyncio_task
+        
+    def set_asyncio_task(self, task: asyncio.Task) -> None:
+        """设置内部asyncio任务对象
+        
+        Args:
+            task: 要设置的asyncio任务对象
+        """
+        self._asyncio_task = task
     
     def get_info(self) -> Dict[str, Any]:
         """获取任务信息"""
@@ -138,6 +146,7 @@ class TaskGroup:
     def remove_sub_group(self, group_id: str) -> bool:
         """移除子任务组"""
         if group_id in self.sub_groups:
+            self.sub_groups[group_id].parent_group = None
             del self.sub_groups[group_id]
             return True
         return False
@@ -237,10 +246,64 @@ class TaskGroup:
 
 
 class TaskManager:
-    """协程任务管理器"""
+    """协程任务管理器（单例模式）"""
+    
+    # 单例实例
+    _instance = None
+    # 初始化标志
+    _initialized = False
+    # 保护单例创建的锁
+    _instance_lock = asyncio.Lock()
+    
+    def __new__(cls):
+        # 使用__new__方法实现单例
+        return cls.get_instance()
+    
+    @classmethod
+    async def get_instance(cls):
+        """获取TaskManager单例实例（异步方法）
+        
+        Returns:
+            TaskManager: 单例实例
+        """
+        if cls._instance is None:
+            async with cls._instance_lock:
+                # 创建实例
+                cls._instance = super(TaskManager, cls).__new__(cls)
+        
+        # 确保只初始化一次
+        if not cls._initialized:
+            async with cls._instance_lock:
+                await cls._instance._initialize()
+                cls._initialized = True
+        
+        return cls._instance
+    
+    @classmethod
+    def get_instance_sync(cls):
+        """获取TaskManager单例实例（同步方法）
+        
+        注意：这个方法应该只在确保事件循环已经运行的情况下使用
+        如果实例未初始化，则会创建实例但不会调用异步初始化
+        
+        Returns:
+            TaskManager: 单例实例
+        """
+        if cls._instance is None:
+            # 在同步上下文中，我们只能创建实例但不能异步初始化
+            cls._instance = super(TaskManager, cls).__new__(cls)
+            # 设置一个标志，表明需要初始化
+            cls._initialized = False
+            
+        return cls._instance
     
     def __init__(self):
-        """初始化任务管理器"""
+        """初始化方法，在单例模式下实际不会执行多次初始化"""
+        # 实际初始化移动到_initialize异步方法中
+        pass
+        
+    async def _initialize(self):
+        """真正的异步初始化方法"""
         self.tasks: Dict[str, Task] = {}
         self.groups: Dict[str, TaskGroup] = {}
         self.running_tasks: Set[str] = set()
@@ -360,7 +423,7 @@ class TaskManager:
                     
         # 创建并保存对asyncio任务的引用（需要任务锁）
         async with self._tasks_lock:
-            task._asyncio_task = asyncio.create_task(run_wrapper())
+            task.set_asyncio_task(asyncio.create_task(run_wrapper()))
             return task._asyncio_task
             
     async def submit_group(self, group_id: str) -> asyncio.Task[Any]:
@@ -409,7 +472,7 @@ class TaskManager:
         async with self._tasks_lock:
             for task in all_tasks:
                 if task.id in self.tasks:
-                    self.tasks[task.id]._asyncio_task = group_task
+                    self.tasks[task.id].set_asyncio_task(group_task)
                     
         return group_task
             
@@ -675,6 +738,12 @@ class TaskManager:
         else:
             # 否则，运行直到完成
             loop.run_until_complete(_get_and_print())
+            
+    @classmethod
+    def reset_instance(cls):
+        """重置单例实例（仅用于测试）"""
+        cls._instance = None
+        cls._initialized = False
         
     async def wait_all(self) -> None:
         """等待所有任务完成"""
