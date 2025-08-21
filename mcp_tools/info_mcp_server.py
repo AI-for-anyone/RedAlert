@@ -261,6 +261,32 @@ async def screen_info_query() -> Dict[str, Any]:
         "mousePosition": {"x": info.MousePosition.x, "y": info.MousePosition.y}
     }
 
+@info_mcp.tool(name="query_actor", description="查询单位列表")
+async def query_actor(type: List[str], faction: str, range: str, restrain: List[dict]) -> List[Dict[str, Any]]:
+    '''查询符合条件的Actor，获取Actor应该使用的接口
+
+    Args:
+        query_params (TargetsQueryParam): 查询参数
+
+    Returns:
+        List[Actor]: 符合条件的Actor列表
+
+    Raises:
+        GameAPIError: 当查询Actor失败时
+    '''
+    params = NewTargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
+    actors = await unit_api.query_actor(params)
+    return [
+        {
+            "actor_id": u.actor_id,
+            "type": u.type,
+            "faction": u.faction,
+            "position": {"x": u.position.x, "y": u.position.y},
+            "hpPercent": getattr(u, "hp_percent", None)
+        }
+        for u in actors
+    ]
+
 
 def main():
     info_mcp.settings.log_level = "critical"

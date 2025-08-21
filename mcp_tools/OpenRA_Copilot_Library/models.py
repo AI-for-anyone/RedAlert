@@ -94,6 +94,8 @@ class Actor:
     faction: Optional[str] = None  # 阵营，值为 {ALL_ACTORS} 中的一个。
     position: Optional[Location] = None  # 单位的位置。
     hppercent: Optional[int] = None
+    max_hp: Optional[int] = None
+    hp: Optional[int] = None
 
     def __format__(self, format_spec: str, /) -> str:
         return "actor[{0}:{1}]({2},{3})=[{4}]".format(self.actor_id, self.type, self.faction, self.position, self.hppercent)
