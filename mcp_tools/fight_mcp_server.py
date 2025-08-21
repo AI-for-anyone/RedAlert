@@ -1,11 +1,15 @@
 from dataclasses import dataclass
 from collections import deque
+
+from openai.types.beta import assistant
 from OpenRA_Copilot_Library import AsyncGameAPI
 from OpenRA_Copilot_Library.models import Location, NewTargetsQueryParam, Actor
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 import asyncio
+import time
 from monitor import update_actors_free_status, get_actors_status, get_monitor, get_all_enemy_actors_status
+import model
 
 import sys
 import os
@@ -20,66 +24,7 @@ fight_api = AsyncGameAPI(host="localhost", port=7445, language="zh")
 #mcp实例
 fight_mcp = FastMCP()
 
-from model import ALL_INFANTRIES, ALL_TANKS, ALL_AIR
-
-@fight_mcp.tool(name="army_attack", description="控制己方到指定地点攻击指定目标")
-async def army_attack(
-    source: NewTargetsQueryParam, 
-    target: Location,
-    perfer_attack_target: List[str] = []
-) -> None:
-    """
-    Args:
-        source (NewTargetsQueryParam): 执行攻击的对象
-        target (Location): 被攻击的目标
-        perfer_attack_target (List[str]): 优先攻击的目标类型列表
-    Raises:
-        GameAPIError: 当攻击命令执行失败时
-    """
-    print("army_attack-print")
-    logger.debug("army_attack-logger")
-    try:
-        actors = await fight_api.query_actor(source)
-        logger.debug("army_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
-        await fight_api.move_units_by_location(target=source, location=target, attack_move=True)
-
-        while True:
-            actors = await fight_api.query_actor(source)
-            logger.debug("army_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
-            center = get_center_location(actors)
-            logger.debug("army_attack-己方战斗单位中心点: {0}".format(str(center)))
-            dis = center.manhattan_distance(target)
-            if dis < 20:
-                break
-            await asyncio.sleep(0.5)
-
-    
-        for perfer_attack_target in perfer_attack_target:
-            while True:
-                actors = await fight_api.query_actor(source)
-                logger.debug("army_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
-                
-                query = NewTargetsQueryParam(
-                    type=[perfer_attack_target], 
-                    faction="敌方", 
-                    restrain=[{"visible": True}]
-                )
-                logger.debug("army_attack-查询目标: {0}".format(str(query)))
-                # 查询目标
-                targets = await fight_api.query_actor(query)
-                logger.debug("army_attack-敌方目标: {0}".format(str([[ac.actor_id, ac.type] for ac in targets])))
-                if targets is None or len(targets) == 0:
-                    logger.debug("army_attack-没有找到敌方目标: {0}".format(str(perfer_attack_target)))
-                    break
-                await fight_api.attack_target(attacker=source, target=NewTargetsQueryParam(actor_id=[ac.actor_id for ac in targets]))
-                await asyncio.sleep(1)
-
-
-        # update_actors_free_status(actors)   # 更新单位状态
-        
-    except Exception as e:
-        logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
-        raise Exception("控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
+from model import ALL_INFANTRIES, ALL_TANKS, ALL_AIR, ALL_DIRECTIONS, ALL_BUILDING
 
 # 计算List[Actor]中心点
 def get_center_location(actors: List[Actor]) -> Location:
@@ -89,8 +34,8 @@ def get_center_location(actors: List[Actor]) -> Location:
     center_y = sum(u.position.y for u in actors) / len(actors)
     return Location(center_x, center_y)
 
-# 军队聚团
-@fight_mcp.tool(name="army_gather", description="控制军队聚集到一起")
+# 收集军队
+@fight_mcp.tool(name="army_gather", description="军队聚团")
 async def army_gather(source: NewTargetsQueryParam) -> None:
     # 查看所有单位
     units = await fight_api.query_actor(source)
@@ -106,6 +51,240 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
     except Exception as e:
         raise logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位聚团时发生错误: {0}".format(str(e)))
 
+
+@fight_mcp.tool(name="army_designated_attack", description="控制己方到指定地点后攻击指定目标")
+async def army_designated_attack(
+    source: NewTargetsQueryParam, 
+    target: Location,
+    perfer_attack_target: List[str] = [],
+    max_seconds: float = 45.0
+) -> None:
+    """
+    Args:
+        source (NewTargetsQueryParam): 执行攻击的对象
+        target (Location): 被攻击的目标
+        perfer_attack_target (List[str]): 优先攻击的目标类型列表
+        max_seconds (float): 最大执行时长（秒），超时自动退出
+    Raises:
+        GameAPIError: 当攻击命令执行失败时
+    """
+    print("army_designated_attack-print")
+    logger.debug("army_designated_attack-logger")
+    try:
+        async def _attack_logic():
+            actors = await fight_api.query_actor(source)
+            logger.debug("army_designated_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
+            await fight_api.move_units_by_location(target=source, location=target, attack_move=True)
+
+            while True:
+                actors = await fight_api.query_actor(source)
+                logger.debug("army_designated_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
+                center = get_center_location(actors)
+                logger.debug("army_designated_attack-己方战斗单位中心点: {0}".format(str(center)))
+                dis = center.manhattan_distance(target)
+                if dis < 20:
+                    break
+                await asyncio.sleep(0.5)
+
+            for perfer_attack_target in perfer_attack_target:
+                while True:
+                    actors = await fight_api.query_actor(source)
+                    logger.debug("army_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
+
+                    query = NewTargetsQueryParam(
+                        type=[perfer_attack_target], 
+                        faction="敌方", 
+                        restrain=[{"visible": True}]
+                    )
+                    logger.debug("army_attack-查询目标: {0}".format(str(query)))
+                    # 查询目标
+                    targets = await fight_api.query_actor(query)
+                    logger.debug("army_attack-敌方目标: {0}".format(str([[ac.actor_id, ac.type] for ac in targets])))
+                    if targets is None or len(targets) == 0:
+                        logger.debug("army_attack-没有找到敌方目标: {0}".format(str(perfer_attack_target)))
+                        break
+                    await fight_api.attack_target(attacker=source, target=NewTargetsQueryParam(actor_id=[ac.actor_id for ac in targets]))
+                    await asyncio.sleep(1)
+
+        # 使用 asyncio.wait_for 为整个任务设置超时
+        await asyncio.wait_for(_attack_logic(), timeout=max_seconds)
+
+    except asyncio.TimeoutError:
+        logger.warning("ARMY_ATTACK_TIMEOUT 控制己方战斗单位攻击指定目标超时，已自动退出: max_seconds={0}".format(max_seconds))
+        return
+    except Exception as e:
+        logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
+        raise Exception("控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
+
+# 移动选中单位
+@fight_mcp.tool(name="move_units_by_location", description="将指定的单位移动到指定位置，若目标是x=0,y=0,则将单位聚集到中心点。")
+async def move_units_by_location(source: NewTargetsQueryParam, target: Location, attack_move: bool = False) -> None:
+    '''
+    Args:
+        source (NewTargetsQueryParam): 要移动的单位
+        target (Location): 目标位置，若是x=0,y=0,则将单位聚集到中心点。
+        attack_move (bool): 是否为攻击性移动
+    '''
+    try:
+        if target.x == 0 and target.y == 0:
+            await army_gather(source)
+        else:
+            await fight_api.move_units_by_location(target=source, location=target, attack_move=attack_move)
+    except Exception as e:
+        raise logger.error("MOVE_UNITS_BY_LOCATION_ERROR", "移动选中单位时发生错误: {0}".format(str(e)))
+
+# 攻击指定方向
+@fight_mcp.tool(name="attack_direction", description="指定单位控往指定方向攻击")
+async def attack_direction(source: NewTargetsQueryParam, direction: str, distance: int = 25) -> None:
+    '''
+    Args:
+        source (NewTargetsQueryParam): 指定单位要攻击的单位
+        direction (str): 攻击方向，必须在 {"左上", "上", "右上", "左", "右", "左下", "下", "右下"} 中
+        distance (int): 攻击距离
+    '''
+    try:
+        # 获取所有攻击单位
+        units = await fight_api.query_actor(source)
+        # 过滤
+        units = [ac for ac in units if ac.type in ALL_INFANTRIES or ac.type in ALL_TANKS or ac.type in ALL_AIR]
+        if units is None or len(units) == 0:
+            logger.info("army_attack-没有找到己方战斗单位: {0}".format(str(source)))
+            return
+
+        # 计算中心点位置
+        before_center = get_center_location(units)
+        logger.debug("army_attack-己方战斗单位中心点: {0}".format(str(before_center)))
+
+        relative_pos = Location(before_center.x, before_center.y)
+        match direction:
+            case "左上":
+                relative_pos.x = max(relative_pos.x - int(distance * 1.41421), 0)
+                relative_pos.y = max(relative_pos.y - int(distance * 1.41421), 0)
+            case "上":
+                relative_pos.y = max(relative_pos.y - distance, 0)
+            case "右上":
+                relative_pos.x = min(relative_pos.x + int(distance * 1.41421), 1024)
+                relative_pos.y = max(relative_pos.y - int(distance * 1.41421), 0)
+            case "左":
+                relative_pos.x = max(relative_pos.x - distance, 0)
+            case "右":
+                relative_pos.x = min(relative_pos.x + distance, 1024)
+            case "左下":
+                relative_pos.x = max(relative_pos.x - int(distance * 1.41421), 0)
+                relative_pos.y = min(relative_pos.y + int(distance * 1.41421), 1024)
+            case "下":
+                relative_pos.y = min(relative_pos.y + distance, 1024)
+            case "右下":
+                relative_pos.x = min(relative_pos.x + int(distance * 1.41421), 1024)
+                relative_pos.y = min(relative_pos.y + int(distance * 1.41421), 1024)
+            case _:
+                logger.info("方向{0}不在{1}中".format(str(direction), ALL_DIRECTIONS))
+                return
+        
+        # move units to relative_pos
+        await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), relative_pos)
+        
+        async def _attack_direction():
+            our_units: Dict[int, model.own_unit] = {}
+            for u in units:
+                our_units[u.actor_id] = model.own_unit(u.actor_id, u.type, u.position, u.hp, u.max_hp)
+            enemy_units: Dict[int, model.enemy_unit] = {}
+            while True:
+                # center
+                new_actors = await fight_api.query_actor(NewTargetsQueryParam(actor_id=[actor_id for actor_id in our_units.keys()]))
+                center = get_center_location(new_actors)
+
+                new_units: Dict[int, model.own_unit] = {}
+                for new_actor in new_actors:
+                    new_units[new_actor.actor_id] = our_units[new_actor.actor_id]
+                    new_units[new_actor.actor_id].hp = new_actor.hp
+                    new_units[new_actor.actor_id].location = new_actor.position
+                our_units = new_units
+
+                # 查看所有敌人
+                enemy_actors = await fight_api.query_actor(NewTargetsQueryParam(
+                    faction="敌方", 
+                    type=ALL_AIR+ALL_INFANTRIES+ALL_TANKS+ALL_BUILDING,
+                    restrain=[{"visible": True},{"distance": 40}],
+                    location=center
+                ))
+                if enemy_actors is None or len(enemy_actors) == 0:
+                    logger.info("没有敌方目标")
+                    if center.manhattan_distance(relative_pos) < 7:
+                        logger.info("己方单位已到达目标位置")
+                        break
+                    await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), relative_pos)
+                    await asyncio.sleep(1)
+                    continue
+                logger.debug("attack_direction-敌方目标: {0}".format(str([[ac.actor_id, ac.type] for ac in enemy_actors])))
+
+                # 记录所有敌方单位
+                new_enemy_units: Dict[int, model.enemy_unit] = {}
+                for enemy_actor in enemy_actors:
+                    if enemy_actor.actor_id in enemy_units.keys():
+                        new_enemy_units[enemy_actor.actor_id] = enemy_units[enemy_actor.actor_id]
+                        new_enemy_units[enemy_actor.actor_id].hp = enemy_actor.hp
+                        new_enemy_units[enemy_actor.actor_id].location = enemy_actor.position
+                    else:
+                        new_enemy_units[enemy_actor.actor_id] = model.enemy_unit(
+                            enemy_actor.actor_id, 
+                            enemy_actor.type, 
+                            enemy_actor.position, 
+                            enemy_actor.hp, 
+                            enemy_actor.max_hp, 
+                            assigned_attack_units=[]
+                        )
+                    new_enemy_units[enemy_actor.actor_id].assigned_attack_units = [u for u in new_enemy_units[enemy_actor.actor_id].assigned_attack_units if u in our_units.keys()]
+                enemy_units = new_enemy_units
+
+                # 每个单位分配目标
+                for own_unit in our_units.values():
+                    # 残血后退
+                    if own_unit.hp < own_unit.max_hp * 0.2 and not own_unit.retreated:
+                        own_unit.retreated = True
+                        if own_unit.target is not None:
+                            try:
+                                enemy_units[own_unit.target].assigned_attack_units.remove(own_unit.actor_id)
+                            except Exception as e:
+                                logger.error("ATTACK_DIRECTION_ERROR", "删除地方单位已分配单位出错: {0}".format(str(e)))
+                        own_unit.target = None
+                        await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[own_unit.actor_id]), before_center)
+                        continue
+
+                    # 如果有目标
+                    if own_unit.target is not None and own_unit.target in enemy_units.keys():
+                        continue
+                    
+                    # 如果没有目标
+                    best_target = [0, 0.0] # [target_actor_id, priority]
+                    for enemy_unit in enemy_units.values():
+                        try:
+                            score = model.effective_damage_score(own_unit, enemy_unit, our_units)
+                        except Exception as e:
+                            logger.warning("ATTACK_DIRECTION_ERROR", "计算己方单位对敌方单位的优先级时发生错误: {0}".format(str(e)))
+                            score = 0
+                        logger.debug("attack_direction-己方单位{0}对敌方单位{1}的优先级: {2}".format(str(own_unit.actor_id), str(enemy_unit.actor_id), str(score)))
+                        if score > best_target[1]:
+                            best_target = [enemy_unit.actor_id, score]
+                    
+                    if best_target[0] != 0:
+                        own_unit.target = best_target[0]
+                        enemy_units[best_target[0]].assigned_attack_units.append(own_unit.actor_id)
+                
+                # 按照优先级分配目标
+                for enemy_unit in enemy_units.values():
+                    if len(enemy_unit.assigned_attack_units) > 0:
+                        await fight_api.attack_target(NewTargetsQueryParam(actor_id=enemy_unit.assigned_attack_units), NewTargetsQueryParam(actor_id=[enemy_unit.actor_id]))
+                await asyncio.sleep(0.5)
+        try:
+            await asyncio.wait_for(_attack_direction(), timeout=90)
+        except asyncio.TimeoutError:
+            logger.warning("ATTACK_DIRECTION_TIMEOUT 控制指定单位攻击指定方向超时，已自动退出")
+            return
+
+    except Exception as e:
+        raise logger.error("ATTACK_DIRECTION_ERROR", "控制指定单位攻击指定方向时发生错误: {0}".format(str(e)))
+
 def main():
     fight_mcp.settings.log_level = "critical"
     fight_mcp.settings.host = "0.0.0.0"
@@ -118,8 +297,9 @@ if __name__ == "__main__":
     """主异步函数"""
     setup_logging(LogConfig(level=LogLevel.DEBUG))
 
-    logger.debug("before 启动 Fight MCP 服务器")
-    main()
-    logger.debug("after 启动 Fight MCP 服务器")
-    # asyncio.run(main_async())    
+    # logger.debug("before 启动 Fight MCP 服务器")
+    # main()
+    # logger.debug("after 启动 Fight MCP 服务器")
+    asyncio.run(army_gather(NewTargetsQueryParam(faction="己方", type=ALL_INFANTRIES+["防空车", "重型坦克", "V2火箭发射车","超重型坦克"]+ALL_AIR)))    
+    asyncio.run(attack_direction(NewTargetsQueryParam(faction="己方", type=ALL_INFANTRIES+["防空车", "重型坦克", "V2火箭发射车","超重型坦克"]+ALL_AIR), "上"))
     

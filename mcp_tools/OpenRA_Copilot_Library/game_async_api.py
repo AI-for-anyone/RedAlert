@@ -281,6 +281,8 @@ class AsyncGameAPI:
                         position,
                         hp_percent
                     )
+                    actor.max_hp = data.get("maxHp", 0)
+                    actor.hp = data.get("hp", 0)
                     actors.append(actor)
                 except KeyError as e:
                     raise AsyncGameAPIError("INVALID_ACTOR_DATA", "Actor数据格式无效: {0}".format(str(e)))
@@ -751,14 +753,14 @@ class AsyncGameAPI:
     UNIT_DEPENDENCIES = {
         "步兵": ["兵营"],
         "火箭兵": ["兵营"],
-        "工程师": ["兵营"],
-        "手雷兵": ["兵营"],
-        "矿车": ["战车工厂"],
+        # "工程师": ["兵营"],
+        # "手雷兵": ["兵营"],
+        "采矿车": ["战车工厂"],
         "防空车": ["战车工厂"],
-        "装甲车": ["战车工厂"],
-        "重坦": ["战车工厂", "维修厂"],
-        "v2": ["战车工厂", "雷达站"],
-        "猛犸坦克": ["战车工厂", "维修厂", "科技中心"]
+        # "装甲车": ["战车工厂"],
+        "重型坦克": ["战车工厂", "维修厂"],
+        "V2火箭发射车": ["战车工厂", "雷达站"],
+        "超重型坦克": ["战车工厂", "维修厂", "科技中心"]
     }
 
     async def deploy_mcv_and_wait(self, wait_time: float = 1.0) -> None:
