@@ -1,9 +1,12 @@
 from OpenRA_Copilot_Library import AsyncGameAPI
 from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
 from utils import unify_unit_name, unify_queue_name
+import logging
+
+logger = logging.getLogger(__name__)
 
 # 单例 GameAPI 客户端
 produce_api = AsyncGameAPI(host="localhost", port=7445, language="zh")
@@ -12,89 +15,125 @@ produce_mcp = FastMCP()
 
 # 生产单位的成本信息
 cost_map = {
-    "电厂": {"cash": 150, "time": 2, "power": 100},
-    "兵营": {"cash": 250, "time": 3, "power": -20},
-    "矿场": {"cash": 700, "time": 9, "power": -30},
-    "车间": {"cash": 1000, "time": 12, "power": -30},
-    "雷达": {"cash": 750, "time": 9, "power": -40},
-    "维修中心": {"cash": 600, "time": 8, "power": -30},
-    "核电": {"cash": 250, "time": 3, "power": 200},
-    "机场": {"cash": 200, "time": 3, "power": 200},
-    "科技中心": {"cash": 750, "time": 9, "power": -100},
-    "火焰塔": {"cash": 300, "time": 4, "power": -20},
-    "电塔": {"cash": 600, "time": 8, "power": -100},
-    "防空塔": {"cash": 350, "time": 5, "power": -40},
-    "步兵": {"cash": 50, "time": 1, "power": 0},
-    "火箭兵": {"cash": 150, "time": 2, "power": 0},
-    "矿车": {"cash": 550, "time": 7, "power": 0},
-    "防空车": {"cash": 300, "time": 4, "power": 0},
-    "重坦": {"cash": 575, "time": 7, "power": 0},
-    "v2": {"cash": 450, "time": 6, "power": 0},
-    "猛犸": {"cash": 1000, "time": 12, "power": 0},
-    "雅克": {"cash": 675, "time": 9, "power": 0},
-    "米格": {"cash": 1000, "time": 12, "power": 0},
+    unify_unit_name("发电厂"): {"cost": 150, "time": 2, "power": 100},
+    unify_unit_name("兵营"): {"cost": 250, "time": 3, "power": -20},
+    unify_unit_name("矿场"): {"cost": 700, "time": 9, "power": -30},
+    unify_unit_name("车间"): {"cost": 1000, "time": 12, "power": -30},
+    unify_unit_name("雷达"): {"cost": 750, "time": 9, "power": -40},
+    unify_unit_name("维修中心"): {"cost": 600, "time": 8, "power": -30},
+    unify_unit_name("核电站"): {"cost": 250, "time": 3, "power": 200},
+    unify_unit_name("机场"): {"cost": 200, "time": 3, "power": 200},
+    unify_unit_name("科技中心"): {"cost": 750, "time": 9, "power": -100},
+    unify_unit_name("火焰塔"): {"cost": 300, "time": 4, "power": -20},
+    unify_unit_name("电塔"): {"cost": 600, "time": 8, "power": -100},
+    unify_unit_name("防空塔"): {"cost": 350, "time": 5, "power": -40},
+    unify_unit_name("步兵"): {"cost": 50, "time": 1, "power": 0},
+    unify_unit_name("火箭兵"): {"cost": 150, "time": 2, "power": 0},
+    unify_unit_name("矿车"): {"cost": 550, "time": 7, "power": 0},
+    unify_unit_name("防空车"): {"cost": 300, "time": 4, "power": 0},
+    unify_unit_name("重坦"): {"cost": 575, "time": 7, "power": 0},
+    unify_unit_name("v2"): {"cost": 450, "time": 6, "power": 0},
+    unify_unit_name("猛犸"): {"cost": 1000, "time": 12, "power": 0},
+    unify_unit_name("雅克"): {"cost": 675, "time": 9, "power": 0},
+    unify_unit_name("米格"): {"cost": 1000, "time": 12, "power": 0},
 }
 
+def get_cost(unit_type: str) -> Dict[str, int]:
+    return cost_map.get(unify_unit_name(unit_type), None)
 
-def get_produce_cost(unit_type: str) -> (Dict[str, Any],bool):
-    '''获取生产单位的成本信息
-
-
-    Args:
-        unit_type (str): Actor类型
-    Returns:
-        dict: 包含生产成本信息的字典
-        bool: 是否获取到
+async def get_produce_remain_resource() -> Tuple[int, int]:
     '''
-    unit_type = unify_unit_name(unit_type)
-    return cost_map.get(unit_type, {}), unit_type in cost_map
+    获取生产完成后剩余的资源
+    Returns:
+        Tuple[int, int]: (money, power)
+    '''
+    base_info = await produce_api.player_base_info_query()
+    money = power = 0
+    for queue_type in ['Building', 'Defense', 'Infantry', 'Vehicle', 'Aircraft']:
+        queue_info = await produce_api.query_production_queue(unify_queue_name(queue_type))
+        items = queue_info.get('queue_items', None)
+        if items is None:
+            raise ValueError(f"未找到 {queue_type} 的生产队列信息")
+        for item in items:
+            if item.get('done', False) or item.get('paused', False):
+                continue
+            name = item.get('chineseName', None)
+            if name is None:
+                raise ValueError(f"未找到 item 的中文名称")
+            cost = get_cost(name)
+            if cost is None:
+                raise ValueError(f"未找到 {name} 的生产成本信息")
+            power += cost.get('power', 0)
+            money += cost.get('cost', 0)
+    return (base_info.Cash + base_info.Resources - money, base_info.PowerProvided - base_info.PowerDrained + power)
 
 
-@produce_mcp.tool(name="get_resource_info", description="返回玩家资源信息")
-async def get_resource_info() -> Dict[str, Any]:
-    
+@produce_mcp.tool(name="get_player_base_info", description="返回玩家资源信息")
+async def get_player_base_info() -> Dict[str, Any]:
+    """返回玩家资源信息"""
     info = await produce_api.player_base_info_query()
-    return info
+    return {"cash":info.Cash, "resources":info.Resources, "powerDrained": info.PowerDrained, "powerProvided": info.PowerProvided}
 
 
 @produce_mcp.tool(name="produce", description="生产指定类型和数量的单位，返回生产任务 ID")
-async def produce(unit_type: str, quantity: int) -> int:
+async def produce(unit_type: str, quantity: int = 1, auto_place: bool = True) -> int:
     '''生产指定数量的Actor
 
     Args:
         unit_type (str): Actor类型
         quantity (int): 生产数量
-        auto_place_building (bool, optional): 是否在生产完成后使用随机位置自动放置建筑，仅对建筑类型有效
+        auto_place (bool, optional): 是否在生产完成后使用随机位置自动放置建筑，仅对建筑类型有效
 
     Returns:
         int: 生产任务的 waitId
         None: 如果任务创建失败
     '''
 
-    wait_id = await produce_api.produce(unify_unit_name(unit_type), quantity, auto_place_building=True)
+    wait_id = await produce_api.produce(unify_unit_name(unit_type), quantity, auto_place_building=auto_place)
     return wait_id or -1
 
 
 @produce_mcp.tool(name="can_produce", description="检查是否可生产某类型单位")
-async def can_produce(unit_type: str) -> bool:
+async def can_produce(unit_type: str, quantity: int = 1, permit_resource_shortage: bool = False, permit_power_shortage: bool = False) -> bool:
     '''检查是否可以生产指定类型的Actor
 
     Args:
         unit_type (str): Actor类型，必须在 {ALL_UNITS} 中
+        quantity (int): 生产数量
+        permit_resource_shortage (bool, optional): 是否允许资源短缺
+        permit_power_shortage (bool, optional): 是否允许电力短缺
     Returns:
         bool: 是否可以生产
     '''
-    return await produce_api.can_produce(unify_unit_name(unit_type), quantity)
-
+    
+    produce_able = await produce_api.can_produce(unify_unit_name(unit_type))
+    if permit_power_shortage and permit_resource_shortage:
+        return produce_able
+    
+    cost = get_cost(unit_type)
+    if cost is None:
+        raise ValueError(f"未找到 {unit_type} 的生产成本信息")
+    remain_money = remain_power = 0
+    if not permit_power_shortage or not permit_resource_shortage:
+        remain_money, remain_power = await get_produce_remain_resource()
+        logger.info(f"当前电力: {remain_power}, 当前资源: {remain_money}")
+    if not permit_power_shortage and remain_power + quantity * cost.get('power', 0) < 0:
+        logger.info("电力不足")
+        return False
+    if not permit_resource_shortage and remain_money - quantity * cost.get('cost', 0) < 0:
+        logger.info("资源不足")
+        return False
+    return True
+    
 
 @produce_mcp.tool(name="produce_wait", description="发起并等待生产完成")
-async def produce_wait(unit_type: str, quantity: int, auto_place: bool = True) -> bool:
+async def produce_wait(unit_type: str, quantity: int = 1, auto_place: bool = True) -> bool:
     '''生产指定数量的Actor并等待生产完成
 
     Args:
         unit_type (str): Actor类型
         quantity (int): 生产数量
-        auto_place_building (bool, optional): 是否在生产完成后使用随机位置自动放置建筑，仅对建筑类型有效
+        auto_place (bool, optional): 是否在生产完成后使用随机位置自动放置建筑，仅对建筑类型有效
 
     Raises:
         GameAPIError: 当生产或等待过程中发生错误时
