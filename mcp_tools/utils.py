@@ -66,6 +66,11 @@ def unify_unit_name(name: str) -> str:
         return '特斯拉塔'
     return name
 
+Building = ['Building', 'building', '建筑', '建筑队列', 'building queue']
+Defense = ['Defense', 'defense', '防御', '防御队列', 'defense queue']
+Infantry = ['Infantry', 'infantry', '步兵', '步兵队列', 'infantry queue']
+Vehicle = ['Vehicle', 'vehicle', '车辆', '车辆队列', 'vehicle queue', '装甲', '装甲队列', 'armor queue']
+Aircraft = ['Aircraft', 'aircraft', '飞机', '飞机队列', 'aircraft queue', '航空', '航空队列', 'air queue']
 
 def unify_queue_name(name: str) -> str:
     '''
@@ -76,5 +81,14 @@ def unify_queue_name(name: str) -> str:
         str: 统一后的生产队列名称
     '''
     name = name.lower()
-    # todo
+    if name in Building:
+        return 'Building'
+    elif name in Defense:
+        return 'Defense'
+    elif name in Infantry:
+        return 'Infantry'
+    elif name in Vehicle:
+        return 'Vehicle'
+    elif name in Aircraft:
+        return 'Aircraft'
     return name
