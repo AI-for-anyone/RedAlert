@@ -325,31 +325,29 @@ def main():
     fight_mcp.run(transport="streamable-http")
 # 所有雅克战机攻击0,40坐标，攻击时优先攻击发电厂和建造厂
 
-async def test():
-    task_manager = await TaskManager.get_instance()
-    await move_units_by_location(NewTargetsQueryParam(type=ALL_TANKS+["火箭兵"]),target=Location(15,0))   
-    await move_units_by_location(NewTargetsQueryParam(type=["步兵"]), target=Location(0,2))
-    await move_units_by_location(NewTargetsQueryParam(type=["超重型坦克"]), target=Location(25,4))
-    await move_units_by_location(NewTargetsQueryParam(type=["重型坦克"]), target=Location(20,4))
-    await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(0,44))
-    await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(30,44))
-    await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(31,38))
+# async def test():
+#     task_manager = await TaskManager.get_instance()
+#     await move_units_by_location(NewTargetsQueryParam(type=ALL_TANKS+["火箭兵"]),target=Location(15,0))   
+#     await move_units_by_location(NewTargetsQueryParam(type=["步兵"]), target=Location(0,2))
+#     await move_units_by_location(NewTargetsQueryParam(type=["超重型坦克"]), target=Location(25,4))
+#     await move_units_by_location(NewTargetsQueryParam(type=["重型坦克"]), target=Location(20,4))
+#     await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(0,44))
+#     await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(30,44))
+#     await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(31,38))
     
-    task_id_2 = await task_manager.create_task(army_attack(
-        NewTargetsQueryParam(faction="己方", type=["超重型坦克","重型坦克"]),
-        location=Location(44,4), 
-        perfer_type_priority={"发电厂": 10, "核电站": 10, "火焰塔": 10, "特斯拉塔": 10},
-        target_type=["核电站","发电厂"]
-    ))
-    await task_manager.submit_task(task_id_2.id)
-    await asyncio.sleep(1)
-    while  True:
-        s2 = task_id_2.status
-        if s2 == TaskStatus.COMPLETED:
-            break
-        await asyncio.sleep(1)
+#     task_id_2 = await task_manager.create_task(army_attack(
+#         NewTargetsQueryParam(faction="己方", type=["超重型坦克","重型坦克"]),
+#         location=Location(44,4), 
+#         perfer_type_priority={"发电厂": 10, "核电站": 10, "火焰塔": 10, "特斯拉塔": 10},
+#         target_type=["核电站","发电厂"]
+#     ))
+#     await task_manager.submit_task(task_id_2.id)
+#     await asyncio.sleep(1)
+#     while  True:
+#         s2 = task_id_2.status
+#         if s2 == TaskStatus.COMPLETED:
+#             break
+#         await asyncio.sleep(1)
     
 if __name__ == "__main__":
-    """主异步函数"""
-    setup_logging(LogConfig(level=LogLevel.INFO))
-    asyncio.run(test())
+    main()
