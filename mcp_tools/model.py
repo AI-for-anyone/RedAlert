@@ -2,6 +2,9 @@ from typing import List, Dict, Optional
 from OpenRA_Copilot_Library.models import Location
 from dataclasses import dataclass
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from logs import logger
 
 ALL_INFANTRIES = ["步兵", "火箭兵"]

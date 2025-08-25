@@ -10,7 +10,7 @@ import asyncio
 import time
 from monitor import update_actors_free_status, get_actors_status, get_monitor, get_all_enemy_actors_status
 import model
-from task_scheduler import TaskManager, TaskStatus
+from task_scheduler import TaskManager, TaskStatus, Task
 
 import sys
 import os
@@ -51,7 +51,6 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
         await fight_api.move_units_by_location(target=source, location=center, attack_move=False)
     except Exception as e:
         raise logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位聚团时发生错误: {0}".format(str(e)))
-
 
 @fight_mcp.tool(name="army_designated_attack", description="控制己方到指定地点后攻击指定目标")
 async def army_designated_attack(
@@ -117,26 +116,90 @@ async def army_designated_attack(
         logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
         raise Exception("控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
 
-# 移动选中单位
-@fight_mcp.tool(name="move_units_by_location", description="将指定的单位移动到指定位置，若目标是x=0,y=0,则将单位聚集到中心点。")
-async def move_units_by_location(source: NewTargetsQueryParam, target: Location, attack_move: bool = False) -> None:
+# 攻击
+@fight_mcp.tool(name="army_attack_direction", description="指定单位往某个方向攻击见到的所有敌人")
+async def army_attack_direction(
+    source: NewTargetsQueryParam, 
+    direction: str = "", 
+    distance: int = 15
+) -> Dict[str, Any]:
     '''
     Args:
         source (NewTargetsQueryParam): 要移动的单位
-        target (Location): 目标位置，若是x=0,y=0,则将单位聚集到中心点。
-        attack_move (bool): 是否为攻击性移动
+        direction (str): 移动方向，必须在 {"左上", "上", "右上", "左", "右", "左下", "下", "右下"} 中
+        distance (int): 移动距离
     '''
-    try:
-        if target.x == 0 and target.y == 0:
-            await army_gather(source)
-        else:
-            await fight_api.move_units_by_location(target=source, location=target, attack_move=attack_move)
-    except Exception as e:
-        raise logger.error("MOVE_UNITS_BY_LOCATION_ERROR", "移动选中单位时发生错误: {0}".format(str(e)))
+    logger.info("army_attack_direction-开始控制己方战斗单位攻击指定目标")
 
-# 攻击指定方向
-@fight_mcp.tool(name="army_attack", description="指定单位往指定地方或方向攻击")
-async def army_attack(
+    await army_advanced_attack(source=source,direction=direction,distance=distance)
+    logger.info("army_attack_direction-控制己方战斗单位攻击指定目标成功")
+    return {"result": "ok"}
+
+@fight_mcp.tool(name="army_attack_location", description="指定单位往某个位置攻击见到的所有敌人, 可以指定优先攻击目标")
+async def army_attack_location(
+    source: NewTargetsQueryParam, 
+    location: Location,
+    perfer_attack_target: List[str] = []
+) -> Dict[str, Any]:
+    '''
+    Args:
+        source (NewTargetsQueryParam): 要移动的单位
+        location (Location): 攻击位置
+        perfer_attack_target (List[str]): 优先攻击的目标类型列表
+    '''
+    if source.group_id is None or len(source.group_id) == 0:
+        group_name = "none"
+    else:
+        group_name =str.join("_", source.group_id)
+
+    perfer_attack_target:Dict[str, float] = {}
+    for target in perfer_attack_target:
+        perfer_attack_target[target] = 100.0
+
+    await army_advanced_attack(source=source,location=location,target_type=perfer_attack_target)
+    logger.info("army_attack_location-控制己方战斗单位攻击指定位置成功")
+    return {"result": "ok"}
+
+# 攻击指定目标
+@fight_mcp.tool(name="army_attack_target_direction", description="指定单位往某个方向攻击见到的特定敌人")
+async def army_attack_target_direction(
+    source: NewTargetsQueryParam, 
+    direction: str = "",
+    distance: int = 15,
+    target_type: List[str] = []
+) -> Dict[str, Any]:
+    '''
+    Args:
+        source (NewTargetsQueryParam): 要移动的单位
+        direction (str): 移动方向，必须在 {ALL_DIRECTIONS} 中
+        distance (int): 移动距离
+        target_type (List[str]): 攻击的目标类型列表
+    '''
+    await army_advanced_attack(source=source,direction=direction,distance=distance,target_type=target_type)
+    logger.info("army_attack_target_direction-控制己方战斗单位攻击指定方向成功")
+    return {"result": "ok"}
+
+# 攻击指定位置
+@fight_mcp.tool(name="army_attack_target_location", description="指定单位往某个位置攻击见到的特定敌人")
+async def army_attack_target_location(
+    source: NewTargetsQueryParam, 
+    location: Location,
+    target_type: List[str] = []
+) -> Dict[str, Any]:
+    '''
+    Args:
+        source (NewTargetsQueryParam): 要移动的单位
+        location (Location): 攻击位置
+        target_type (List[str]): 攻击的目标类型列表
+    '''
+    await army_advanced_attack(source=source,location=location,target_type=target_type)
+    logger.info("army_attack_target_location-控制己方战斗单位攻击指定位置成功")
+    return {"result": "ok"}
+
+
+
+# 智能攻击
+async def army_advanced_attack(
     source: NewTargetsQueryParam, 
     direction: str = "", 
     location: Location|None = None, 
@@ -231,7 +294,7 @@ async def army_attack(
                         location=center
                     ))  
                 except Exception as e:
-                    logger.error("ATTACK_DIRECTION_ERROR-查询敌方单位失败: {0}".format(str(e)))
+                    logger.info("ATTACK_DIRECTION_ERROR-查询敌方单位失败: {0}".format(str(e)))
                     enemy_actors = None
                 if enemy_actors is None or len(enemy_actors) == 0:
                     logger.info("没有敌方目标")
@@ -319,35 +382,11 @@ async def army_attack(
         raise logger.error("ATTACK_DIRECTION_ERROR-控制指定单位攻击指定方向时发生错误: {0}".format(str(e)))
 
 def main():
-    fight_mcp.settings.log_level = "critical"
+    setup_logging(LogConfig(level=LogLevel.DEBUG, enable_console_logging=True))
+    fight_mcp.settings.log_level = "debug"
     fight_mcp.settings.host = "0.0.0.0"
     fight_mcp.settings.port = 8001
     fight_mcp.run(transport="streamable-http")
-# 所有雅克战机攻击0,40坐标，攻击时优先攻击发电厂和建造厂
-
-# async def test():
-#     task_manager = await TaskManager.get_instance()
-#     await move_units_by_location(NewTargetsQueryParam(type=ALL_TANKS+["火箭兵"]),target=Location(15,0))   
-#     await move_units_by_location(NewTargetsQueryParam(type=["步兵"]), target=Location(0,2))
-#     await move_units_by_location(NewTargetsQueryParam(type=["超重型坦克"]), target=Location(25,4))
-#     await move_units_by_location(NewTargetsQueryParam(type=["重型坦克"]), target=Location(20,4))
-#     await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(0,44))
-#     await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(30,44))
-#     await move_units_by_location(NewTargetsQueryParam(type=["防空车"]), target=Location(31,38))
-    
-#     task_id_2 = await task_manager.create_task(army_attack(
-#         NewTargetsQueryParam(faction="己方", type=["超重型坦克","重型坦克"]),
-#         location=Location(44,4), 
-#         perfer_type_priority={"发电厂": 10, "核电站": 10, "火焰塔": 10, "特斯拉塔": 10},
-#         target_type=["核电站","发电厂"]
-#     ))
-#     await task_manager.submit_task(task_id_2.id)
-#     await asyncio.sleep(1)
-#     while  True:
-#         s2 = task_id_2.status
-#         if s2 == TaskStatus.COMPLETED:
-#             break
-#         await asyncio.sleep(1)
     
 if __name__ == "__main__":
     main()

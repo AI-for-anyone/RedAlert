@@ -63,7 +63,7 @@ class NewTargetsQueryParam:
     range: Optional[str] = None  # 从哪些Actor中筛选，取值为 {"screen", "selected", "all"} 中的一个，默认为all，selected表示只在选中的单位中筛选。
     group_id: Optional[List[int]] = None  # {ALL_GROUPS} 列表或 None。
     type: Optional[List[str]] = None  # 目标类型，值为 {ALL_UNITS} 列表或 None。
-    faction: Optional[str] = None  # 阵营，值为 {ALL_ACTORS} 中的一个或 None。
+    faction: Optional[str] = None  # 阵营，取值为 {"敌方", "己方", "中立"} 中的一个或None。
     restrain: Optional[List[dict]] = None  # 约束条件。
     ''' 约束条件是一个字典，可以为空，也包含以下键值对：
     {"distance": int}   # 距离（只选中距离小于等于distance的单位）
