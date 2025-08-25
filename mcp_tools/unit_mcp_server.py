@@ -3,6 +3,8 @@ from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTarget
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
+import json
+
 
 
 # 单例 GameAPI 客户端
@@ -10,103 +12,54 @@ unit_api = AsyncGameAPI(host="localhost", port=7445, language="zh")
 #mcp实例
 unit_mcp = FastMCP()
 
-
-@unit_mcp.tool(name="visible_units", description="根据条件查询可见单位")
-async def visible_units(type: List[str],faction: str, restrain: List[dict]) -> List[Dict[str, Any]]:
-    """
-    Args:
-        type (List[str]): 单位类型列表
-        faction (str): {"敌方", "己方", "全部"}
-        restrain (List[dict]): 限制条件
-    Returns:
-        List[Dict[str, Any]]: 符合条件的单位列表
-    """
-    # 修复单值传入错误
-    if isinstance(type, str):
-        type = [type]
-    if isinstance(restrain, dict):  # 有时也会传成一个字典
-        restrain = [restrain]
-    elif isinstance(restrain, bool):  # LLM 有时会给布尔值
-        restrain = []
-
-    params = NewTargetsQueryParam(type=type, faction=faction, restrain=restrain)
-    units = await unit_api.query_actor(params)
-    return [
-        {
-            "actor_id": u.actor_id,
-            "type": u.type,
-            "faction": u.faction,
-            "position": {"x": u.position.x, "y": u.position.y},
-            "hpPercent": getattr(u, "hp_percent", None)
-        }
-        for u in units
-    ]
-
-@unit_mcp.tool(name="move_units",description="移动一批单位到指定坐标")
-async def move_units(actor_ids: List[int], x: int, y: int, attack_move: bool = False) -> str:
-    #     Args:
-    #     actors(List[Actor]): 要移动的Actor列表
-    #     location(Location): 目标位置
-    #     attack_move(bool): 是否为攻击性移动
-    target = NewTargetsQueryParam(actor_id=actor_ids)
-    loc = Location(x, y)
-    await unit_api.move_units_by_location(target=target, location=loc, attack_move=attack_move)
-    return "ok"
-
-
-@unit_mcp.tool(name="move_units_by_direction", description="按方向移动一批单位")
-async def move_units_by_direction(actor_ids: List[int], direction: str, distance: int) -> str:
-    actors = [Actor(i) for i in actor_ids]
-    await unit_api.move_units_by_direction(actors, direction, distance)
-    return "ok"
-
-
-# —— 查询与选择 ——
-@unit_mcp.tool(name="select_units", description="选中符合条件的单位")
-async def select_units(type: List[str], faction: str, range: str, restrain: List[dict]) -> str:
-    '''选中符合条件的Actor，指的是游戏中的选中操作
-
-    Args:
-        query_params (TargetsQueryParam): 查询参数
-
-    Raises:
-        GameAPIError: 当选择单位失败时
+# 编组
+@unit_mcp.tool(name="group_units", description="将指定单位编组")
+async def group_units(source: NewTargetsQueryParam, group_id: int) -> str:
     '''
-    await unit_api.select_units(TargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain))
+    Args:
+        source (NewTargetsQueryParam): 要编组的单位
+        group_id (int): 群组 ID
+    '''
+    # 查询单位
+    units = await unit_api.query_actor(source)
+    if units is None or len(units) == 0:
+        return "no actors"
+    await unit_api.form_group(units, group_id)
     return "ok"
 
 
-@unit_mcp.tool(name="query_actor", description="查询单位列表")
-async def query_actor(type: List[str], faction: str, range: str, restrain: List[dict]) -> List[Dict[str, Any]]:
-    '''查询符合条件的Actor，获取Actor应该使用的接口
 
-    Args:
-        query_params (TargetsQueryParam): 查询参数
-
-    Returns:
-        List[Actor]: 符合条件的Actor列表
-
-    Raises:
-        GameAPIError: 当查询Actor失败时
+# 移动
+@unit_mcp.tool(name="move_units",description="移动指定单位到指定坐标")
+async def move_units(source: NewTargetsQueryParam, target: Location) -> str:
     '''
-    params = NewTargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
-    actors = await unit_api.query_actor(params)
-    return [
-        {
-            "actor_id": u.actor_id,
-            "type": u.type,
-            "faction": u.faction,
-            "position": {"x": u.position.x, "y": u.position.y},
-            "hpPercent": getattr(u, "hp_percent", None)
-        }
-        for u in actors
-    ]
+    Args:
+        source (NewTargetsQueryParam): 要移动的单位
+        target (Location): 目标位置
+    '''
+    await unit_api.move_units_by_location(target=source, location=target, attack_move=False)
+    
+    return "ok"
+
+@unit_mcp.tool(name="move_units_by_direction", description="以指定单位的中心为起点，按方向移动一批单位")
+async def move_units_by_direction(source: NewTargetsQueryParam, direction: str, distance: int) -> str:
+    '''
+    Args:
+        source (NewTargetsQueryParam): 要移动的单位
+        direction (str): 移动方向，必须在 {"左上", "上", "右上", "左", "右", "左下", "下", "右下"} 中
+        distance (int): 移动距离
+    '''
+    units = await unit_api.query_actor(source)
+    if units is None or len(units) == 0:
+        return "no actors"
+    await unit_api.move_units_by_direction(units, direction, distance)
+    return "ok"
 
 @unit_mcp.tool(name="set_rally_point",description="为指定建筑设置集结点")
-async def set_rally_point(actor_ids: List[int], x: int, y: int) -> str:
+async def set_rally_point(source: NewTargetsQueryParam, x: int, y: int) -> str:
     """
     Args:
-        actor_ids (List[int]): 要设置集结点的建筑 ID 列表
+        source (NewTargetsQueryParam): 要设置集结点的建筑
         x (int): 集结点 X 坐标
         y (int): 集结点 Y 坐标
     Returns:

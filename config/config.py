@@ -62,6 +62,23 @@ class Config:
         self._setup_llm_configs()
         self._setup_prompt_configs()
         self._setup_mcp_servers()
+
+    def _prompt_params(self):
+        """获取提示词参数"""
+        ALL_TOWER = ["火焰塔", "特斯拉塔" ,"防空塔"]
+        class PromptParams:
+            ALL_ACTORS = ["敌方", "己方", "中立"]
+            ALL_DIRECTIONS = ["左上", "上", "右上", "左", "右", "左下", "下", "右下"]
+            ALL_GROUPS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+            ALL_BUILDINGS = ["建造厂", "发电厂", "兵营", "矿场", "战车工厂", "雷达站", "维修厂", "核电站", "科技中心", "空军基地"] + ALL_TOWER
+            ALL_UNITS = ["步兵", "火箭兵", "防空车", "重型坦克", "V2火箭发射车", "超重型坦克", "雅克战机", "米格战机", "采矿车"]
+        return {
+            "ALL_ACTORS": PromptParams.ALL_ACTORS,
+            "ALL_DIRECTIONS": PromptParams.ALL_DIRECTIONS,
+            "ALL_GROUPS": PromptParams.ALL_GROUPS,
+            "ALL_BUILDINGS": PromptParams.ALL_BUILDINGS,
+            "ALL_UNITS": PromptParams.ALL_UNITS
+        }
     
     def _load_env_vars(self):
         """加载环境变量"""
@@ -169,11 +186,11 @@ class Config:
         """设置 MCP 服务器配置"""
         # MCP 服务器工具模式配置
         self.server_tool_patterns: Dict[str, List[str]] = {
-            "camera": ["camera", "move_camera", "视角"],
-            "fight": ["attack", "occupy", "repair", "stop", "战斗", "army"],
-            "info": ["get_game_state", "map_query", "find_path", "player_base", "screen_info", "visible", "explorer"],
+            "camera": ["move_camera_to", "camera_move_dir", "camera_move_to"],
+            "fight": ["army_gather", "army_designated_attack", "army_attack_direction", "army_attack_location", "army_attack_target_direction", "army_attack_target_location", "army"],
+            "info": ["get_game_state", "find_path", "get_actor_by_id", "update_actor", "visible_query", "explorer_query", "get_unexplored_nearby_positions", "unit_attribute_query", "unit_info_query", "map_query", "player_base_info_query", "screen_info_query", "query_actor", "get_ungrouped_actors", "get_groups"],
             "produce": ["produce", "can_produce", "query_production", "manage_production", "ensure_can_produce", "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info"],
-            "unit": ["move_units", "query_actor", "select_units", "form_group", "deploy_units", "单位"],
+            "unit": ["group_units", "move_units", "move_units_by_direction", "set_rally_point"],
             "base": ["map_query", "unit_info_query"],
         }
         
