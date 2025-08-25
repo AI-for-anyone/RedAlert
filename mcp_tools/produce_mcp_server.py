@@ -68,11 +68,11 @@ async def get_produce_remain_resource() -> Tuple[int, int]:
     return (base_info.Cash + base_info.Resources - money, base_info.PowerProvided - base_info.PowerDrained + power)
 
 
-@produce_mcp.tool(name="get_player_base_info", description="返回玩家资源信息")
-async def get_player_base_info() -> Dict[str, Any]:
-    """返回玩家资源信息"""
-    info = await produce_api.player_base_info_query()
-    return {"cash":info.Cash, "resources":info.Resources, "powerDrained": info.PowerDrained, "powerProvided": info.PowerProvided}
+# @produce_mcp.tool(name="get_player_base_info", description="返回玩家资源信息")
+# async def get_player_base_info() -> Dict[str, Any]:
+#     """返回玩家资源信息"""
+#     info = await produce_api.player_base_info_query()
+#     return {"cash":info.Cash, "resources":info.Resources, "powerDrained": info.PowerDrained, "powerProvided": info.PowerProvided}
 
 
 @produce_mcp.tool(name="produce", description="生产指定类型和数量的单位，返回生产任务 ID")

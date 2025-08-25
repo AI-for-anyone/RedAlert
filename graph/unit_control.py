@@ -26,6 +26,8 @@ class UnitControlNode(BaseNode):
             llm_config = config.get_llm_config(self.workflow_type)
             if not llm_config:
                 raise ValueError(f"未找到 {self.workflow_type.value} 的LLM配置")
+
+            self.prompt_params = config._prompt_params()
             
             # 初始化LLM
             self._model = ChatOpenAI(
@@ -90,7 +92,12 @@ class UnitControlNode(BaseNode):
 
         prompt = unit_control_prompt.format(
             map_info = map_info,
-            unit_status = unit_status
+            unit_status = unit_status,
+            ALL_ACTORS = self.prompt_params["ALL_ACTORS"],
+            ALL_DIRECTIONS = self.prompt_params["ALL_DIRECTIONS"],
+            ALL_GROUPS = self.prompt_params["ALL_GROUPS"],
+            ALL_BUILDINGS = self.prompt_params["ALL_BUILDINGS"],
+            ALL_UNITS = self.prompt_params["ALL_UNITS"] 
         )
         
         logger.debug(f"单位控制系统提示词: {prompt}")   

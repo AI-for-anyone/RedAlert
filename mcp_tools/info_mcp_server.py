@@ -3,11 +3,15 @@ from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTarget
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
+import asyncio
+import json
 
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from logs import get_logger, setup_logging, LogConfig, LogLevel
+
+from task_scheduler import TaskManager, Task
 
 logger = get_logger("info_mcp_server")
 
@@ -275,7 +279,7 @@ async def query_actor(type: List[str], faction: str, range: str, restrain: List[
         GameAPIError: 当查询Actor失败时
     '''
     params = NewTargetsQueryParam(type=type, faction=faction, range=range, restrain=restrain)
-    actors = await unit_api.query_actor(params)
+    actors = await info_api.query_actor(params)
     return [
         {
             "actor_id": u.actor_id,
@@ -288,8 +292,50 @@ async def query_actor(type: List[str], faction: str, range: str, restrain: List[
     ]
 
 
+
+
+# 查看所有编组
+@info_mcp.tool(name="get_groups", description="查看所有编组")
+async def get_groups() -> str:
+    '''
+    Returns:
+        str: 所有编组信息
+    '''
+    class Group:
+        group_id: int
+        units: List[Actor]
+        def __init__(self, group_id: int, units: List[Actor]):
+            self.group_id = group_id
+            self.units = units
+    groups: List[Group] = []
+    for group_id in range(0, 9):
+        units = await info_api.query_actor(NewTargetsQueryParam(faction="己方", group_id=group_id))
+        if units is None or len(units) == 0:
+            continue
+        groups.append(Group(group_id, units))
+    return json.dumps([group.__dict__ for group in groups])
+
+# 查看所有没有被编组的作战单位
+@info_mcp.tool(name="get_ungrouped_actors", description="查看所有没有被编组的作战单位")
+async def get_ungrouped_actors() -> str:
+    '''
+    Returns:
+        str: 所有没有被编组的作战单位信息
+    '''
+    from model import FIGHT_UNITS
+    all_actors = await info_api.query_actor(NewTargetsQueryParam(faction="己方",type=FIGHT_UNITS))
+    grouped_actors:List[Actor] = []
+    for group_id in range(0, 9):
+        units = await info_api.query_actor(NewTargetsQueryParam(faction="己方", group_id=group_id))
+        if units is None or len(units) == 0:
+            continue
+        grouped_actors.extend(units)
+
+    ungrouped_actors = [actor for actor in all_actors if actor not in grouped_actors]
+    return json.dumps([actor.__dict__ for actor in ungrouped_actors])
+
 def main():
-    info_mcp.settings.log_level = "critical"
+    info_mcp.settings.log_level = "debug"
     info_mcp.settings.host = "0.0.0.0"
     info_mcp.settings.port = 8002
     info_mcp.run(transport="streamable-http")

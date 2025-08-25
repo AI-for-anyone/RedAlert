@@ -51,9 +51,10 @@ class IntelligenceNode(BaseNode):
                 current_task = global_state["classify_plan_cmds"][current_task_index].task
             
             task_input = current_task or global_state["input_cmd"]
+            logger.info(f"执行信息管理: {task_input}")
             
             # 使用LLM和工具执行任务
-            result = await self.execute_with_tools(task_input)
+            result = await self.execute_with_tools(task_input, max_iterations=1)
             logger.info(f"信息管理执行结果: {result}")
             
             return Command(
