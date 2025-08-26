@@ -34,11 +34,18 @@ class NextCommand:
 class GlobalState(TypedDict):
     input_cmd: Annotated[str, lambda x, y: y if y else x]  # Take the latest non-empty value
     result: Annotated[str, lambda x, y: y if y else x]  # Take the latest non-empty value
+    # 保留旧的分类字段以向后兼容
     classify_plan_index: Annotated[int, lambda x, y: y if y is not None else x]  # Take the latest non-None value
     classify_plan_cmds: Annotated[List[NextCommand], lambda x, y: y if y else x]  # Take the latest non-empty list
     state: Annotated[Literal[WorkflowState.INIT, WorkflowState.CLASSIFYING, WorkflowState.EXECUTING, WorkflowState.COMPLETED, WorkflowState.ERROR], lambda x, y: y if y else x]
     cmd_type: Annotated[Literal[WorkflowType.CAMERA_CONTROL, WorkflowType.PRODUCTION, WorkflowType.UNIT_CONTROL, WorkflowType.INTELLIGENCE], lambda x, y: y if y else x]
-    # 新增字段用于支持子任务和跨运行图交互
+    
+    # 新增计划相关字段
+    execution_plan: Annotated[Optional[List[Dict[str, Any]]], lambda x, y: y if y is not None else x]  # 执行计划（包含串行/并行阶段）
+    current_stage: Annotated[Optional[int], lambda x, y: y if y is not None else x]  # 当前执行阶段索引
+    stage_results: Annotated[Optional[List[Dict[str, Any]]], lambda x, y: y if y is not None else x]  # 各阶段执行结果
+    
+    # 子任务和跨运行图交互字段
     run_id: Annotated[Optional[str], lambda x, y: y if y is not None else x]  # 运行ID，用于标识和隔离不同的图运行实例
     subtask_enabled: Annotated[Optional[bool], lambda x, y: y if y is not None else x]  # 是否启用子任务模式
     subtask_plan: Annotated[Optional[List[Dict[str, Any]]], lambda x, y: y if y is not None else x]  # 子任务执行计划

@@ -8,7 +8,7 @@ from task_scheduler import Task, TaskManager, TaskGroup, TaskStatus
 from task_scheduler.blackboard import init_blackboard, blackboard, ns, clear_run_state
 
 from .state import GlobalState, WorkflowType
-from .classify import ClassifyNode
+from .plan import PlanNode
 from .camera import CameraNode
 from .production import ProductionNode
 from .unit_control import UnitControlNode
@@ -25,7 +25,7 @@ class Graph:
     def __init__(self, mode="stdio"):
         self._mode : str = mode
         self._check_dependencies()
-        self._classify_node = ClassifyNode()
+        self._plan_node = PlanNode()
         self._camera_node = CameraNode()
         self._production_node = ProductionNode()
         self._unit_control_node = UnitControlNode()
@@ -43,22 +43,17 @@ class Graph:
             await init_blackboard()
             logger.info("共享黑板系统初始化完成")
             
-            # 初始化MCP管理器
+            # 初始化MCP管理器和所有节点
             await mcp_manager.initialize()
-            logger.info("MCP管理器初始化完成")
-            
-            # 初始化所有节点
-            await self._classify_node.initialize()
+            await self._plan_node.initialize()
             await self._camera_node.initialize()
             await self._production_node.initialize()
             await self._unit_control_node.initialize()
             await self._intelligence_node.initialize()
-            
             self._initialized = True
             logger.info("所有节点初始化完成")
-            
         except Exception as e:
-            logger.error(f"图初始化失败: {e}")
+            logger.error(f"节点初始化失败: {e}")
             raise
     
     def _check_dependencies(self):
@@ -73,7 +68,8 @@ class Graph:
         self._graph = StateGraph(GlobalState)
 
         # 使用字符串作为节点名，传递绑定的方法
-        self._graph.add_node(WorkflowType.CLASSIFY.value, self._classify_node.classify_node)
+        self._graph.add_node("plan", self._plan_node.plan_node)
+        self._graph.add_node("execute_plan", self._plan_node.execute_plan_node)
         self._graph.add_node(WorkflowType.CAMERA_CONTROL.value, self._camera_node.camera_node)
         self._graph.add_node(WorkflowType.PRODUCTION.value, self._production_node.production_node)
         self._graph.add_node(WorkflowType.UNIT_CONTROL.value, self._unit_control_node.unit_control_node)
@@ -84,20 +80,17 @@ class Graph:
         self._graph.add_node("init_run", self._init_run_state)
         self._graph.add_node("cleanup_run", self._cleanup_run_state)
 
-        # 使用字符串作为边的节点名
+        # 使用新的计划驱动的边
         self._graph.add_edge(START, "init_run")  # 先初始化运行状态
-        self._graph.add_edge("init_run", WorkflowType.CLASSIFY.value)
-        self._graph.add_edge(WorkflowType.CAMERA_CONTROL.value, WorkflowType.CLASSIFY.value)
-        self._graph.add_edge(WorkflowType.PRODUCTION.value, WorkflowType.CLASSIFY.value)
-        self._graph.add_edge(WorkflowType.UNIT_CONTROL.value, WorkflowType.CLASSIFY.value)
-        self._graph.add_edge(WorkflowType.INTELLIGENCE.value, WorkflowType.CLASSIFY.value)
+        self._graph.add_edge("init_run", "plan")  # 初始化后进入计划阶段
         
-        # 子任务系统边 - 只保留子任务完成后回到分类的边
-        self._graph.add_edge("subtask", WorkflowType.CLASSIFY.value)  # 子任务完成后回到分类
-        # 移除无条件的分类到子任务的边，让classify_node通过Command.goto控制路由
-        # 移除无条件的分类到清理的边，让classify_node通过Command.goto=END控制结束
+        # 计划阶段控制执行流程，不需要无条件边
+        # execute_plan 节点会循环执行直到所有阶段完成
         
-        # 添加cleanup边到END，确保资源清理
+        # 保留子任务系统支持
+        self._graph.add_edge("subtask", "plan")  # 子任务完成后回到计划重新评估
+        
+        # 清理资源并结束
         self._graph.add_edge("cleanup_run", END)
 
         self._compiled_graph = self._graph.compile()
