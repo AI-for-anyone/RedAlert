@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import TypedDict, Literal, List, Optional, Dict, Any
+from typing import TypedDict, Literal, List, Optional, Dict, Any, Annotated
+import operator
 
 # from graph import classify
 
@@ -31,17 +32,17 @@ class NextCommand:
         self.task = task
 
 class GlobalState(TypedDict):
-    input_cmd: str
-    result: str
-    classify_plan_index: int
-    classify_plan_cmds: List[NextCommand]
-    state: Literal[WorkflowState.INIT, WorkflowState.CLASSIFYING, WorkflowState.EXECUTING, WorkflowState.COMPLETED, WorkflowState.ERROR]
-    cmd_type: Literal[WorkflowType.CAMERA_CONTROL, WorkflowType.PRODUCTION, WorkflowType.UNIT_CONTROL, WorkflowType.INTELLIGENCE]
+    input_cmd: Annotated[str, lambda x, y: y if y else x]  # Take the latest non-empty value
+    result: Annotated[str, lambda x, y: y if y else x]  # Take the latest non-empty value
+    classify_plan_index: Annotated[int, lambda x, y: y if y is not None else x]  # Take the latest non-None value
+    classify_plan_cmds: Annotated[List[NextCommand], lambda x, y: y if y else x]  # Take the latest non-empty list
+    state: Annotated[Literal[WorkflowState.INIT, WorkflowState.CLASSIFYING, WorkflowState.EXECUTING, WorkflowState.COMPLETED, WorkflowState.ERROR], lambda x, y: y if y else x]
+    cmd_type: Annotated[Literal[WorkflowType.CAMERA_CONTROL, WorkflowType.PRODUCTION, WorkflowType.UNIT_CONTROL, WorkflowType.INTELLIGENCE], lambda x, y: y if y else x]
     # 新增字段用于支持子任务和跨运行图交互
-    run_id: Optional[str]  # 运行ID，用于标识和隔离不同的图运行实例
-    subtask_enabled: Optional[bool]  # 是否启用子任务模式
-    subtask_plan: Optional[List[Dict[str, Any]]]  # 子任务执行计划
-    subtask_results: Optional[List[Dict[str, Any]]]  # 子任务执行结果
-    blackboard_keys: Optional[List[str]]  # 关联的黑板键列表，用于清理
-    parent_run_id: Optional[str]  # 父运行ID，用于嵌套子任务
-    metadata: Optional[Dict[str, Any]]  # 额外的元数据
+    run_id: Annotated[Optional[str], lambda x, y: y if y is not None else x]  # 运行ID，用于标识和隔离不同的图运行实例
+    subtask_enabled: Annotated[Optional[bool], lambda x, y: y if y is not None else x]  # 是否启用子任务模式
+    subtask_plan: Annotated[Optional[List[Dict[str, Any]]], lambda x, y: y if y is not None else x]  # 子任务执行计划
+    subtask_results: Annotated[Optional[List[Dict[str, Any]]], lambda x, y: y if y is not None else x]  # 子任务执行结果
+    blackboard_keys: Annotated[Optional[List[str]], lambda x, y: y if y is not None else x]  # 关联的黑板键列表，用于清理
+    parent_run_id: Annotated[Optional[str], lambda x, y: y if y is not None else x]  # 父运行ID，用于嵌套子任务
+    metadata: Annotated[Optional[Dict[str, Any]], lambda x, y: y if y is not None else x]  # 额外的元数据

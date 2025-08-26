@@ -92,10 +92,13 @@ class Graph:
         self._graph.add_edge(WorkflowType.UNIT_CONTROL.value, WorkflowType.CLASSIFY.value)
         self._graph.add_edge(WorkflowType.INTELLIGENCE.value, WorkflowType.CLASSIFY.value)
         
-        # 子任务系统边
+        # 子任务系统边 - 只保留子任务完成后回到分类的边
         self._graph.add_edge("subtask", WorkflowType.CLASSIFY.value)  # 子任务完成后回到分类
-        self._graph.add_edge(WorkflowType.CLASSIFY.value, "subtask")  # 从分类可以进入子任务
-        self._graph.add_edge(WorkflowType.CLASSIFY.value, "cleanup_run")  # 完成后清理
+        # 移除无条件的分类到子任务的边，让classify_node通过Command.goto控制路由
+        # 移除无条件的分类到清理的边，让classify_node通过Command.goto=END控制结束
+        
+        # 添加cleanup边到END，确保资源清理
+        self._graph.add_edge("cleanup_run", END)
 
         self._compiled_graph = self._graph.compile()
     
