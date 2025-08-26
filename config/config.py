@@ -7,10 +7,59 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Final, Mapping, Tuple
+from types import MappingProxyType
 
 # 项目根目录
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
+# 提示词目录常量
+PROMPT_DIR: Final[Path] = PROJECT_ROOT / "prompt"
+
+# Prompt 参数常量（不可变）
+ALL_TOWER: Final[Tuple[str, ...]] = ("火焰塔", "特斯拉塔", "防空塔")
+ALL_ACTORS: Final[Tuple[str, ...]] = ("敌方", "己方", "中立")
+ALL_DIRECTIONS: Final[Tuple[str, ...]] = ("左上", "上", "右上", "左", "右", "左下", "下", "右下")
+ALL_GROUPS: Final[Tuple[str, ...]] = tuple(str(i) for i in range(10))
+ALL_BUILDINGS: Final[Tuple[str, ...]] = (
+    "建造厂", "发电厂", "兵营", "矿场", "战车工厂", "雷达站", "维修厂", "核电站", "科技中心", "空军基地"
+) + ALL_TOWER
+ALL_UNITS: Final[Tuple[str, ...]] = (
+    "步兵", "火箭兵", "防空车", "重型坦克", "V2火箭发射车", "超重型坦克", "雅克战机", "米格战机", "采矿车"
+)
+
+# 作为只读映射暴露
+PROMPT_PARAMS: Final[Mapping[str, Tuple[str, ...]]] = MappingProxyType({
+    "ALL_ACTORS": ALL_ACTORS,
+    "ALL_DIRECTIONS": ALL_DIRECTIONS,
+    "ALL_GROUPS": ALL_GROUPS,
+    "ALL_BUILDINGS": ALL_BUILDINGS,
+    "ALL_UNITS": ALL_UNITS,
+})
+
+# MCP 默认常量
+MCP_DEFAULT_HOST: Final[str] = "127.0.0.1"
+MCP_DEFAULT_PATH: Final[str] = "/mcp"
+MCP_DEFAULT_TRANSPORT: Final[str] = "streamable_http"
+
+# 服务器工具模式（只读映射 + 不可变序列）
+SERVER_TOOL_PATTERNS: Final[Mapping[str, Tuple[str, ...]]] = MappingProxyType({
+    "camera": ("move_camera_to", "camera_move_dir", "camera_move_to"),
+    "fight": (
+        "army_gather", "army_designated_attack", "army_attack_direction", "army_attack_location",
+        "army_attack_target_direction", "army_attack_target_location", "army"
+    ),
+    "info": (
+        "get_game_state", "find_path", "get_actor_by_id", "update_actor", "visible_query", "explorer_query",
+        "get_unexplored_nearby_positions", "unit_attribute_query", "unit_info_query", "map_query",
+        "player_base_info_query", "screen_info_query", "query_actor", "get_ungrouped_actors", "get_groups"
+    ),
+    "produce": (
+        "produce", "can_produce", "query_production", "manage_production", "ensure_can_produce",
+        "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info"
+    ),
+    "unit": ("group_units", "move_units", "move_units_by_direction", "set_rally_point"),
+    "base": ("map_query", "unit_info_query"),
+})
 
 class WorkflowType(Enum):
     """工作流类型枚举"""
@@ -30,6 +79,7 @@ class LLMConfig:
     temperature: float = 0.7
     max_tokens: int = 4096
     timeout: int = 30
+    model_provider: str = "openai"
 
 @dataclass
 class PromptConfig:
@@ -65,20 +115,7 @@ class Config:
 
     def _prompt_params(self):
         """获取提示词参数"""
-        ALL_TOWER = ["火焰塔", "特斯拉塔" ,"防空塔"]
-        class PromptParams:
-            ALL_ACTORS = ["敌方", "己方", "中立"]
-            ALL_DIRECTIONS = ["左上", "上", "右上", "左", "右", "左下", "下", "右下"]
-            ALL_GROUPS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-            ALL_BUILDINGS = ["建造厂", "发电厂", "兵营", "矿场", "战车工厂", "雷达站", "维修厂", "核电站", "科技中心", "空军基地"] + ALL_TOWER
-            ALL_UNITS = ["步兵", "火箭兵", "防空车", "重型坦克", "V2火箭发射车", "超重型坦克", "雅克战机", "米格战机", "采矿车"]
-        return {
-            "ALL_ACTORS": PromptParams.ALL_ACTORS,
-            "ALL_DIRECTIONS": PromptParams.ALL_DIRECTIONS,
-            "ALL_GROUPS": PromptParams.ALL_GROUPS,
-            "ALL_BUILDINGS": PromptParams.ALL_BUILDINGS,
-            "ALL_UNITS": PromptParams.ALL_UNITS
-        }
+        return PROMPT_PARAMS
     
     def _load_env_vars(self):
         """加载环境变量"""
@@ -101,7 +138,8 @@ class Config:
                 api_key=os.getenv("CLASSIFY_API_KEY", ""),
                 model=os.getenv("CLASSIFY_MODEL", "deepseek-chat"),
                 temperature=0.1,  # 低温度，确保分类准确
-                max_tokens=1024
+                max_tokens=1024,
+                model_provider=os.getenv("CLASSIFY_MODEL_PROVIDER", "deepseek")
             ),
             
             # 地图视角控制 - 需要精确的空间理解
@@ -110,7 +148,8 @@ class Config:
                 api_key=os.getenv("CAMERA_API_KEY", ""),
                 model=os.getenv("CAMERA_MODEL", "deepseek-chat"),
                 temperature=0.3,
-                max_tokens=2048
+                max_tokens=2048,
+                model_provider=os.getenv("CAMERA_MODEL_PROVIDER", "deepseek")
             ),
             
             # 生产管理 - 需要逻辑推理
@@ -119,7 +158,8 @@ class Config:
                 api_key=os.getenv("PRODUCTION_API_KEY", ""),
                 model=os.getenv("PRODUCTION_MODEL", "deepseek-chat"),
                 temperature=0.5,
-                max_tokens=3072
+                max_tokens=3072,
+                model_provider=os.getenv("PRODUCTION_MODEL_PROVIDER", "deepseek")
             ),
             
             # 单位控制 - 需要实时决策
@@ -128,7 +168,8 @@ class Config:
                 api_key=os.getenv("UNIT_CONTROL_API_KEY", ""),
                 model=os.getenv("UNIT_CONTROL_MODEL", "deepseek-chat"),
                 temperature=0.0,
-                max_tokens=8192
+                max_tokens=8192,
+                model_provider=os.getenv("UNIT_CONTROL_MODEL_PROVIDER", "deepseek")
             ),
             
             # 信息管理 - 需要准确的信息处理
@@ -137,13 +178,14 @@ class Config:
                 api_key=os.getenv("INTELLIGENCE_API_KEY", ""),
                 model=os.getenv("INTELLIGENCE_MODEL", "deepseek-chat"),
                 temperature=0.2,
-                max_tokens=2048
+                max_tokens=2048,
+                model_provider=os.getenv("INTELLIGENCE_MODEL_PROVIDER", "deepseek")
             )
         }
     
     def _setup_prompt_configs(self):
         """设置 Prompt 配置"""
-        prompt_dir = PROJECT_ROOT / "prompt"
+        prompt_dir = PROMPT_DIR
         
         self.prompt_configs: Dict[WorkflowType, PromptConfig] = {
             WorkflowType.CLASSIFY: PromptConfig(
@@ -184,61 +226,54 @@ class Config:
     
     def _setup_mcp_servers(self):
         """设置 MCP 服务器配置"""
-        # MCP 服务器工具模式配置
-        self.server_tool_patterns: Dict[str, List[str]] = {
-            "camera": ["move_camera_to", "camera_move_dir", "camera_move_to"],
-            "fight": ["army_gather", "army_designated_attack", "army_attack_direction", "army_attack_location", "army_attack_target_direction", "army_attack_target_location", "army"],
-            "info": ["get_game_state", "find_path", "get_actor_by_id", "update_actor", "visible_query", "explorer_query", "get_unexplored_nearby_positions", "unit_attribute_query", "unit_info_query", "map_query", "player_base_info_query", "screen_info_query", "query_actor", "get_ungrouped_actors", "get_groups"],
-            "produce": ["produce", "can_produce", "query_production", "manage_production", "ensure_can_produce", "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info"],
-            "unit": ["group_units", "move_units", "move_units_by_direction", "set_rally_point"],
-            "base": ["map_query", "unit_info_query"],
-        }
+        # MCP 服务器工具模式配置（只读）
+        self.server_tool_patterns = SERVER_TOOL_PATTERNS
         
         self.mcp_servers: Dict[str, MCPServerConfig] = {
 
             # 相机控制 MCP 服务器
             "camera": MCPServerConfig(
                 name="camera",
-                host="127.0.0.1",
+                host=MCP_DEFAULT_HOST,
                 port=8000,
-                path="/mcp",
-                transport="streamable_http",
+                path=MCP_DEFAULT_PATH,
+                transport=MCP_DEFAULT_TRANSPORT,
                 description="相机控制服务器"
             ),
             # 战斗控制 MCP 服务器
             "fight": MCPServerConfig(
                 name="fight",
-                host="127.0.0.1",
+                host=MCP_DEFAULT_HOST,
                 port=8001,
-                path="/mcp",
-                transport="streamable_http",
+                path=MCP_DEFAULT_PATH,
+                transport=MCP_DEFAULT_TRANSPORT,
                 description="战斗控制服务器"
             ),
             # 信息查询 MCP 服务器
             "info": MCPServerConfig(
                 name="info",
-                host="127.0.0.1",
+                host=MCP_DEFAULT_HOST,
                 port=8002,
-                path="/mcp",
-                transport="streamable_http",
+                path=MCP_DEFAULT_PATH,
+                transport=MCP_DEFAULT_TRANSPORT,
                 description="游戏信息查询服务器"
             ),
             # 生产管理 MCP 服务器
             "produce": MCPServerConfig(
                 name="produce",
-                host="127.0.0.1",
+                host=MCP_DEFAULT_HOST,
                 port=8003,
-                path="/mcp",
-                transport="streamable_http",
+                path=MCP_DEFAULT_PATH,
+                transport=MCP_DEFAULT_TRANSPORT,
                 description="生产管理服务器"
             ),
             # 单位控制 MCP 服务器
             "unit": MCPServerConfig(
                 name="unit",
-                host="127.0.0.1",
+                host=MCP_DEFAULT_HOST,
                 port=8004,
-                path="/mcp",
-                transport="streamable_http",
+                path=MCP_DEFAULT_PATH,
+                transport=MCP_DEFAULT_TRANSPORT,
                 description="单位控制服务器"
             ),
         }
@@ -299,7 +334,7 @@ def get_mcp_server(server_name: str) -> Optional[MCPServerConfig]:
     """获取 MCP 服务器配置"""
     return config.get_mcp_server(server_name)
 
-def get_server_tool_patterns() -> Dict[str, List[str]]:
+def get_server_tool_patterns() -> Mapping[str, Tuple[str, ...]]:
     """获取服务器工具模式配置"""
     return config.server_tool_patterns
 
