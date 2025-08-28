@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 
 # 导入黑板系统
 try:
-    from .blackboard import blackboard, ns, clear_run_state
+    from graph.blackboard import blackboard, ns, clear_run_state
     BLACKBOARD_AVAILABLE = True
 except ImportError:
     BLACKBOARD_AVAILABLE = False

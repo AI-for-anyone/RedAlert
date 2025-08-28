@@ -7,7 +7,7 @@ import asyncio
 from typing import TypedDict, Literal, List, Dict, Any, Optional, Annotated
 from langgraph.graph import StateGraph, START, END
 from logs import get_logger
-from task_scheduler.blackboard import blackboard, ns
+from .blackboard import blackboard, ns
 
 logger = get_logger("subtask_graph")
 

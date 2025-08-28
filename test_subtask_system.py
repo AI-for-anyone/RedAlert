@@ -8,7 +8,7 @@ import uuid
 import time
 from typing import Dict, Any, List
 
-from task_scheduler.blackboard import (
+from graph.blackboard import (
     init_blackboard, blackboard, ns, global_ns,
     get_run_state, set_run_state, clear_run_state,
     wait_for_run_change, update_run_state

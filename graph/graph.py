@@ -5,7 +5,7 @@ from typing import TypedDict, Annotated, Literal
 from enum import Enum
 
 from task_scheduler import Task, TaskManager, TaskGroup, TaskStatus
-from task_scheduler.blackboard import init_blackboard, blackboard, ns, clear_run_state
+from .blackboard import init_blackboard, blackboard, ns, clear_run_state
 
 from .state import GlobalState, WorkflowType
 from .plan import PlanNode
