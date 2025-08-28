@@ -4,7 +4,7 @@ from collections import deque
 from openai.types.beta import assistant
 from OpenRA_Copilot_Library import AsyncGameAPI
 from OpenRA_Copilot_Library.models import Location, NewTargetsQueryParam, Actor
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, AsyncIterator
 from mcp.server.fastmcp import FastMCP
 import asyncio
 import time
@@ -24,6 +24,9 @@ logger = get_logger("fight_mcp_server")
 fight_api = AsyncGameAPI(host="localhost", port=7445, language="zh")
 #mcp实例
 fight_mcp = FastMCP()
+
+from group import GroupMgr
+_group_mgr = GroupMgr()
 
 from model import ALL_INFANTRIES, ALL_TANKS, ALL_AIR, ALL_DIRECTIONS, ALL_BUILDING, FIGHT_UNITS
 
@@ -52,154 +55,115 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
     except Exception as e:
         raise logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位聚团时发生错误: {0}".format(str(e)))
 
-@fight_mcp.tool(name="army_designated_attack", description="控制己方到指定地点后攻击指定目标")
-async def army_designated_attack(
-    source: NewTargetsQueryParam, 
-    target: Location,
-    perfer_attack_target: List[str] = [],
-    max_seconds: float = 45.0
-) -> None:
-    """
-    Args:
-        source (NewTargetsQueryParam): 执行攻击的对象
-        target (Location): 被攻击的目标
-        perfer_attack_target (List[str]): 优先攻击的目标类型列表
-        max_seconds (float): 最大执行时长（秒），超时自动退出
-    Raises:
-        GameAPIError: 当攻击命令执行失败时
-    """
-    print("army_designated_attack-print")
-    logger.debug("army_designated_attack-logger")
-    try:
-        async def _attack_logic():
-            actors = await fight_api.query_actor(source)
-            logger.debug("army_designated_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
-            await fight_api.move_units_by_location(target=source, location=target, attack_move=True)
-
-            while True:
-                actors = await fight_api.query_actor(source)
-                logger.debug("army_designated_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
-                center = get_center_location(actors)
-                logger.debug("army_designated_attack-己方战斗单位中心点: {0}".format(str(center)))
-                dis = center.manhattan_distance(target)
-                if dis < 20:
-                    break
-                await asyncio.sleep(0.5)
-
-            for perfer_attack_target in perfer_attack_target:
-                while True:
-                    actors = await fight_api.query_actor(source)
-                    logger.debug("army_attack-己方战斗单位: {0}".format(str([ac.actor_id for ac in actors])))
-
-                    query = NewTargetsQueryParam(
-                        type=[perfer_attack_target], 
-                        faction="敌方", 
-                        restrain=[{"visible": True}]
-                    )
-                    logger.debug("army_attack-查询目标: {0}".format(str(query)))
-                    # 查询目标
-                    targets = await fight_api.query_actor(query)
-                    logger.debug("army_attack-敌方目标: {0}".format(str([[ac.actor_id, ac.type] for ac in targets])))
-                    if targets is None or len(targets) == 0:
-                        logger.debug("army_attack-没有找到敌方目标: {0}".format(str(perfer_attack_target)))
-                        break
-                    await fight_api.attack_target(attacker=source, target=NewTargetsQueryParam(actor_id=[ac.actor_id for ac in targets]))
-                    await asyncio.sleep(1)
-
-        # 使用 asyncio.wait_for 为整个任务设置超时
-        await asyncio.wait_for(_attack_logic(), timeout=max_seconds)
-
-    except asyncio.TimeoutError:
-        logger.warning("ARMY_ATTACK_TIMEOUT 控制己方战斗单位攻击指定目标超时，已自动退出: max_seconds={0}".format(max_seconds))
-        return
-    except Exception as e:
-        logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
-        raise Exception("控制己方战斗单位攻击指定目标时发生错误: {0}".format(str(e)))
-
 # 攻击
-@fight_mcp.tool(name="army_attack_direction", description="指定单位往某个方向攻击见到的所有敌人")
+@fight_mcp.tool(name="army_attack_direction", description="指定某个编组往某个方向攻击见到的所有敌人")
 async def army_attack_direction(
-    source: NewTargetsQueryParam, 
+    group_id: int, 
     direction: str = "", 
     distance: int = 15
 ) -> Dict[str, Any]:
     '''
     Args:
-        source (NewTargetsQueryParam): 要移动的单位
+        group_id (int): 指定的编组ID
         direction (str): 移动方向，必须在 {"左上", "上", "右上", "左", "右", "左下", "下", "右下"} 中
         distance (int): 移动距离
     '''
-    logger.info("army_attack_direction-开始控制己方战斗单位攻击指定目标")
-
-    await army_advanced_attack(source=source,direction=direction,distance=distance)
+    logger.info("army_attack_direction-开始控制己方战斗单位攻击指定方向{}".format(direction))
+    _group_mgr.start_new_task(group_id)
+    
+    await army_advanced_attack(
+        _group_mgr.get_event(group_id),
+        source=NewTargetsQueryParam(group_id=group_id),
+        direction=direction,
+        distance=distance
+    )
     logger.info("army_attack_direction-控制己方战斗单位攻击指定目标成功")
     return {"result": "ok"}
 
-@fight_mcp.tool(name="army_attack_location", description="指定单位往某个位置攻击见到的所有敌人, 可以指定优先攻击目标")
+@fight_mcp.tool(name="army_attack_location", description="指定某个编组往某个位置攻击见到的所有敌人, 可以指定优先攻击目标")
 async def army_attack_location(
-    source: NewTargetsQueryParam, 
+    group_id: int, 
     location: Location,
     perfer_attack_target: List[str] = []
 ) -> Dict[str, Any]:
     '''
     Args:
-        source (NewTargetsQueryParam): 要移动的单位
+        group_id (int): 指定的编组ID
         location (Location): 攻击位置
         perfer_attack_target (List[str]): 优先攻击的目标类型列表
     '''
-    if source.group_id is None or len(source.group_id) == 0:
-        group_name = "none"
-    else:
-        group_name =str.join("_", source.group_id)
+    logger.info("army_attack_location-控制己方战斗单位攻击指定位置{0}".format(location))
 
     perfer_attack_target:Dict[str, float] = {}
     for target in perfer_attack_target:
         perfer_attack_target[target] = 100.0
 
-    await army_advanced_attack(source=source,location=location,target_type=perfer_attack_target)
+    _group_mgr.start_new_task(group_id)
+
+    await army_advanced_attack(
+        _group_mgr.get_event(group_id),
+        source=NewTargetsQueryParam(group_id=group_id),
+        location=location,
+        target_type=perfer_attack_target
+    )
     logger.info("army_attack_location-控制己方战斗单位攻击指定位置成功")
     return {"result": "ok"}
 
 # 攻击指定目标
-@fight_mcp.tool(name="army_attack_target_direction", description="指定单位往某个方向攻击见到的特定敌人")
+@fight_mcp.tool(name="army_attack_target_direction", description="指定某个编组往某个方向攻击见到的特定敌人")
 async def army_attack_target_direction(
-    source: NewTargetsQueryParam, 
+    group_id: int, 
     direction: str = "",
     distance: int = 15,
     target_type: List[str] = []
 ) -> Dict[str, Any]:
     '''
     Args:
-        source (NewTargetsQueryParam): 要移动的单位
+        group_id (int): 指定的编组ID
         direction (str): 移动方向，必须在 {ALL_DIRECTIONS} 中
         distance (int): 移动距离
         target_type (List[str]): 攻击的目标类型列表
     '''
-    await army_advanced_attack(source=source,direction=direction,distance=distance,target_type=target_type)
+    _group_mgr.start_new_task(group_id)
+
+    await army_advanced_attack(
+        _group_mgr.get_event(group_id),
+        source=NewTargetsQueryParam(group_id=group_id),
+        direction=direction,
+        distance=distance,
+        target_type=target_type
+    )
     logger.info("army_attack_target_direction-控制己方战斗单位攻击指定方向成功")
     return {"result": "ok"}
 
 # 攻击指定位置
-@fight_mcp.tool(name="army_attack_target_location", description="指定单位往某个位置攻击见到的特定敌人")
+@fight_mcp.tool(name="army_attack_target_location", description="指定某个编组往某个位置攻击见到的特定敌人")
 async def army_attack_target_location(
-    source: NewTargetsQueryParam, 
+    group_id: int, 
     location: Location,
     target_type: List[str] = []
 ) -> Dict[str, Any]:
     '''
     Args:
-        source (NewTargetsQueryParam): 要移动的单位
+        group_id (int): 指定的编组ID
         location (Location): 攻击位置
         target_type (List[str]): 攻击的目标类型列表
     '''
-    await army_advanced_attack(source=source,location=location,target_type=target_type)
+    _group_mgr.start_new_task(group_id)
+
+    await army_advanced_attack(
+        _group_mgr.get_event(group_id),
+        source=NewTargetsQueryParam(group_id=group_id),
+        location=location,
+        target_type=target_type
+    )
     logger.info("army_attack_target_location-控制己方战斗单位攻击指定位置成功")
     return {"result": "ok"}
 
 
-
 # 智能攻击
 async def army_advanced_attack(
+    cancel_evt: asyncio.Event,
     source: NewTargetsQueryParam, 
     direction: str = "", 
     location: Location|None = None, 
@@ -259,18 +223,19 @@ async def army_advanced_attack(
         # move units to relative_pos
         await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), relative_pos)
         
-        async def _attack_direction():
+        async def _attack_direction(cancel_evt: asyncio.Event):
             our_units: Dict[int, model.own_unit] = {}
             for u in units:
                 our_units[u.actor_id] = model.own_unit(u.actor_id, u.type, u.position, u.hp, u.max_hp)
             enemy_units: Dict[int, model.enemy_unit] = {}
 
             enemy_type = []
-            if target_type is not None:
+            if target_type is not None and len(target_type) > 0:
                 enemy_type = target_type
             else:
                 enemy_type = FIGHT_UNITS + ALL_BUILDING + ["采矿车"]
-            while True:
+                
+            while not cancel_evt.is_set():
                 # center
                 new_actors = await fight_api.query_actor(NewTargetsQueryParam(actor_id=[actor_id for actor_id in our_units.keys()]))
                 if new_actors is None or len(new_actors) == 0:
@@ -290,14 +255,14 @@ async def army_advanced_attack(
                     enemy_actors = await fight_api.query_actor(NewTargetsQueryParam(
                         faction="敌方", 
                         type=enemy_type,
-                        restrain=[{"visible": True},{"distance": 10}],
+                        restrain=[{"distance": 10}],
                         location=center
                     ))  
                 except Exception as e:
                     logger.info("ATTACK_DIRECTION_ERROR-查询敌方单位失败: {0}".format(str(e)))
                     enemy_actors = None
                 if enemy_actors is None or len(enemy_actors) == 0:
-                    logger.info("没有敌方目标")
+                    logger.debug("没有敌方目标")
                     if center.manhattan_distance(relative_pos) < 7:
                         logger.info("己方单位已到达目标位置")
                         break
@@ -372,8 +337,11 @@ async def army_advanced_attack(
                     if len(enemy_unit.assigned_attack_units) > 0:
                         await fight_api.attack_target(NewTargetsQueryParam(actor_id=enemy_unit.assigned_attack_units), NewTargetsQueryParam(actor_id=[enemy_unit.actor_id]))
                 await asyncio.sleep(1)
+            if cancel_evt.is_set():
+                logger.info("army_attack-中止")
+                return
         try:
-            await asyncio.wait_for(_attack_direction(), timeout=150)
+            await asyncio.wait_for(_attack_direction(cancel_evt), timeout=180)
         except asyncio.TimeoutError:
             logger.warning("ATTACK_DIRECTION_TIMEOUT 控制指定单位攻击指定方向超时，已自动退出")
             return

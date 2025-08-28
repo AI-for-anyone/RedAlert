@@ -1,6 +1,6 @@
 from OpenRA_Copilot_Library import AsyncGameAPI
 from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTargetsQueryParam, Actor,MapQueryResult
-from typing import List, Dict, Any
+from typing import List, Dict, Any ,Tuple
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
 import asyncio
@@ -198,13 +198,28 @@ async def unit_info_query() -> Dict[str, Any]:
         if unit.faction == "己方":
             if unit.type not in our_dict.keys():
                 our_dict[unit.type] = {"locations": [], "count": 0}
-            our_dict[unit.type]["locations"].append(unit.position)
+            our_dict[unit.type]["locations"].append((unit.position.x, unit.position.y))
             our_dict[unit.type]["count"] += 1
         elif unit.faction == "敌方":
             if unit.type not in enemy_dict.keys():
                 enemy_dict[unit.type] = {"locations": [], "count": 0}
-            enemy_dict[unit.type]["locations"].append(unit.position)
+            enemy_dict[unit.type]["locations"].append((unit.position.x, unit.position.y))
             enemy_dict[unit.type]["count"] += 1
+
+    def get_center_location(locations: List[Tuple[int, int]]) -> Location:
+        if not locations:
+            return Location(0, 0)
+        
+        total_x = sum(x for x, _ in locations)
+        total_y = sum(y for _, y in locations)
+        
+        return Location(total_x // len(locations), total_y // len(locations))
+    
+    for d in our_dict:
+        our_dict[d]["center_locations"] = get_center_location(our_dict[d]["locations"])
+
+    for d in enemy_dict:
+        enemy_dict[d]["center_locations"] = get_center_location(enemy_dict[d]["locations"])
 
     result = {"our": our_dict, "enemy": enemy_dict}
     logger.debug(f"unit_info_query- {result}")
@@ -292,44 +307,48 @@ async def query_actor(type: List[str], faction: str, range: str, restrain: List[
     ]
 
 
-
-
 # 查看所有编组
 @info_mcp.tool(name="get_groups", description="查看所有编组")
-async def get_groups() -> str:
+async def get_groups() -> List[Tuple[int, List[Tuple[int, str]]]]:
     '''
     Returns:
-        str: 所有编组信息
+        List[Tuple[int, List[Tuple[int, str]]]]: 所有编组信息
     '''
-    class Group:
-        group_id: int
-        units: List[Actor]
-        def __init__(self, group_id: int, units: List[Actor]):
-            self.group_id = group_id
-            self.units = units
-    groups: List[Group] = []
-    for group_id in range(0, 9):
-        units = await info_api.query_actor(NewTargetsQueryParam(faction="己方", group_id=group_id))
+    
+    groups: List[Tuple[int, List[Tuple[int, str]]]] = []
+    for group_id in range(1, 10):
+        try:
+            units = await info_api.query_actor(NewTargetsQueryParam(faction="己方", group_id=[group_id]))
+        except Exception as e:
+            logger.error("get_groups-查询编组失败: {0}".format(e))
+            continue
         if units is None or len(units) == 0:
             continue
-        groups.append(Group(group_id, units))
-    return json.dumps([group.__dict__ for group in groups])
+        groups.append((group_id, [(unit.actor_id, unit.type) for unit in units]))
+    return groups
 
 # 查看所有没有被编组的作战单位
 @info_mcp.tool(name="get_ungrouped_actors", description="查看所有没有被编组的作战单位")
-async def get_ungrouped_actors() -> str:
+async def get_ungrouped_actors() -> List[Actor]:
     '''
     Returns:
-        str: 所有没有被编组的作战单位信息
+        List[Actor]: 所有没有被编组的作战单位信息
     '''
     from model import FIGHT_UNITS
     all_actors = await info_api.query_actor(NewTargetsQueryParam(faction="己方",type=FIGHT_UNITS))
+    logger.info(f"get_ungrouped_actors- {all_actors}")
+
     grouped_actors:List[Actor] = []
-    for group_id in range(0, 9):
-        units = await info_api.query_actor(NewTargetsQueryParam(faction="己方", group_id=group_id))
-        if units is None or len(units) == 0:
-            continue
-        grouped_actors.extend(units)
+    
+    try:
+        units = await info_api.query_actor(NewTargetsQueryParam(faction="己方", group_id=[id for id in range(1, 10)]))
+    except Exception as e:
+        logger.error("get_ungrouped_actors-查询编组失败: {0}".format(e))
+        units = []
+    logger.info(f"get_ungrouped_actors- {units}")
+    if units is None or len(units) == 0:
+        return json.dumps([actor.__dict__ for actor in all_actors])
+    grouped_actors.extend(units)
 
     ungrouped_actors = [actor for actor in all_actors if actor not in grouped_actors]
     return json.dumps([actor.__dict__ for actor in ungrouped_actors])

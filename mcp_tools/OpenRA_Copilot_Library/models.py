@@ -61,7 +61,7 @@ class TargetsQueryParam:
 class NewTargetsQueryParam:
     actor_id: Optional[List[int]] = None  # Actor ID
     range: Optional[str] = None  # 从哪些Actor中筛选，取值为 {"screen", "selected", "all"} 中的一个，默认为all，selected表示只在选中的单位中筛选。
-    group_id: Optional[List[int]] = None  # {ALL_GROUPS} 列表或 None。
+    group_id: Optional[List[int]]|str|int = None  # {ALL_GROUPS} 列表或 None。
     type: Optional[List[str]] = None  # 目标类型，值为 {ALL_UNITS} 列表或 None。
     faction: Optional[str] = None  # 阵营，取值为 {"敌方", "己方", "中立"} 中的一个或None。
     restrain: Optional[List[dict]] = None  # 约束条件。
@@ -75,10 +75,28 @@ class NewTargetsQueryParam:
     
     def to_dict(self):
         # 将查询参数转换为字典表示。
+        group_id = []
+        if isinstance(self.group_id, list):
+            for id in self.group_id:
+                group_id.append(int(id))
+        elif isinstance(self.group_id, int):
+            group_id = [self.group_id]
+        elif isinstance(self.group_id, str):
+            group_id = [int(self.group_id)]
+        else:
+            group_id = None
+
+        if self.faction == 'our' or self.faction == 'player':
+            self.faction = '己方'
+        elif self.faction == 'enemy':
+            self.faction = '敌方'
+        elif self.faction == 'neutral':
+            self.faction = '中立'
+
         return {
             "actorId": self.actor_id,
             "range": self.range,
-            "groupId": self.group_id,
+            "groupId": group_id,
             "type": self.type,
             "faction": self.faction,
             "restrain": self.restrain,

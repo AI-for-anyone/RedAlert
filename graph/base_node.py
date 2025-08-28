@@ -123,6 +123,7 @@ class BaseNode(ABC):
         state = {"messages": messages}
         logger.info(f"调用工具: {messages[-1].tool_calls}")
         result = await self._tool_node.ainvoke(state)
+        logger.info(f"调用工具结果: {result}")
         return result
     
     async def execute_with_tools(self, user_input: str, max_iterations: int = 5) -> str:

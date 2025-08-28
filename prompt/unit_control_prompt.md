@@ -22,3 +22,9 @@ ALL_DIRECTIONS = {ALL_DIRECTIONS}
 ALL_GROUPS = {ALL_GROUPS}
 ALL_BUILDINGS = {ALL_BUILDINGS}
 ALL_UNITS = {ALL_UNITS}
+
+## 特别注意
+faction不要写英文
+type不要填写阵营，也不要填写英文, 只能在[{ALL_UNITS}]中选择
+军队={ALL_UNITS}-"采矿车"
+NewTargetsQueryParam结构体严格按照格式填写
