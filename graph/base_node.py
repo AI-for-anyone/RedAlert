@@ -5,7 +5,7 @@ import os
 import time
 from typing import Dict, Any, List
 from abc import ABC, abstractmethod
-from langchain_openai import ChatOpenAI
+from langchain.chat_models import init_chat_model
 from langgraph.prebuilt import ToolNode
 from langgraph.types import Command
 from langgraph.graph import MessagesState
@@ -47,8 +47,9 @@ class BaseNode(ABC):
                 raise ValueError(f"未找到 {self.workflow_type.value} 的LLM配置")
             
             # 初始化LLM
-            self._model = ChatOpenAI(
+            self._model = init_chat_model(
                 model=llm_config.model,
+                model_provider=llm_config.model_provider,
                 api_key=llm_config.api_key,
                 base_url=llm_config.base_url,
                 extra_body={
