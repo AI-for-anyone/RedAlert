@@ -36,3 +36,5 @@ langchain-mcp-adapters
 langchain
 aioconsole
 gradio
+pytest
+pytest-asyncio

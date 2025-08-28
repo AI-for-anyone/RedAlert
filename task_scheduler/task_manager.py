@@ -13,6 +13,7 @@ import json
 from contextlib import asynccontextmanager
 
 
+
 class TaskStatus(Enum):
     """任务状态枚举"""
     PENDING = "pending"      # 等待执行
@@ -44,6 +45,7 @@ class Task:
         self.end_time: Optional[datetime] = None
         self._asyncio_task: Optional[asyncio.Task] = None
         self.group_id: Optional[str] = None  # 所属任务组ID
+
         
     async def run(self) -> Any:
         """执行任务"""
@@ -758,3 +760,4 @@ class TaskManager:
         # 等待任务完成（无需锁，这是异步操作）
         if tasks_to_wait:
             await asyncio.gather(*tasks_to_wait, return_exceptions=True)
+    

@@ -7,11 +7,15 @@ import json
 import io
 import sys
 from typing import List, Dict, Any
-from task_manager import TaskManager, TaskStatus, Task, TaskGroup
+from .task_manager import TaskManager, TaskStatus, Task, TaskGroup
 
 
 class TestTaskManager:
     """任务管理器测试类"""
+    
+    def setup_method(self):
+        """每个测试前重置TaskManager实例"""
+        TaskManager.reset_instance()
     
     async def test_single_task(self) -> None:
         """测试单个任务的创建和执行"""
