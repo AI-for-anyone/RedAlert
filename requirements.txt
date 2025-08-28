@@ -37,3 +37,4 @@ langchain
 aioconsole
 gradio
 pytest
+pytest-asyncio

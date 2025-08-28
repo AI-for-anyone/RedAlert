@@ -12,12 +12,6 @@ import inspect
 import json
 from contextlib import asynccontextmanager
 
-# 导入黑板系统
-try:
-    from graph.blackboard import blackboard, ns, clear_run_state
-    BLACKBOARD_AVAILABLE = True
-except ImportError:
-    BLACKBOARD_AVAILABLE = False
 
 
 class TaskStatus(Enum):
@@ -32,7 +26,7 @@ class TaskStatus(Enum):
 class Task:
     """单个任务的封装"""
     
-    def __init__(self, coro: Callable[..., Any], task_id: Optional[str] = None, name: Optional[str] = None, run_id: Optional[str] = None):
+    def __init__(self, coro: Callable[..., Any], task_id: Optional[str] = None, name: Optional[str] = None):
         """
         初始化任务
         
@@ -40,7 +34,6 @@ class Task:
             coro: 协程对象
             task_id: 任务ID，如果不提供则自动生成
             name: 任务名称
-            run_id: 运行ID，用于黑板系统标识
         """
         self.id: str = task_id or str(uuid.uuid4())
         self.name: str = name or f"Task-{self.id[:8]}"
@@ -52,20 +45,12 @@ class Task:
         self.end_time: Optional[datetime] = None
         self._asyncio_task: Optional[asyncio.Task] = None
         self.group_id: Optional[str] = None  # 所属任务组ID
-        self.run_id: Optional[str] = run_id or str(uuid.uuid4())  # 运行ID
+
         
     async def run(self) -> Any:
         """执行任务"""
         self.status = TaskStatus.RUNNING
         self.start_time = datetime.now()
-        
-        # 记录任务状态到黑板
-        if BLACKBOARD_AVAILABLE and self.run_id:
-            try:
-                await blackboard.set(ns(self.run_id, "task_status"), "running")
-                await blackboard.set(ns(self.run_id, "task_start_time"), self.start_time.isoformat())
-            except Exception:
-                pass  # 黑板操作失败不影响任务执行
         
         try:
             # 执行协程
@@ -74,37 +59,14 @@ class Task:
         except asyncio.CancelledError:
             self.status = TaskStatus.CANCELLED
             self.end_time = datetime.now()
-            # 更新黑板状态
-            if BLACKBOARD_AVAILABLE and self.run_id:
-                try:
-                    await blackboard.set(ns(self.run_id, "task_status"), "cancelled")
-                    await blackboard.set(ns(self.run_id, "task_end_time"), self.end_time.isoformat())
-                except Exception:
-                    pass
             raise
         except Exception as e:
             self.status = TaskStatus.FAILED
             self.error = e
             self.end_time = datetime.now()
-            # 更新黑板状态
-            if BLACKBOARD_AVAILABLE and self.run_id:
-                try:
-                    await blackboard.set(ns(self.run_id, "task_status"), "failed")
-                    await blackboard.set(ns(self.run_id, "task_error"), str(e))
-                    await blackboard.set(ns(self.run_id, "task_end_time"), self.end_time.isoformat())
-                except Exception:
-                    pass
             raise
         else:
             self.end_time = datetime.now()
-            # 更新黑板状态
-            if BLACKBOARD_AVAILABLE and self.run_id:
-                try:
-                    await blackboard.set(ns(self.run_id, "task_status"), "completed")
-                    await blackboard.set(ns(self.run_id, "task_result"), str(self.result)[:1000])  # 限制长度
-                    await blackboard.set(ns(self.run_id, "task_end_time"), self.end_time.isoformat())
-                except Exception:
-                    pass
             return self.result
             
     def cancel(self) -> bool:
@@ -141,8 +103,7 @@ class Task:
             "error": str(self.error) if self.error else None,
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "end_time": self.end_time.isoformat() if self.end_time else None,
-            "group_id": self.group_id,
-            "run_id": self.run_id
+            "group_id": self.group_id
         }
 
 
@@ -372,7 +333,7 @@ class TaskManager:
             for lock in reversed(acquired_locks):
                 lock.release()
     
-    async def create_task(self, coro: Callable[..., Any], task_id: Optional[str] = None, name: Optional[str] = None, group_id: Optional[str] = None, run_id: Optional[str] = None) -> Task:
+    async def create_task(self, coro: Callable[..., Any], task_id: Optional[str] = None, name: Optional[str] = None, group_id: Optional[str] = None) -> Task:
         """
         创建任务
         
@@ -381,13 +342,12 @@ class TaskManager:
             task_id: 任务ID
             name: 任务名称
             group_id: 要加入的任务组ID
-            run_id: 运行ID，用于黑板系统标识
             
         Returns:
             创建的任务对象
         """
         # 创建任务对象 (无需锁)
-        task = Task(coro, task_id, name, run_id)
+        task = Task(coro, task_id, name)
         
         if group_id is not None:
             # 需要同时访问任务和任务组，使用多重锁
@@ -801,83 +761,3 @@ class TaskManager:
         if tasks_to_wait:
             await asyncio.gather(*tasks_to_wait, return_exceptions=True)
     
-    async def cleanup_run_blackboard(self, run_id: str) -> int:
-        """清理指定运行ID的黑板数据
-        
-        Args:
-            run_id: 要清理的运行ID
-            
-        Returns:
-            清理的键数量
-        """
-        if not BLACKBOARD_AVAILABLE:
-            return 0
-            
-        try:
-            return await clear_run_state(run_id)
-        except Exception as e:
-            # 记录错误但不抛出异常
-            print(f"清理黑板数据失败: {e}")
-            return 0
-    
-    async def get_run_blackboard_status(self, run_id: str) -> Dict[str, Any]:
-        """获取指定运行ID的黑板状态
-        
-        Args:
-            run_id: 运行ID
-            
-        Returns:
-            黑板状态信息
-        """
-        if not BLACKBOARD_AVAILABLE:
-            return {"available": False, "error": "黑板系统不可用"}
-        
-        try:
-            status_keys = await blackboard.list_keys(f"run:{run_id}:")
-            return {
-                "available": True,
-                "run_id": run_id,
-                "total_keys": len(status_keys),
-                "keys": status_keys
-            }
-        except Exception as e:
-            return {"available": False, "error": str(e)}
-    
-    async def set_run_blackboard_data(self, run_id: str, key: str, value: Any) -> bool:
-        """设置运行相关的黑板数据
-        
-        Args:
-            run_id: 运行ID
-            key: 键名
-            value: 值
-            
-        Returns:
-            是否设置成功
-        """
-        if not BLACKBOARD_AVAILABLE:
-            return False
-            
-        try:
-            await blackboard.set(ns(run_id, key), value)
-            return True
-        except Exception:
-            return False
-    
-    async def get_run_blackboard_data(self, run_id: str, key: str, default: Any = None) -> Any:
-        """获取运行相关的黑板数据
-        
-        Args:
-            run_id: 运行ID
-            key: 键名
-            default: 默认值
-            
-        Returns:
-            键值或默认值
-        """
-        if not BLACKBOARD_AVAILABLE:
-            return default
-            
-        try:
-            return await blackboard.get(ns(run_id, key), default)
-        except Exception:
-            return default
