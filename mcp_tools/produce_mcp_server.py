@@ -3,6 +3,7 @@ from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,Map
 from typing import List, Dict, Any, Tuple
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
+import asyncio
 from utils import unify_unit_name, unify_queue_name
 import logging
 
@@ -39,41 +40,7 @@ cost_map = {
 }
 
 def get_cost(unit_type: str) -> Dict[str, int]:
-    return cost_map.get(unify_unit_name(unit_type), None)
-
-async def get_produce_remain_resource() -> Tuple[int, int]:
-    '''
-    获取生产完成后剩余的资源
-    Returns:
-        Tuple[int, int]: (money, power)
-    '''
-    base_info = await produce_api.player_base_info_query()
-    money = power = 0
-    for queue_type in ['Building', 'Defense', 'Infantry', 'Vehicle', 'Aircraft']:
-        queue_info = await produce_api.query_production_queue(unify_queue_name(queue_type))
-        items = queue_info.get('queue_items', None)
-        if items is None:
-            raise ValueError(f"未找到 {queue_type} 的生产队列信息")
-        for item in items:
-            if item.get('done', False) or item.get('paused', False):
-                continue
-            name = item.get('chineseName', None)
-            if name is None:
-                raise ValueError(f"未找到 item 的中文名称")
-            cost = get_cost(name)
-            if cost is None:
-                raise ValueError(f"未找到 {name} 的生产成本信息")
-            power += cost.get('power', 0)
-            money += cost.get('cost', 0)
-    return (base_info.Cash + base_info.Resources - money, base_info.PowerProvided - base_info.PowerDrained + power)
-
-
-# @produce_mcp.tool(name="get_player_base_info", description="返回玩家资源信息")
-# async def get_player_base_info() -> Dict[str, Any]:
-#     """返回玩家资源信息"""
-#     info = await produce_api.player_base_info_query()
-#     return {"cash":info.Cash, "resources":info.Resources, "powerDrained": info.PowerDrained, "powerProvided": info.PowerProvided}
-
+    return cost_map.get(unify_unit_name(unit_type), {"cost": 999999, "time": 999999, "power": 999999})
 
 @produce_mcp.tool(name="produce", description="生产指定类型和数量的单位，返回生产任务 ID")
 async def produce(unit_type: str, quantity: int = 1, auto_place: bool = True) -> int:
@@ -91,7 +58,6 @@ async def produce(unit_type: str, quantity: int = 1, auto_place: bool = True) ->
 
     wait_id = await produce_api.produce(unify_unit_name(unit_type), quantity, auto_place_building=auto_place)
     return wait_id or -1
-
 
 @produce_mcp.tool(name="can_produce", description="检查是否可生产某类型单位")
 async def can_produce(unit_type: str, quantity: int = 1, permit_resource_shortage: bool = False, permit_power_shortage: bool = False) -> bool:
@@ -125,8 +91,6 @@ async def can_produce(unit_type: str, quantity: int = 1, permit_resource_shortag
         return False
     return True
     
-
-@produce_mcp.tool(name="produce_wait", description="发起并等待生产完成")
 async def produce_wait(unit_type: str, quantity: int = 1, auto_place: bool = True) -> bool:
     '''生产指定数量的Actor并等待生产完成
 
@@ -144,29 +108,6 @@ async def produce_wait(unit_type: str, quantity: int = 1, auto_place: bool = Tru
     except Exception:
         return False
 
-@produce_mcp.tool(name="is_ready",description="检查指定生产任务是否已完成")
-async def is_ready(wait_id: int) -> bool:
-    """
-    Args:
-        wait_id (int): 生产任务的 ID
-    Returns:
-        bool: 生产任务是否已完成
-    """
-    return await produce_api.is_ready(wait_id)
-
-# @RAMCP.tool(name="wait",description="等待指定生产任务完成，或超时返回 False")
-# def wait(wait_id: int, max_wait_time: float = 20.0) -> bool:
-#     """
-#     Args:
-#         wait_id (int): 生产任务的 ID
-#         max_wait_time (float): 最大等待时间（秒），默认 20.0
-#     Returns:
-#         bool: 是否在指定时间内完成（False 表示超时）
-#     """
-#     return api.wait(wait_id, max_wait_time)
-
-
-@produce_mcp.tool(name="query_production_queue",description="查询指定类型的生产队列")
 async def query_production_queue(queue_type: str) -> Dict[str, Any]:
     '''查询指定类型的生产队列
 
@@ -225,41 +166,6 @@ async def place_building(queue_type: str, x: Optional[int] = None, y: Optional[i
     await produce_api.place_building(unify_queue_name(queue_type), loc)
     return "ok"
 
-@produce_mcp.tool(name="manage_production",description="管理生产队列中的项目（暂停、取消或继续）")
-async def manage_production(queue_type: str, action: str) -> str:
-    """
-    Args:
-        queue_type (str): 队列类型，必须是 'Building', 'Defense', 'Infantry', 'Vehicle', 'Aircraft' 或 'Naval'
-        action (str): 操作类型，必须是 'pause', 'cancel' 或 'resume'
-    Returns:
-        str: 操作完成时返回 "ok"
-    """
-    await produce_api.manage_production(unify_queue_name(queue_type), action)
-    return "ok"
-
-
-@produce_mcp.tool(name="ensure_can_build_wait",description="确保指定建筑已存在，若不存在则递归建造其所有依赖并等待完成")
-async def ensure_can_build_wait(building_name: str) -> bool:
-    """
-    Args:
-        building_name (str): 建筑名称（中文）
-    Returns:
-        bool: 是否已拥有该建筑或成功建造完成
-    """
-    return await produce_api.ensure_can_build_wait(unify_unit_name(building_name))
-
-
-@produce_mcp.tool(name="ensure_can_produce_unit",description="确保能生产指定单位（会自动补齐依赖建筑并等待完成）")
-async def ensure_can_produce_unit(unit_name: str) -> bool:
-    """
-    Args:
-        unit_name (str): 要生产的单位名称（中文）
-    Returns:
-        bool: 是否已准备好生产该单位
-    """
-    return await produce_api.ensure_can_produce_unit(unify_unit_name(unit_name))
-
-
 @produce_mcp.tool(name="deploy_mcv_and_wait",description="展开/部署自己的基地车并等待指定时间")
 async def deploy_mcv_and_wait(wait_time: float = 1.0) -> str:
     """
@@ -269,8 +175,56 @@ async def deploy_mcv_and_wait(wait_time: float = 1.0) -> str:
     await produce_api.deploy_mcv_and_wait(wait_time)
     return "ok"
 
+@produce_mcp.tool(name="double_mine_start",description="使用固定开局：双矿开局")
+async def double_mine_start():
+    '''
+    使用双矿开局
+    '''
+    produce_list: List[Tuple[str, int, bool]] = [
+        ("发电厂", 1, True),
+        ("矿场", 2, True),
+        ("发电厂", 2, True),
+        ("兵营", 1, True),
+        ("步兵", 10, False),
+        ("战车工厂", 1, True),
+        ("雷达站", 1, True),
+        ("矿车", 2, False),
+        ("维修工厂", 1, True),
+        ("科技中心", 1, True),
+        ("空军基地", 1, True),
+    ]
+    await produce_api.deploy_mcv_and_wait(1.0)
+    for unit_type, quantity, wait_flag in produce_list:
+        loop_times = 0
+        while loop_times < 100:
+            loop_times += 1
+            # 首先检测是否能生产
+            if not await produce_api.can_produce(unit_type):
+                await produce_api.ensure_can_build(unit_type)
+                await asyncio.sleep(0.1)
+                continue
 
+            # 判断是否有足够资源
+            base_info = await produce_api.player_base_info_query()
+            try:
+                cost = get_cost(unit_type).get('cost')
+                power = get_cost(unit_type).get('power')
+            except Exception:
+                logger.error(f"未找到 {unit_type} 的生产成本信息")
+                return f"未找到 {unit_type} 的生产成本信息"
+            while base_info.Cash < quantity * cost or base_info.Power + quantity * power < 0:
+                await asyncio.sleep(0.1)
+                continue
 
+            if wait_flag:
+                await produce_api.produce_wait(unit_type, quantity)
+                break
+            else:
+                await produce_api.produce(unit_type, quantity)
+                break
+        if loop_times >= 100:
+            logger.error(f"生产 {unit_type} 失败")
+            return f"生产 {unit_type} 失败"
 
 def main():
     produce_mcp.settings.log_level = "debug"
@@ -278,5 +232,9 @@ def main():
     produce_mcp.settings.port = 8003
     produce_mcp.run(transport="streamable-http")
 
+async def test():
+    await double_mine_start()
+
 if __name__ == "__main__":
+    # asyncio.run(test())
     main()

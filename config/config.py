@@ -55,7 +55,7 @@ SERVER_TOOL_PATTERNS: Final[Mapping[str, Tuple[str, ...]]] = MappingProxyType({
     ),
     "produce": (
         "produce", "can_produce", "query_production", "manage_production", "ensure_can_produce",
-        "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info"
+        "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info", "double_mine_start"
     ),
     "unit": ("group_units", "move_units", "move_units_by_direction", "set_rally_point"),
     "base": ("map_query", "unit_info_query"),

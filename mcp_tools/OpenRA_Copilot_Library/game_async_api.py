@@ -398,8 +398,8 @@ class AsyncGameAPI:
         except Exception as e:
             raise AsyncGameAPIError("CAMERA_MOVE_ERROR", "移动相机时发生错误: {0}".format(str(e)))
 
-    async def can_produce(self, unit_type: str) -> bool:
         '''检查是否可以生产指定类型的Actor'''
+    async def can_produce(self, unit_type: str) -> bool:
         try:
             response = await self._send_request('query_can_produce', {
                 "units": [{"unit_type": unit_type}]
@@ -773,6 +773,17 @@ class AsyncGameAPI:
             return
         await self.deploy_units(mcv)
         await asyncio.sleep(wait_time)
+
+    async def ensure_can_build(self, building_name: str) -> bool:
+        '''确保能生产某个建筑，如果不能会尝试生产所有前置建筑，并等待生产完成'''
+        building_exists = await self.query_actor(TargetsQueryParam(type=[building_name], faction="自己"))
+        if building_exists:
+            return True
+        deps = self.BUILDING_DEPENDENCIES.get(building_name, [])
+        for dep in deps:
+            if not await self.ensure_building_wait_buildself(dep):
+                return False
+        return True
 
     async def ensure_can_build_wait(self, building_name: str) -> bool:
         '''确保能生产某个建筑，如果不能会尝试生产所有前置建筑，并等待生产完成'''
