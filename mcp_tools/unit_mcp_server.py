@@ -55,18 +55,16 @@ async def move_units_by_direction(source: NewTargetsQueryParam, direction: str, 
     await unit_api.move_units_by_direction(units, direction, distance)
     return "ok"
 
-@unit_mcp.tool(name="set_rally_point",description="为指定建筑设置集结点")
-async def set_rally_point(source: NewTargetsQueryParam, x: int, y: int) -> str:
+@unit_mcp.tool(name="set_rally_point",description="为出兵建筑设置集结点")
+async def set_rally_point(x: int, y: int) -> str:
     """
     Args:
-        source (NewTargetsQueryParam): 要设置集结点的建筑
         x (int): 集结点 X 坐标
         y (int): 集结点 Y 坐标
     Returns:
         str: 操作完成返回 "ok"
     """
-    actors = [Actor(i) for i in actor_ids]
-    await unit_api.set_rally_point(actors, Location(x, y))
+    await unit_api.set_rally_point(Location(x, y))
     return "ok"
 
 def main():

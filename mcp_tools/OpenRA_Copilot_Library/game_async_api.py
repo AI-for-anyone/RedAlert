@@ -411,7 +411,7 @@ class AsyncGameAPI:
         except Exception as e:
             raise AsyncGameAPIError("PRODUCE_QUERY_ERROR", "查询生产能力时发生错误: {0}".format(str(e)))
 
-    async def produce(self, unit_type: str, quantity: int, auto_place_building: bool = False) -> Optional[int]:
+    async def produce(self, unit_type: str, quantity: int, auto_place_building: bool = True) -> Optional[int]:
         '''生产指定数量的Actor，返回waitId'''
         try:
             response = await self._send_request('start_production', {
@@ -913,11 +913,11 @@ class AsyncGameAPI:
         except Exception as e:
             raise AsyncGameAPIError("SCREEN_INFO_QUERY_ERROR", "查询屏幕信息时发生错误: {0}".format(str(e)))
 
-    async def set_rally_point(self, actors: List[Actor], target_location: Location) -> None:
+    async def set_rally_point(self, target_location: Location) -> None:
         '''设置建筑的集结点'''
         try:
             response = await self._send_request('set_rally_point', {
-                "targets": {"actorId": [actor.actor_id for actor in actors]},
+                "targets": {"type": ["兵营", "战车工厂", "空军基地"]},
                 "location": target_location.to_dict()
             })
             self._handle_response(response, "设置集结点失败")

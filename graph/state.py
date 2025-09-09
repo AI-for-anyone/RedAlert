@@ -18,6 +18,7 @@ class WorkflowType(Enum):
     PRODUCTION = "production"       # 生产管理
     UNIT_CONTROL = "unit_control"   # 单位控制
     INTELLIGENCE = "intelligence"   # 信息管理
+    AI_ASSISTANT = "ai_assistant"   # AI 助手
 
 # class InputState(TypedDict):
 #     input_cmd: str

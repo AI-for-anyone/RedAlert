@@ -34,7 +34,8 @@ class BaseNode(ABC):
             "production": WorkflowType.PRODUCTION,
             "camera": WorkflowType.CAMERA_CONTROL,
             "unit_control": WorkflowType.UNIT_CONTROL,
-            "intelligence": WorkflowType.INTELLIGENCE
+            "intelligence": WorkflowType.INTELLIGENCE,
+            "ai_assistant": WorkflowType.AI_ASSISTANT
         }
         return mapping.get(node_name, WorkflowType.CLASSIFY)
     

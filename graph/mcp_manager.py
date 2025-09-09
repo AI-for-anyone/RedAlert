@@ -85,7 +85,7 @@ class MCPManager:
         server_tool_patterns = config.server_tool_patterns
         
         patterns = server_tool_patterns.get(server_name, [])
-        return any(pattern in tool_name.lower() for pattern in patterns)
+        return tool_name in patterns
     
     async def close(self):
         """关闭MCP客户端连接"""

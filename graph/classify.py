@@ -164,6 +164,8 @@ class ClassifyNode:
                 return WorkflowType.UNIT_CONTROL.value
             case "信息查询":
                 return WorkflowType.INTELLIGENCE.value
+            case "ai助手":
+                return WorkflowType.AI_ASSISTANT.value
             case _:
                 logger.error(f"无法识别的任务类型: {task}")
                 return END

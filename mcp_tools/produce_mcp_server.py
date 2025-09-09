@@ -108,50 +108,6 @@ async def produce_wait(unit_type: str, quantity: int = 1, auto_place: bool = Tru
     except Exception:
         return False
 
-async def query_production_queue(queue_type: str) -> Dict[str, Any]:
-    '''查询指定类型的生产队列
-
-    Args:
-        queue_type (str): 队列类型，必须是以下值之一：
-            'Building'
-            'Defense'
-            'Infantry'
-            'Vehicle'
-            'Aircraft'
-            'Naval'
-
-    Returns:
-        dict: 包含队列信息的字典，格式如下：
-            {
-                "queue_type": "队列类型",
-                "queue_items": [
-                    {
-                        "name": "项目内部名称",
-                        "chineseName": "项目中文名称",
-                        "remaining_time": 剩余时间,
-                        "total_time": 总时间,
-                        "remaining_cost": 剩余花费,
-                        "total_cost": 总花费,
-                        "paused": 是否暂停,
-                        "done": 是否完成,
-                        "progress_percent": 完成百分比,
-                        "owner_actor_id": 所属建筑的ActorID,
-                        "status": "项目状态，可能的值：
-                            'completed' - 已完成
-                            'paused' - 已暂停
-                            'in_progress' - 正在建造（队列中第一个项目）
-                            'waiting' - 等待中（队列中其他项目）"
-                    },
-                    ...
-                ],
-                "has_ready_item": 是否有已就绪的项目
-            }
-
-    Raises:
-        GameAPIError: 当查询生产队列失败时
-    '''
-    return await produce_api.query_production_queue(unify_queue_name(queue_type))
-
 @produce_mcp.tool(name="place_building",description="放置生产队列中已就绪的建筑")
 async def place_building(queue_type: str, x: Optional[int] = None, y: Optional[int] = None) -> str:
     """
@@ -182,16 +138,17 @@ async def double_mine_start():
     '''
     produce_list: List[Tuple[str, int, bool]] = [
         ("发电厂", 1, True),
-        ("矿场", 2, True),
-        ("发电厂", 2, True),
+        ("矿场", 1, True),
+        ("发电厂", 1, True),
+        ("战车工厂", 1, True),
+        ("矿车", 2, False),
+        ("矿场", 1, True),
+        ("发电厂", 1, True),
         ("兵营", 1, True),
         ("步兵", 10, False),
-        ("战车工厂", 1, True),
         ("雷达站", 1, True),
-        ("矿车", 2, False),
-        ("维修工厂", 1, True),
-        ("科技中心", 1, True),
-        ("空军基地", 1, True),
+        ("维修厂", 1, True),
+        ("科技中心", 1, True)
     ]
     await produce_api.deploy_mcv_and_wait(1.0)
     for unit_type, quantity, wait_flag in produce_list:

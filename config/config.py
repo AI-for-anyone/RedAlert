@@ -46,7 +46,7 @@ SERVER_TOOL_PATTERNS: Final[Mapping[str, Tuple[str, ...]]] = MappingProxyType({
     "camera": ("move_camera_to", "camera_move_dir", "camera_move_to"),
     "fight": (
         "army_gather", "army_designated_attack", "army_attack_direction", "army_attack_location",
-        "army_attack_target_direction", "army_attack_target_location", "army"
+        "army_attack_target_direction", "army_attack_target_location", "army", "army_move"
     ),
     "info": (
         "get_game_state", "find_path", "get_actor_by_id", "update_actor", "visible_query", "explorer_query",
@@ -59,6 +59,9 @@ SERVER_TOOL_PATTERNS: Final[Mapping[str, Tuple[str, ...]]] = MappingProxyType({
     ),
     "unit": ("group_units", "move_units", "move_units_by_direction", "set_rally_point"),
     "base": ("map_query", "unit_info_query"),
+    "ai_assistant": ( "player_base_info_query", "query_production_queue", 
+        "produce",  "ensure_can_produce", "unit_info_query", "do_nothing",
+        "ensure_can_build", "deploy_mcv", "double_mine_start")
 })
 
 class WorkflowType(Enum):
@@ -69,6 +72,7 @@ class WorkflowType(Enum):
     UNIT_CONTROL = "unit_control"   # 单位控制
     RESOURCE = "resource"           # 资源管理
     INTELLIGENCE = "intelligence"   # 信息管理
+    AI_ASSISTANT = "ai_assistant"   # AI 助手
 
 @dataclass
 class LLMConfig:
@@ -180,6 +184,16 @@ class Config:
                 temperature=0.2,
                 max_tokens=2048,
                 model_provider=os.getenv("INTELLIGENCE_MODEL_PROVIDER", "deepseek")
+            ),
+            
+            # AI助手 - 需要智能的决策
+            WorkflowType.AI_ASSISTANT: LLMConfig(
+                base_url=os.getenv("AI_ASSISTANT_API_BASE", "https://api.deepseek.com"),
+                api_key=os.getenv("AI_ASSISTANT_API_KEY", ""),
+                model=os.getenv("AI_ASSISTANT_MODEL", "deepseek-chat"),
+                temperature=0.2,
+                max_tokens=2048,
+                model_provider=os.getenv("AI_ASSISTANT_MODEL_PROVIDER", "deepseek")
             )
         }
     

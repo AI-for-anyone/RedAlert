@@ -11,6 +11,7 @@ from .camera import CameraNode
 from .production import ProductionNode
 from .unit_control import UnitControlNode
 from .intelligence import IntelligenceNode
+from .ai_assistant import AIAssistantNode
 from .mcp_manager import mcp_manager
 from logs import get_logger
 from config.config import check_mcp_servers
@@ -27,6 +28,7 @@ class Graph:
         self._production_node = ProductionNode()
         self._unit_control_node = UnitControlNode()
         self._intelligence_node = IntelligenceNode()
+        self._ai_assistant_node = AIAssistantNode()
         self._initialized = False
         self._init_graph()
     
@@ -46,6 +48,7 @@ class Graph:
             await self._production_node.initialize()
             await self._unit_control_node.initialize()
             await self._intelligence_node.initialize()
+            await self._ai_assistant_node.initialize()
             
             self._initialized = True
             logger.info("所有节点初始化完成")
@@ -71,6 +74,7 @@ class Graph:
         self._graph.add_node(WorkflowType.PRODUCTION.value, self._production_node.production_node)
         self._graph.add_node(WorkflowType.UNIT_CONTROL.value, self._unit_control_node.unit_control_node)
         self._graph.add_node(WorkflowType.INTELLIGENCE.value, self._intelligence_node.intelligence_node)
+        self._graph.add_node(WorkflowType.AI_ASSISTANT.value, self._ai_assistant_node.ai_assistant_node)
 
         # 使用字符串作为边的节点名
         self._graph.add_edge(START, WorkflowType.CLASSIFY.value)

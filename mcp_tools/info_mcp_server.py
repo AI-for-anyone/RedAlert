@@ -5,6 +5,7 @@ from mcp.server.fastmcp import FastMCP
 from typing import Optional
 import asyncio
 import json
+from utils import unify_unit_name, unify_queue_name
 
 import sys
 import os
@@ -352,6 +353,67 @@ async def get_ungrouped_actors() -> List[Actor]:
 
     ungrouped_actors = [actor for actor in all_actors if actor not in grouped_actors]
     return json.dumps([actor.__dict__ for actor in ungrouped_actors])
+
+@info_mcp.tool(name="query_production_queue", description="查询指定类型的生产队列")
+async def query_production_queue(queue_type: str) -> Dict[str, Any]:
+    '''查询指定类型的生产队列
+
+    Args:
+        queue_type (str): 队列类型，必须是以下值之一：
+            'Building'
+            'Defense'
+            'Infantry'
+            'Vehicle'
+            'Aircraft'
+            'Naval'
+
+    Returns:
+        dict: 包含队列信息的字典，格式如下：
+            {
+                "queue_type": "队列类型",
+                "queue_items": [
+                    {
+                        "name": "项目内部名称",
+                        "chineseName": "项目中文名称",
+                        "remaining_time": 剩余时间,
+                        "total_time": 总时间,
+                        "remaining_cost": 剩余花费,
+                        "total_cost": 总花费,
+                        "paused": 是否暂停,
+                        "done": 是否完成,
+                        "progress_percent": 完成百分比,
+                        "owner_actor_id": 所属建筑的ActorID,
+                        "status": "项目状态，可能的值：
+                            'completed' - 已完成
+                            'paused' - 已暂停
+                            'in_progress' - 正在建造（队列中第一个项目）
+                            'waiting' - 等待中（队列中其他项目）"
+                    },
+                    ...
+                ],
+                "has_ready_item": 是否有已就绪的项目
+            }
+
+    Raises:
+        GameAPIError: 当查询生产队列失败时
+    '''
+    logger.info(f"query_production_queue- {queue_type}")
+    info = await info_api.query_production_queue(unify_queue_name(queue_type))
+    logger.info(f"query_production_queue- {info}")
+    res: Dict[str, int] = dict()
+    for item in info.get("queue_items", []):
+        if item.get("chineseName") not in res:
+            res[item.get("chineseName")] = 0
+        res[item.get("chineseName")] += 1
+    logger.info(f"query_production_queue- {res}")
+    return res
+
+@info_mcp.tool(name="do_nothing", description="没有需要做的事情，什么都不做")
+async def do_nothing() -> None:
+    logger.info("do_nothing")
+    await asyncio.sleep(3)
+    return None
+
 
 def main():
     info_mcp.settings.log_level = "debug"

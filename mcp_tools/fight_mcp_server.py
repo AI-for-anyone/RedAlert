@@ -39,7 +39,7 @@ def get_center_location(actors: List[Actor]) -> Location:
     return Location(center_x, center_y)
 
 # 收集军队
-@fight_mcp.tool(name="army_gather", description="军队聚团")
+@fight_mcp.tool(name="army_gather", description="使军队聚团")
 async def army_gather(source: NewTargetsQueryParam) -> None:
     # 查看所有单位
     units = await fight_api.query_actor(source)
@@ -55,6 +55,21 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
     except Exception as e:
         raise logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位聚团时发生错误: {0}".format(str(e)))
 
+@fight_mcp.tool(name="army_move", description="指定某个编组移动到指定位置")
+async def army_move(group_id: int, target: Location) -> bool:
+    '''
+    Args:
+        group_id (int): 指定的编组ID
+        target (Location): 目标位置
+    Returns:
+        bool: 操作是否成功
+    '''
+    logger.info("army_move-开始控制己方战斗编组{0}移动到指定位置{1}".format(group_id, target))
+    _group_mgr.start_new_task(group_id)
+
+    await fight_api.move_units_by_location(target=NewTargetsQueryParam(group_id=group_id), location=target, attack_move=False)
+    return True
+
 # 攻击
 @fight_mcp.tool(name="army_attack_direction", description="指定某个编组往某个方向攻击见到的所有敌人")
 async def army_attack_direction(
@@ -68,7 +83,7 @@ async def army_attack_direction(
         direction (str): 移动方向，必须在 {"左上", "上", "右上", "左", "右", "左下", "下", "右下"} 中
         distance (int): 移动距离
     '''
-    logger.info("army_attack_direction-开始控制己方战斗单位攻击指定方向{}".format(direction))
+    logger.info("army_attack_direction-开始控制己方战斗编组{}攻击指定方向{}".format(group_id, direction))
     _group_mgr.start_new_task(group_id)
     
     await army_advanced_attack(
@@ -255,7 +270,7 @@ async def army_advanced_attack(
                     enemy_actors = await fight_api.query_actor(NewTargetsQueryParam(
                         faction="敌方", 
                         type=enemy_type,
-                        restrain=[{"distance": 10}],
+                        restrain=[{"distance": 15}],
                         location=center
                     ))  
                 except Exception as e:
@@ -266,6 +281,7 @@ async def army_advanced_attack(
                     if center.manhattan_distance(relative_pos) < 7:
                         logger.info("己方单位已到达目标位置")
                         break
+                    # 这里调整阵型
                     await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), relative_pos)
                     await asyncio.sleep(1)
                     continue

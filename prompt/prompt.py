@@ -10,6 +10,7 @@ def load_classify_prompt(path: str) -> str:
 
 classify_prompt = load_classify_prompt("classify_prompt.md")
 unit_control_prompt = load_classify_prompt("unit_control_prompt.md")
+ai_assistant_prompt: str = load_classify_prompt("ai_assistant_prompt.md")
 
 if __name__ == "__main__":
     print(classify_prompt)
