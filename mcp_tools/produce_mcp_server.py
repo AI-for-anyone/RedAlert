@@ -153,7 +153,7 @@ async def double_mine_start():
     await produce_api.deploy_mcv_and_wait(1.0)
     for unit_type, quantity, wait_flag in produce_list:
         loop_times = 0
-        while loop_times < 100:
+        while loop_times < 1000:
             loop_times += 1
             # 首先检测是否能生产
             if not await produce_api.can_produce(unit_type):

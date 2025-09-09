@@ -176,6 +176,37 @@ async def army_attack_target_location(
     return {"result": "ok"}
 
 
+async def formation_adjustment(
+    units: List[Actor],
+    after_center: Location
+):
+    tanks: List[Actor] = []
+    others: List[Actor] = []
+    for unit in units:
+        if unit.type in ["重型坦克", "超重型坦克"]:
+            tanks.append(unit)
+        else:
+            others.append(unit)
+
+    if len(tanks) == 0 or len(others) == 0:
+        await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), after_center)
+        return
+
+    tank_center = get_center_location(tanks)
+    other_center = get_center_location(others)
+
+    if after_center.euclidean_distance(tank_center) > after_center.euclidean_distance(other_center):
+        logger.debug("formation_adjustment-坦克前进，其他聚团")
+        await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in tanks]), after_center)
+        await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in others]), other_center)
+        await asyncio.sleep(1)
+        await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), after_center)
+    else:
+        logger.debug("formation_adjustment-全部前进")
+        await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), after_center)
+
+    
+
 # 智能攻击
 async def army_advanced_attack(
     cancel_evt: asyncio.Event,
@@ -282,7 +313,7 @@ async def army_advanced_attack(
                         logger.info("己方单位已到达目标位置")
                         break
                     # 这里调整阵型
-                    await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), relative_pos)
+                    await formation_adjustment(units, relative_pos)
                     await asyncio.sleep(1)
                     continue
                 logger.debug("attack_direction-敌方目标: {0}".format(str([[ac.actor_id, ac.type] for ac in enemy_actors])))

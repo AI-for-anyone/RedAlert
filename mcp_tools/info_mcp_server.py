@@ -411,7 +411,7 @@ async def query_production_queue(queue_type: str) -> Dict[str, Any]:
 @info_mcp.tool(name="do_nothing", description="没有需要做的事情，什么都不做")
 async def do_nothing() -> None:
     logger.info("do_nothing")
-    await asyncio.sleep(3)
+    await asyncio.sleep(6)
     return None
 
 
