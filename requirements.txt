@@ -34,5 +34,7 @@ langgraph
 langchain_openai
 langchain-mcp-adapters
 langchain
-aioconsole
 gradio
+pyaudio
+numpy
+websocket-client

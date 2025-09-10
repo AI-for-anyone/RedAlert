@@ -1,5 +1,5 @@
 from OpenRA_Copilot_Library import AsyncGameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, Actor,MapQueryResult
+from OpenRA_Copilot_Library.models import Location, NewTargetsQueryParam, Actor,MapQueryResult
 from typing import List, Dict, Any, Tuple
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
@@ -55,6 +55,8 @@ async def produce(unit_type: str, quantity: int = 1, auto_place: bool = True) ->
         int: 生产任务的 waitId
         None: 如果任务创建失败
     '''
+    if quantity > 10:
+        quantity = 10
 
     wait_id = await produce_api.produce(unify_unit_name(unit_type), quantity, auto_place_building=auto_place)
     return wait_id or -1
@@ -71,6 +73,8 @@ async def can_produce(unit_type: str, quantity: int = 1, permit_resource_shortag
     Returns:
         bool: 是否可以生产
     '''
+    if quantity > 10:
+        quantity = 10
     
     produce_able = await produce_api.can_produce(unify_unit_name(unit_type))
     if permit_power_shortage and permit_resource_shortage:
@@ -102,6 +106,8 @@ async def produce_wait(unit_type: str, quantity: int = 1, auto_place: bool = Tru
     Raises:
         GameAPIError: 当生产或等待过程中发生错误时
     '''
+    if quantity > 10:
+        quantity = 10
     try:
         await produce_api.produce_wait(unit_type, quantity, auto_place)
         return True
@@ -143,12 +149,9 @@ async def double_mine_start():
         ("战车工厂", 1, True),
         ("矿车", 2, False),
         ("矿场", 1, True),
-        ("发电厂", 1, True),
         ("兵营", 1, True),
-        ("步兵", 10, False),
-        ("雷达站", 1, True),
-        ("维修厂", 1, True),
-        ("科技中心", 1, True)
+        ("发电厂", 1, True),
+        ("步兵", 10, False)
     ]
     await produce_api.deploy_mcv_and_wait(1.0)
     for unit_type, quantity, wait_flag in produce_list:
@@ -182,6 +185,17 @@ async def double_mine_start():
         if loop_times >= 100:
             logger.error(f"生产 {unit_type} 失败")
             return f"生产 {unit_type} 失败"
+
+
+@produce_mcp.tool(name="clean_queue",description="清空队列")
+async def clean_queue():
+    await produce_api.m
+    try:
+        await produce_api.place_building("Building", None)
+    except Exception as e:
+        logger.error(f"place_building error: {e}")
+
+    return "ok"
 
 def main():
     produce_mcp.settings.log_level = "debug"

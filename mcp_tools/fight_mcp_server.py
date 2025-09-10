@@ -55,6 +55,24 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
     except Exception as e:
         raise logger.error("ARMY_ATTACK_ERROR", "控制己方战斗单位聚团时发生错误: {0}".format(str(e)))
 
+async def _default_group(group_id: int):
+    if group_id == 1:
+        units = await fight_api.query_actor(NewTargetsQueryParam(type=ALL_INFANTRIES + ALL_TANKS + ALL_AIR))
+        if units is None or len(units) == 0:
+            return 
+        await fight_api.form_group(units, group_id)
+    elif group_id == 2:
+        units = await fight_api.query_actor(NewTargetsQueryParam(type=["重型坦克", "超重型坦克"]))
+        if units is None or len(units) == 0:
+            return 
+        await fight_api.form_group(units, group_id)
+    elif group_id == 3:
+        units = await fight_api.query_actor(NewTargetsQueryParam(type=["v2火箭发射车"]))
+        if units is None or len(units) == 0:
+            return 
+        await fight_api.form_group(units, group_id)
+    
+
 @fight_mcp.tool(name="army_move", description="指定某个编组移动到指定位置")
 async def army_move(group_id: int, target: Location) -> bool:
     '''
@@ -64,6 +82,7 @@ async def army_move(group_id: int, target: Location) -> bool:
     Returns:
         bool: 操作是否成功
     '''
+    await _default_group(group_id)
     logger.info("army_move-开始控制己方战斗编组{0}移动到指定位置{1}".format(group_id, target))
     _group_mgr.start_new_task(group_id)
 
@@ -83,6 +102,7 @@ async def army_attack_direction(
         direction (str): 移动方向，必须在 {"左上", "上", "右上", "左", "右", "左下", "下", "右下"} 中
         distance (int): 移动距离
     '''
+    await _default_group(group_id)
     logger.info("army_attack_direction-开始控制己方战斗编组{}攻击指定方向{}".format(group_id, direction))
     _group_mgr.start_new_task(group_id)
     
@@ -107,6 +127,7 @@ async def army_attack_location(
         location (Location): 攻击位置
         perfer_attack_target (List[str]): 优先攻击的目标类型列表
     '''
+    await _default_group(group_id)
     logger.info("army_attack_location-控制己方战斗单位攻击指定位置{0}".format(location))
 
     perfer_attack_target:Dict[str, float] = {}
@@ -139,6 +160,7 @@ async def army_attack_target_direction(
         distance (int): 移动距离
         target_type (List[str]): 攻击的目标类型列表
     '''
+    await _default_group(group_id)
     _group_mgr.start_new_task(group_id)
 
     await army_advanced_attack(
@@ -164,6 +186,7 @@ async def army_attack_target_location(
         location (Location): 攻击位置
         target_type (List[str]): 攻击的目标类型列表
     '''
+    await _default_group(group_id)
     _group_mgr.start_new_task(group_id)
 
     await army_advanced_attack(
@@ -301,7 +324,7 @@ async def army_advanced_attack(
                     enemy_actors = await fight_api.query_actor(NewTargetsQueryParam(
                         faction="敌方", 
                         type=enemy_type,
-                        restrain=[{"distance": 15}],
+                        restrain=[{"distance": 23}],
                         location=center
                     ))  
                 except Exception as e:
@@ -313,7 +336,7 @@ async def army_advanced_attack(
                         logger.info("己方单位已到达目标位置")
                         break
                     # 这里调整阵型
-                    await formation_adjustment(units, relative_pos)
+                    await fight_api.move_units_by_location(NewTargetsQueryParam(actor_id=[ac.actor_id for ac in units]), relative_pos)
                     await asyncio.sleep(1)
                     continue
                 logger.debug("attack_direction-敌方目标: {0}".format(str([[ac.actor_id, ac.type] for ac in enemy_actors])))
@@ -397,7 +420,7 @@ async def army_advanced_attack(
         raise logger.error("ATTACK_DIRECTION_ERROR-控制指定单位攻击指定方向时发生错误: {0}".format(str(e)))
 
 def main():
-    setup_logging(LogConfig(level=LogLevel.DEBUG, enable_console_logging=True))
+    setup_logging(LogConfig(level=LogLevel.INFO, enable_console_logging=True))
     fight_mcp.settings.log_level = "debug"
     fight_mcp.settings.host = "0.0.0.0"
     fight_mcp.settings.port = 8001

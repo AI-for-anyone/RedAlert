@@ -94,7 +94,7 @@ class ProductionNode(BaseNode):
             task_input = current_task or global_state["input_cmd"]
             
             # 使用LLM和工具执行任务
-            result = await self.execute_with_tools(task_input, max_iterations=3)
+            result = await self.execute_with_tools(task_input, max_iterations=1)
             logger.info(f"生产管理执行结果: {result}")
             
             return Command(
