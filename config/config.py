@@ -57,7 +57,7 @@ SERVER_TOOL_PATTERNS: Final[Mapping[str, Tuple[str, ...]]] = MappingProxyType({
         "produce", "can_produce", "query_production", "manage_production", "ensure_can_produce",
         "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info",  "recycle_mcv" , "deploy_mcv_and_wait", "clean_queue"
     ),
-    "unit": ("group_units", "move_units", "move_units_by_direction", "set_rally_point", "recycle_mcv"),
+    "unit": ("group_units", "move_units", "move_units_by_direction", "set_rally_point", "recycle_mcv", "investigation"),
     "base": ("map_query", "unit_info_query"),
     "ai_assistant": ( "player_base_info_query", "query_production_queue", 
         "produce",  "ensure_can_produce", "unit_info_query", "do_nothing",

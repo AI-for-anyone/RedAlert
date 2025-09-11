@@ -189,7 +189,13 @@ async def double_mine_start():
 
 @produce_mcp.tool(name="clean_queue",description="清空队列")
 async def clean_queue():
-    await produce_api.m
+    await produce_api.manage_production("Building", "cancel")
+    await produce_api.manage_production("Defense", "cancel")
+    await produce_api.manage_production("Infantry", "cancel")
+    await produce_api.manage_production("Vehicle", "cancel")
+    await produce_api.manage_production("Aircraft", "cancel")
+    await produce_api.manage_production("Naval", "cancel")
+    
     try:
         await produce_api.place_building("Building", None)
     except Exception as e:

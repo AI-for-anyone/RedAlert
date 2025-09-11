@@ -57,17 +57,22 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
 
 async def _default_group(group_id: int):
     if group_id == 1:
-        units = await fight_api.query_actor(NewTargetsQueryParam(type=ALL_INFANTRIES + ALL_TANKS + ALL_AIR))
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["火箭兵"] + ALL_TANKS + ALL_AIR))
         if units is None or len(units) == 0:
             return 
         await fight_api.form_group(units, group_id)
     elif group_id == 2:
-        units = await fight_api.query_actor(NewTargetsQueryParam(type=["重型坦克", "超重型坦克"]))
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["重型坦克", "超重型坦克"]))
         if units is None or len(units) == 0:
             return 
         await fight_api.form_group(units, group_id)
     elif group_id == 3:
-        units = await fight_api.query_actor(NewTargetsQueryParam(type=["v2火箭发射车"]))
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["v2火箭发射车"]))
+        if units is None or len(units) == 0:
+            return 
+        await fight_api.form_group(units, group_id)
+    elif group_id == 4:
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["采矿车"]))
         if units is None or len(units) == 0:
             return 
         await fight_api.form_group(units, group_id)

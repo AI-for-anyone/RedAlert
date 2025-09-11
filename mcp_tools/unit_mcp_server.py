@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
 import json
+import random
 
 
 
@@ -114,6 +115,36 @@ async def recycle_mcv() -> str:
         return "ok"
 
     await unit_api.deploy_units([Actor(actor_id=factory[0].actor_id)])
+    return "ok"
+
+@unit_mcp.tool(name="investigation",description="侦察")
+async def investigation() -> str:
+    """
+    """
+    unit = await unit_api.query_actor(NewTargetsQueryParam(type=['步兵'], faction='自己'))
+    if unit is None or len(unit) == 0:
+        return "no actors"
+    
+    map_info = await unit_api.map_query()
+    for u in unit:
+        # 全图随机一个坐标
+        locations:List[Location] = [
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),
+            Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight))
+        ]
+        await unit_api.move_units_by_path(actors=[Actor(actor_id=u.actor_id)],path=locations)
     return "ok"
 
 def main():
