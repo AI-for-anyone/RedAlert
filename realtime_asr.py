@@ -54,33 +54,29 @@ class RealtimeASR:
         
     def create_url(self):
         """生成WebSocket连接URL"""
-        url = 'wss://iat-api.xfyun.cn/v2/iat'
+        url = 'ws://iat.xf-yun.com/v1'
         
         # 生成RFC1123格式的时间戳
         now = datetime.now()
         date = format_date_time(mktime(now.timetuple()))
         
-        # 拼接字符串
-        signature_origin = "host: " + "iat-api.xfyun.cn" + "\n"
+       # 拼接字符串
+        signature_origin = "host: " + "iat.xf-yun.com" + "\n"
         signature_origin += "date: " + date + "\n"
-        signature_origin += "GET " + "/v2/iat " + "HTTP/1.1"
-        
+        signature_origin += "GET " + "/v1 " + "HTTP/1.1"
         # 进行hmac-sha256进行加密
-        signature_sha = hmac.new(
-            self.api_secret.encode('utf-8'), 
-            signature_origin.encode('utf-8'),
-            digestmod=hashlib.sha256
-        ).digest()
+        signature_sha = hmac.new(self.api_secret.encode('utf-8'), signature_origin.encode('utf-8'),
+                                 digestmod=hashlib.sha256).digest()
         signature_sha = base64.b64encode(signature_sha).decode(encoding='utf-8')
-        
-        authorization_origin = f'api_key="{self.api_key}", algorithm="hmac-sha256", headers="host date request-line", signature="{signature_sha}"'
+
+        authorization_origin = "api_key=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"" % (
+            self.api_key, "hmac-sha256", "host date request-line", signature_sha)
         authorization = base64.b64encode(authorization_origin.encode('utf-8')).decode(encoding='utf-8')
-        
         # 将请求的鉴权参数组合为字典
         v = {
             "authorization": authorization,
             "date": date,
-            "host": "iat-api.xfyun.cn"
+            "host": "iat.xf-yun.com"
         }
         
         # 拼接鉴权参数，生成url
@@ -92,41 +88,40 @@ class RealtimeASR:
         try:
             print(f"收到消息: {message}")  # 调试输出
             message_data = json.loads(message)
+
+            code = message_data["header"]["code"]
+            status = message_data["header"]["status"]
             
             # 检查是否是错误消息
-            if "code" in message_data and message_data["code"] != 0:
-                print(f"识别错误：{message_data['code']} - {message_data.get('message', '')}")
+            if code != 0:
+                print(f"识别错误：{code} - {message_data.get('message', '')}")
+                self.is_running = False
+                self.ws.close()
                 self.result_queue.put({"error": f"错误码: {message_data['code']}"})
                 return
-            
-            # 检查v2 API消息结构
-            if "data" not in message_data:
-                print(f"消息格式错误，缺少data字段: {message_data}")
-                return
                 
-            data = message_data["data"]
-            status = data.get("status", -1)
+            payload = message_data.get("payload")
             
             # 处理识别结果
-            if "result" in data:
-                result_data = data["result"]
-                if "ws" in result_data:
-                    text_ws = result_data["ws"]
+            if payload:
+                if payload:
+                    text = payload["result"]["text"]
+                    text = json.loads(str(base64.b64decode(text), "utf8"))
+                    text_ws = text['ws']
                     result = ''
                     for i in text_ws:
-                        for j in i.get("cw", []):
-                            w = j.get("w", "")
+                        for j in i["cw"]:
+                            w = j["w"]
                             result += w
-                    
-                    if result:
-                        is_final = (status == 2) or result_data.get("ls", False)
-                        self.result_queue.put({
-                            "text": result,
-                            "is_final": is_final,
-                            "timestamp": time.time()
-                        })
+                    print("识别结果:", result)
+                    self.result_queue.put({
+                        "text": result,
+                        "is_final": False,
+                        "timestamp": time.time()    
+                    })
             
             if status == 2:
+                print("识别结束，重置状态准备下一轮")
                 # 识别结束，重置状态准备下一轮
                 self.frame_status = self.STATUS_FIRST_FRAME
                 # 停止发送更多音频数据，避免invalid handle错误
@@ -215,22 +210,21 @@ class RealtimeASR:
     
     def _send_end_frame(self):
         """发送结束帧"""
-        try:
-            if self.ws and self.is_running:
-                end_data = {
-                    "data": {
-                        "status": 2,
-                        "format": "audio/L16;rate=16000",
-                        "audio": "",
-                        "encoding": "raw"
-                    }
-                }
-                self.ws.send(json.dumps(end_data))
-        except Exception as e:
-            print(f"发送结束帧错误: {e}")
+        self.frame_status = self.STATUS_LAST_FRAME
+
     
     def send_audio_data(self):
         """发送音频数据到WebSocket"""
+        # iFlytek API 参数配置
+        iat_params = {
+            "domain": "slm", "language": "zh_cn", "accent": "mandarin","dwa":"wpgs", "result":
+                {
+                    "encoding": "utf8",
+                    "compress": "raw",
+                    "format": "plain"
+                }
+        }
+        
         while self.is_running:
             try:
                 # 从队列获取音频数据
@@ -239,36 +233,60 @@ class RealtimeASR:
                 # 编码音频数据
                 audio_base64 = base64.b64encode(audio_data).decode('utf-8')
                 
-                # 构造数据包 - v2 API格式
+                # 构造数据包 - 按照官方demo格式
                 if self.frame_status == self.STATUS_FIRST_FRAME:
                     # 第一帧
                     d = {
-                        "common": {
+                        "header": {
+                            "status": 0,
                             "app_id": self.app_id
                         },
-                        "business": {
-                            "language": "zh_cn",
-                            "domain": "iat",
-                            "accent": "mandarin",
-                            "vinfo": 1,
-                            "vad_eos": 10000
+                        "parameter": {
+                            "iat": iat_params
                         },
-                        "data": {
-                            "status": 0,
-                            "format": "audio/L16;rate=16000",
-                            "audio": audio_base64,
-                            "encoding": "raw"
+                        "payload": {
+                            "audio": {
+                                "audio": audio_base64,
+                                "sample_rate": 16000,
+                                "encoding": "raw"
+                            }
                         }
                     }
                     self.frame_status = self.STATUS_CONTINUE_FRAME
-                else:
+                elif self.frame_status == self.STATUS_CONTINUE_FRAME:
                     # 中间帧
                     d = {
-                        "data": {
+                        "header": {
                             "status": 1,
-                            "format": "audio/L16;rate=16000",
-                            "audio": audio_base64,
-                            "encoding": "raw"
+                            "app_id": self.app_id
+                        },
+                        "parameter": {
+                            "iat": iat_params
+                        },
+                        "payload": {
+                            "audio": {
+                                "audio": audio_base64,
+                                "sample_rate": 16000,
+                                "encoding": "raw"
+                            }
+                        }
+                    }
+                elif self.frame_status == self.STATUS_LAST_FRAME:
+                    # 最后一帧
+                    d = {
+                        "header": {
+                            "status": 2,
+                            "app_id": self.app_id
+                        },
+                        "parameter": {
+                            "iat": iat_params
+                        },
+                        "payload": {
+                            "audio": {
+                                "audio": audio_base64,
+                                "sample_rate": 16000,
+                                "encoding": "raw"
+                            }
                         }
                     }
                 
@@ -323,6 +341,7 @@ class RealtimeASR:
         """获取识别结果（非阻塞）"""
         results = []
         while not self.result_queue.empty():
+            print("获取识别结果")
             try:
                 result = self.result_queue.get_nowait()
                 results.append(result)
