@@ -55,8 +55,8 @@ async def produce(unit_type: str, quantity: int = 1, auto_place: bool = True) ->
         int: 生产任务的 waitId
         None: 如果任务创建失败
     '''
-    if quantity > 10:
-        quantity = 10
+    if quantity > 20:
+        quantity = 20
 
     wait_id = await produce_api.produce(unify_unit_name(unit_type), quantity, auto_place_building=auto_place)
     return wait_id or -1
@@ -73,8 +73,8 @@ async def can_produce(unit_type: str, quantity: int = 1, permit_resource_shortag
     Returns:
         bool: 是否可以生产
     '''
-    if quantity > 10:
-        quantity = 10
+    if quantity > 20:
+        quantity = 20
     
     produce_able = await produce_api.can_produce(unify_unit_name(unit_type))
     if permit_power_shortage and permit_resource_shortage:
@@ -85,7 +85,9 @@ async def can_produce(unit_type: str, quantity: int = 1, permit_resource_shortag
         raise ValueError(f"未找到 {unit_type} 的生产成本信息")
     remain_money = remain_power = 0
     if not permit_power_shortage or not permit_resource_shortage:
-        remain_money, remain_power = await get_produce_remain_resource()
+        base_info = await produce_api.player_base_info_query()
+        remain_money = base_info.Cash
+        remain_power = base_info.Power
         logger.info(f"当前电力: {remain_power}, 当前资源: {remain_money}")
     if not permit_power_shortage and remain_power + quantity * cost.get('power', 0) < 0:
         logger.info("电力不足")
@@ -106,8 +108,8 @@ async def produce_wait(unit_type: str, quantity: int = 1, auto_place: bool = Tru
     Raises:
         GameAPIError: 当生产或等待过程中发生错误时
     '''
-    if quantity > 10:
-        quantity = 10
+    if quantity > 20:
+        quantity = 20
     try:
         await produce_api.produce_wait(unit_type, quantity, auto_place)
         return True

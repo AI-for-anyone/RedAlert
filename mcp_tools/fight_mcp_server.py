@@ -57,7 +57,7 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
 
 async def _default_group(group_id: int):
     if group_id == 1:
-        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["火箭兵"] + ALL_TANKS + ALL_AIR))
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["火箭兵"] +  [ "重型坦克", "V2火箭发射车","超重型坦克"] + ALL_AIR))
         if units is None or len(units) == 0:
             return 
         await fight_api.form_group(units, group_id)
@@ -72,7 +72,7 @@ async def _default_group(group_id: int):
             return 
         await fight_api.form_group(units, group_id)
     elif group_id == 4:
-        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["采矿车"]))
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["防空车"]))
         if units is None or len(units) == 0:
             return 
         await fight_api.form_group(units, group_id)
@@ -416,7 +416,7 @@ async def army_advanced_attack(
                 logger.info("army_attack-中止")
                 return
         try:
-            await asyncio.wait_for(_attack_direction(cancel_evt), timeout=180)
+            await asyncio.wait_for(_attack_direction(cancel_evt), timeout=300)
         except asyncio.TimeoutError:
             logger.warning("ATTACK_DIRECTION_TIMEOUT 控制指定单位攻击指定方向超时，已自动退出")
             return

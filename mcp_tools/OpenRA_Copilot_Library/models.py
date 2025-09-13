@@ -184,3 +184,20 @@ class ScreenInfoResult:
         }
 
 
+@dataclass
+class ControlPoint:
+    name: str  # 控制点名称。
+    x: int  # 控制点x坐标。
+    y: int  # 控制点y坐标。
+    hasBuffs: bool  # 控制点是否有Buff。
+    buffs: List[str]  # 控制点Buff列表。
+
+@dataclass
+class ControlPointQueryResult:
+    ControlPoints: List[ControlPoint]  # 控制点列表。
+
+@dataclass
+class MatchInfoQueryResult:
+    SelfScore: int  # 自己分数。
+    EnemyScore: int  # 敌人分数。
+    RemainingTime: int  # 剩余时间。

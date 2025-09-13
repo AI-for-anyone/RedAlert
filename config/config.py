@@ -51,14 +51,14 @@ SERVER_TOOL_PATTERNS: Final[Mapping[str, Tuple[str, ...]]] = MappingProxyType({
     "info": (
         "get_game_state", "find_path", "get_actor_by_id", "update_actor", "visible_query", "explorer_query",
         "get_unexplored_nearby_positions", "unit_attribute_query", "unit_info_query", "map_query",
-        "player_base_info_query", "screen_info_query", "query_actor", "get_ungrouped_actors", "get_groups"
+        "player_base_info_query", "screen_info_query", "query_actor", "get_ungrouped_actors", "get_groups", "control_point_query"
     ),
     "produce": (
         "produce", "can_produce", "query_production", "manage_production", "ensure_can_produce",
         "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info",  "recycle_mcv" , "deploy_mcv_and_wait", "clean_queue"
     ),
-    "unit": ("group_units", "move_units", "move_units_by_direction", "set_rally_point", "recycle_mcv", "investigation"),
-    "base": ("map_query", "unit_info_query"),
+    "unit": ("group_units", "move_units", "move_units_by_direction", "set_rally_point", "recycle_mcv", "investigation", "occupy_cp"),
+    "base": ("map_query", "unit_info_query", "control_point_query"),
     "ai_assistant": ( "player_base_info_query", "query_production_queue", 
         "produce",  "ensure_can_produce", "unit_info_query", "do_nothing",
         "ensure_can_build", "deploy_mcv", "double_mine_start")

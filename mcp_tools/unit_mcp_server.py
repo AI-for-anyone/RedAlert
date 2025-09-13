@@ -121,12 +121,47 @@ async def recycle_mcv() -> str:
 async def investigation() -> str:
     """
     """
-    unit = await unit_api.query_actor(NewTargetsQueryParam(type=['步兵'], faction='自己'))
-    if unit is None or len(unit) == 0:
+    units = await unit_api.query_actor(NewTargetsQueryParam(type=['步兵'], faction='自己'))
+    if units is None or len(units) == 0:
         return "no actors"
-    
+
+    # 获取所有据点信息
+    cps = []
+    cps_info = await unit_api.control_point_query()
+    for cp in cps_info.ControlPoints:
+        cps.append({ "x": cp.get("x"), "y": cp.get("y")})
+
+    # 5个兵一组去一个据点，兵不够或据点不够就停止分配
+    cp_index = 0
+    for i in range(0, len(units), 5):
+        if cp_index >= len(cps):
+            break  # 据点不够了，停止分配
+        
+        # 获取当前组的单位（最多5个）
+        if i + 5 > len(units):
+            break
+
+        current_group = units[i:i+5]
+        if len(current_group) == 0:
+            break  # 没有更多单位了
+            
+        # 派遣当前组去占领据点
+        await unit_api.move_units_by_location(
+            target=NewTargetsQueryParam(actor_id=[u.actor_id for u in current_group]), 
+            location=Location(cps[cp_index]["x"], cps[cp_index]["y"]), 
+            attack_move=False
+        )
+        cp_index += 1
+
+    # 未分配的步兵随机移动
+    free_units = []
+    if cp_index*5 < len(units):
+        free_units = units[cp_index*5:]
+    else:
+        return "Ok"
+        
     map_info = await unit_api.map_query()
-    for u in unit:
+    for u in free_units:
         # 全图随机一个坐标
         locations:List[Location] = [
             Location(random.randrange(0,map_info.MapWidth),random.randrange(0,map_info.MapHeight)),

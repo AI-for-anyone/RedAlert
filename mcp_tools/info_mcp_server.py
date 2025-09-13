@@ -1,5 +1,5 @@
 from OpenRA_Copilot_Library import AsyncGameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTargetsQueryParam, Actor,MapQueryResult
+from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTargetsQueryParam, Actor,MapQueryResult ,ControlPointQueryResult,MatchInfoQueryResult,ControlPoint
 from typing import List, Dict, Any ,Tuple
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
@@ -413,6 +413,26 @@ async def do_nothing() -> None:
     logger.info("do_nothing")
     await asyncio.sleep(6)
     return None
+
+@info_mcp.tool(name="control_point_query", description="获取据点信息")
+async def control_point_query() -> Dict[str, Tuple[int, int]]:
+    """
+    Returns:
+        Dict[str, Tuple[int, int]]: 据点信息列表，包含据点名称、X坐标和Y坐标
+    """
+    info: ControlPointQueryResult = await info_api.control_point_query()
+    cp_list: List[ControlPoint] = info.ControlPoints
+    logger.info(f"control_point_query- {info}")
+    
+    control_points = {}
+    for cp in cp_list:
+        logger.info(f"control_point_query- {cp}")
+        control_points[cp.get("name")] = (cp.get("x"), cp.get("y"))
+
+    if len(control_points) == 0:
+        return None
+    
+    return control_points
 
 
 def main():

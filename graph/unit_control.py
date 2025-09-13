@@ -78,21 +78,37 @@ class UnitControlNode(BaseNode):
                     return tool
             return None
         
-        map_tool, unit_tool = _get_tool("map_query"), _get_tool("unit_info_query")
-        if map_tool is None or unit_tool is None:
+        map_tool, unit_tool, control_point_tool = _get_tool("map_query"), _get_tool("unit_info_query"), _get_tool("control_point_query")
+        if map_tool is None or unit_tool is None or control_point_tool is None:
             logger.warning("未找到 map_query 或 unit_info_query 工具，使用默认提示词")
             return self._get_system_prompt()
         
         try:
             map_info = await map_tool.ainvoke({})
             unit_status = await unit_tool.ainvoke({})
+            control_points = await control_point_tool.ainvoke({})
         except Exception as e:
             logger.error(f"获取工具信息失败: {e}")
             return self._get_system_prompt()
 
+        control_points = json.loads(control_points)
+        cps = []
+        for cp in control_points.keys():
+            cps.append({"x": control_points[cp][0], "y": control_points[cp][1]})
+        cps.sort(key=lambda x: (x["x"], x["y"]))
+
+        control_points_info = ""
+        index = 1
+        for cp in cps:
+            control_points_info += f"据点{index}: ({cp["x"]}, {cp["y"]})\n"
+            index += 1
+
+        logger.info(f"控制点信息: {control_points_info}")
+
         prompt = unit_control_prompt.format(
             map_info = map_info,
             unit_status = unit_status,
+            control_point_info = control_points_info,
             ALL_ACTORS = self.prompt_params["ALL_ACTORS"],
             ALL_DIRECTIONS = self.prompt_params["ALL_DIRECTIONS"],
             ALL_GROUPS = self.prompt_params["ALL_GROUPS"],

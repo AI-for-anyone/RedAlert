@@ -925,3 +925,53 @@ class AsyncGameAPI:
             raise
         except Exception as e:
             raise AsyncGameAPIError("SET_RALLY_POINT_ERROR", "设置集结点时发生错误: {0}".format(str(e)))
+
+    async def control_point_query(self) -> ControlPointQueryResult:
+        '''查询控制点信息
+        '''
+        '''
+        Args:
+            None
+
+        Returns:
+            ControlPointQueryResult: 控制点信息查询结果
+
+        Raises:
+            GameAPIError: 当查询控制点信息失败时
+        '''
+        try:
+            response = await self._send_request('query_control_points', {})
+            result = self._handle_response(response, "查询控制点信息失败")
+            return ControlPointQueryResult(
+                ControlPoints=result.get('controlPoints', [])
+            )
+        except AsyncGameAPIError:
+            raise
+        except Exception as e:
+            raise AsyncGameAPIError("CONTROL_POINT_QUERY_ERROR", "查询控制点信息时发生错误: {0}".format(str(e)))
+
+    async def match_info_query(self) -> MatchInfoQueryResult:
+        '''查询比赛信息
+        '''
+        '''
+        Args:
+            None
+
+        Returns:
+            MatchInfoQueryResult: 比赛信息查询结果
+
+        Raises:
+            GameAPIError: 当查询比赛信息失败时
+        '''
+        try:
+            response = await self._send_request('match_info_query', {})
+            result = self._handle_response(response, "查询比赛信息失败")
+            return MatchInfoQueryResult(
+                SelfScore=result.get('selfScore', 0),
+                EnemyScore=result.get('enemyScore', 0),
+                RemainingTime=result.get('remainingTime', 0)
+            )
+        except AsyncGameAPIError:
+            raise
+        except Exception as e:
+            raise AsyncGameAPIError("MATCH_INFO_QUERY_ERROR", "查询比赛信息时发生错误: {0}".format(str(e)))

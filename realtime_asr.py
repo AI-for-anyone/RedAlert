@@ -24,7 +24,7 @@ from audio_recorder import AudioRecorder
 class RealtimeASR:
     """实时语音识别"""
     
-    def __init__(self, app_id, api_key, api_secret, volume_threshold=500, silence_duration=2.0):
+    def __init__(self, app_id, api_key, api_secret, volume_threshold=500, silence_duration=0.5):
         self.app_id = app_id
         self.api_key = api_key
         self.api_secret = api_secret
@@ -122,10 +122,10 @@ class RealtimeASR:
             
             if status == 2:
                 print("识别结束，重置状态准备下一轮")
-                # 识别结束，重置状态准备下一轮
+                # 识别结束，重置状态准备下一轮，但不关闭连接
                 self.frame_status = self.STATUS_FIRST_FRAME
-                # 停止发送更多音频数据，避免invalid handle错误
-                time.sleep(0.5)  # 短暂停顿
+                # 短暂停顿，让服务器处理完当前会话
+                time.sleep(0.1)
                 
         except Exception as e:
             print(f"消息处理错误: {e}")
@@ -180,6 +180,8 @@ class RealtimeASR:
                 self.frame_status = self.STATUS_FIRST_FRAME
                 # 清空之前的缓冲区
                 self.speech_buffer.clear()
+                # 新建ws连接
+                self._create_connection()
             
             self.last_speech_time = current_time
             self.speech_buffer.append(audio_data)
@@ -195,13 +197,10 @@ class RealtimeASR:
                 if current_time - self.last_speech_time > self.silence_duration:
                     print(f"检测到语音结束 (静音 {self.silence_duration}s)")
                     self.is_speaking = False
-                    # 发送结束标志
-                    self._send_end_frame()
                 else:
                     # 静音时间不够长，继续缓冲
                     self.speech_buffer.append(audio_data)
-        
-        # 只有在检测到语音时才发送数据
+            
         if self.is_speaking and self.speech_buffer:
             # 发送缓冲区中的数据
             for buffered_data in self.speech_buffer:
@@ -210,7 +209,41 @@ class RealtimeASR:
     
     def _send_end_frame(self):
         """发送结束帧"""
-        self.frame_status = self.STATUS_LAST_FRAME
+        if self.ws and self.is_running:
+            try:
+                # 发送最后一帧数据
+                iat_params = {
+                    "domain": "slm", "language": "zh_cn", "accent": "mandarin","dwa":"wpgs", "result":
+                        {
+                            "encoding": "utf8",
+                            "compress": "raw",
+                            "format": "plain"
+                        }
+                }
+                
+                end_frame = {
+                    "header": {
+                        "status": 2,
+                        "app_id": self.app_id
+                    },
+                    "parameter": {
+                        "iat": iat_params
+                    },
+                    "payload": {
+                        "audio": {
+                            "audio": "",
+                            "sample_rate": 16000,
+                            "encoding": "raw"
+                        }
+                    }
+                }
+                
+                self.ws.send(json.dumps(end_frame))
+                self.ws.close()
+                print("发送结束帧")
+                
+            except Exception as e:
+                print(f"发送结束帧错误: {e}")
 
     
     def send_audio_data(self):
@@ -298,10 +331,14 @@ class RealtimeASR:
                 print(f"发送音频数据错误: {e}")
                 break
     
-    def start_recognition(self):
-        """开始实时语音识别"""
+    def _create_connection(self):
+        """创建新的WebSocket连接"""
         try:
-            # 创建WebSocket连接
+            # 如果已有连接，先关闭
+            if self.ws:
+                self.ws.close()
+            
+            # 创建新的WebSocket连接
             websocket.enableTrace(False)
             ws_url = self.create_url()
             self.ws = websocket.WebSocketApp(
@@ -312,13 +349,33 @@ class RealtimeASR:
             )
             self.ws.on_open = self.on_open
             
+            # 在新线程中启动连接
+            import threading
+            def run_ws():
+                self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+            
+            ws_thread = threading.Thread(target=run_ws, daemon=True)
+            ws_thread.start()
+            
+            # 等待连接建立
+            import time
+            time.sleep(0.5)
+            
+        except Exception as e:
+            print(f"创建WebSocket连接失败: {e}")
+
+    def start_recognition(self):
+        """开始实时语音识别"""
+        try:
             self.is_running = True
             
             # 启动录音
             self.recorder.start_recording(callback=self.audio_callback)
             
-            # 启动WebSocket连接（阻塞）
-            self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+            # 保持主线程运行，等待用户停止
+            while self.is_running:
+                import time
+                time.sleep(0.1)
             
         except Exception as e:
             print(f"启动识别失败: {e}")
