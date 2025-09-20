@@ -185,12 +185,18 @@ class ScreenInfoResult:
 
 
 @dataclass
+class CPBuff:
+    unitType: str
+    buffType: str
+    buffName: str
+
+@dataclass
 class ControlPoint:
     name: str  # 控制点名称。
     x: int  # 控制点x坐标。
     y: int  # 控制点y坐标。
     hasBuffs: bool  # 控制点是否有Buff。
-    buffs: List[str]  # 控制点Buff列表。
+    buffs: List[CPBuff]  # 控制点Buff列表。
 
 @dataclass
 class ControlPointQueryResult:
@@ -201,3 +207,9 @@ class MatchInfoQueryResult:
     SelfScore: int  # 自己分数。
     EnemyScore: int  # 敌人分数。
     RemainingTime: int  # 剩余时间。
+
+@dataclass
+class FrozenActor:
+    type: Optional[str] = None  # 单位类型，值为 {ALL_UNITS} 中的一个。
+    faction: Optional[str] = None  # 阵营，值为 {ALL_ACTORS} 中的一个。
+    position: Optional[Location] = None  # 单位的位置。

@@ -57,7 +57,7 @@ async def army_gather(source: NewTargetsQueryParam) -> None:
 
 async def _default_group(group_id: int):
     if group_id == 1:
-        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["火箭兵"] +  [ "重型坦克", "V2火箭发射车","超重型坦克"] + ALL_AIR))
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["火箭兵"] + ["重型坦克", "V2火箭发射车","超重型坦克"] + ALL_AIR))
         if units is None or len(units) == 0:
             return 
         await fight_api.form_group(units, group_id)
@@ -76,6 +76,14 @@ async def _default_group(group_id: int):
         if units is None or len(units) == 0:
             return 
         await fight_api.form_group(units, group_id)
+    elif group_id == 5:
+        units = await fight_api.query_actor(NewTargetsQueryParam(faction="己方", type=["步兵"]))
+        if units is None or len(units) == 0:
+            return 
+        await fight_api.form_group(units, group_id)
+# {32, 62} {79, 49} 
+
+# {22, 22} {93, 87}
     
 
 @fight_mcp.tool(name="army_move", description="指定某个编组移动到指定位置")

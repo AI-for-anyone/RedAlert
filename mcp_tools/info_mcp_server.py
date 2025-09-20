@@ -1,11 +1,12 @@
 from OpenRA_Copilot_Library import AsyncGameAPI
-from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTargetsQueryParam, Actor,MapQueryResult ,ControlPointQueryResult,MatchInfoQueryResult,ControlPoint
+from OpenRA_Copilot_Library.models import Location, TargetsQueryParam, NewTargetsQueryParam, Actor,MapQueryResult ,ControlPointQueryResult,MatchInfoQueryResult,ControlPoint,CPBuff
 from typing import List, Dict, Any ,Tuple
 from mcp.server.fastmcp import FastMCP
 from typing import Optional
 import asyncio
 import json
 from utils import unify_unit_name, unify_queue_name
+from model import cpBuffInfo
 
 import sys
 import os
@@ -415,7 +416,7 @@ async def do_nothing() -> None:
     return None
 
 @info_mcp.tool(name="control_point_query", description="获取据点信息")
-async def control_point_query() -> Dict[str, Tuple[int, int]]:
+async def control_point_query() -> Dict[str, Tuple[int, int, List[Any]]]:
     """
     Returns:
         Dict[str, Tuple[int, int]]: 据点信息列表，包含据点名称、X坐标和Y坐标
@@ -427,10 +428,20 @@ async def control_point_query() -> Dict[str, Tuple[int, int]]:
     control_points = {}
     for cp in cp_list:
         logger.info(f"control_point_query- {cp}")
-        control_points[cp.get("name")] = (cp.get("x"), cp.get("y"))
+        buffs: List[CPBuff]  = cp.get("buffs")
+        buffs_info = []
+        for buff in buffs:
+            name = unify_unit_name(buff.get("unitType"))
+            buffName = buff.get("buffName")
+            if buffName not in cpBuffInfo:
+                continue
+            effect = cpBuffInfo[buffName][0]
+            note = cpBuffInfo[buffName][1]
+            buffs_info.append((name, effect, note))
+        control_points[cp.get("name")] = (cp.get("x"), cp.get("y"), buffs_info)
 
     if len(control_points) == 0:
-        return None
+        return {}
     
     return control_points
 

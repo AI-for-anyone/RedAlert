@@ -55,6 +55,8 @@ async def produce(unit_type: str, quantity: int = 1, auto_place: bool = True) ->
         int: 生产任务的 waitId
         None: 如果任务创建失败
     '''
+    if quantity < 1:
+        quantity = 1
     if quantity > 20:
         quantity = 20
 
@@ -73,6 +75,8 @@ async def can_produce(unit_type: str, quantity: int = 1, permit_resource_shortag
     Returns:
         bool: 是否可以生产
     '''
+    if quantity < 1:
+        quantity = 1
     if quantity > 20:
         quantity = 20
     
@@ -108,6 +112,8 @@ async def produce_wait(unit_type: str, quantity: int = 1, auto_place: bool = Tru
     Raises:
         GameAPIError: 当生产或等待过程中发生错误时
     '''
+    if quantity < 1:
+        quantity = 1
     if quantity > 20:
         quantity = 20
     try:
