@@ -1,0 +1,23 @@
+  [tool.poetry]
+name = "ra-unit"
+version = "0.0.1"
+authors = [
+    "Mofa Bot"
+]
+description = "ra-unit"
+license = "MIT"
+# homepage = "https://github.com/moxin-org/mofa"
+# documentation = "https://github.com/moxin-org/mofa/blob/main/README.md"
+# readme = "README.md"
+packages = [{ include = "unit" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.scripts]
+show-result = "unit.main:main"
+
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"

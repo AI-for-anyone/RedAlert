@@ -1,0 +1,67 @@
+nodes:
+  - id: ra-terminal-input
+    build: pip install -e ./agent-hub/ra-terminal-input
+    path: dynamic
+    outputs:
+      - data
+
+  - id: ra-classify
+    build: pip install -e ./agent-hub/ra-classify
+    path: ra-classify
+    outputs:
+      - classify_result
+      - terminal_output
+    inputs:
+      command: terminal-input/data
+
+  - id: ra-camera
+    build: pip install -e ./agent-hub/ra-camera
+    path: ra-camera
+    outputs:
+      - camera_result
+      - terminal_output
+    inputs:
+      command: ra-classify/classify_result
+    
+  - id: ra-produce
+    build: pip install -e ./agent-hub/ra-produce
+    path: ra-produce
+    outputs:
+      - produce_result
+      - terminal_output
+    inputs:
+      command: ra-classify/classify_result
+
+  - id: ra-unit
+    build: pip install -e ./agent-hub/ra-unit
+    path: ra-unit
+    outputs:
+      - unit_result
+      - terminal_output
+    inputs:
+      command: ra-classify/classify_result
+
+  - id: ra-info
+    build: pip install -e ./agent-hub/ra-info
+    path: ra-info
+    outputs:
+      - info_result
+      - terminal_output
+    inputs:
+      command: ra-classify/classify_result
+    
+  - id: ra-ai_assistant
+    build: pip install -e ./agent-hub/ra-ai_assistant
+    path: ra-ai-assistant
+    outputs:
+      - ai_assistant_result
+      - terminal_output
+    inputs:
+      command: ra-classify/classify_result
+
+  - id: ra-show
+    build: pip install -e ./agent-hub/ra-show
+    path: ra-show
+    inputs:
+      classify_output: ra-classify/terminal_output
+

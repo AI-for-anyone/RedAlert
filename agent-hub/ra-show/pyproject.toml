@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ra-show"
+version = "0.0.1"
+authors = [
+    "hust2018"
+]
+packages = [{ include = "show" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+
+[tool.poetry.scripts]
+ra-show = "show.main:main"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"

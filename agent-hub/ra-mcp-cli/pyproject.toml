@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "ra-mcp-cli"
+version = "0.0.1"
+authors = [
+    "Mofa Bot"
+]
+description = "ra-mcp-cli"
+license = "MIT"
+# homepage = "https://github.com/moxin-org/mofa"
+# documentation = "https://github.com/moxin-org/mofa/blob/main/README.md"
+# readme = "README.md"
+packages = [{ include = "mcp-cli" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+
+[tool.poetry.scripts]
+show-result = "mcp-cli.main:main"
+
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"

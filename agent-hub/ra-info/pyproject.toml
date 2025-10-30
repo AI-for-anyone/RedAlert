@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "ra-info"
+version = "0.0.1"
+authors = [
+    "Mofa Bot"
+]
+description = "ra-info"
+license = "MIT"
+# homepage = "https://github.com/moxin-org/mofa"
+# documentation = "https://github.com/moxin-org/mofa/blob/main/README.md"
+# readme = "README.md"
+packages = [{ include = "info" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.scripts]
+show-result = "info.main:main"
+
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
