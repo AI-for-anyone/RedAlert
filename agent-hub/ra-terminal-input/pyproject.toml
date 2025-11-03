@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-terminal-input = "terminal_input.main:main"
+ra-terminal-input = "terminal_input.main:main"
 
 [tool.setuptools.packages.find]
 include = ["terminal_input*"]

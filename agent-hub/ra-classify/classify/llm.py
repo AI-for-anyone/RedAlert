@@ -86,7 +86,7 @@ class LLMClient:
             print(f"记录token使用失败: {e}")
             tokens = 0
         
-        print("tokens: {tokens}")
+        print(f"tokens: {tokens}")
 
         # 解析 JSON 响应
         try:
@@ -106,10 +106,10 @@ class LLMClient:
             
             # 验证格式
 
-            if not isinstance(task, dict) or "assistant" not in task or "task" not in task:
+            if not isinstance(task, list)  or not isinstance(task[0], dict) or "assistant" not in task[0] or "task" not in task[0]:
                 raise ValueError("任务格式不正确，缺少 assistant 或 task 字段")
             
-            return task
+            return task[0]
             
         except json.JSONDecodeError:
             raise ValueError("未找到有效的 JSON 结构")

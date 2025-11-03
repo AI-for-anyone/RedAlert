@@ -70,4 +70,4 @@ class MCPManager:
         return self._tools
 
 # 全局MCP管理器实例
-mcp_manager = MCPManager()
+mcp_manager = MCPManager("172.19.160.1")

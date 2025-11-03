@@ -9,10 +9,14 @@ nodes:
     build: pip install -e ./agent-hub/ra-classify
     path: ra-classify
     outputs:
-      - classify_result
+      - assistant
+      - produce
+      - camera
+      - unit
+      - info
       - terminal_output
     inputs:
-      command: terminal-input/data
+      command: ra-terminal-input/data
 
   - id: ra-camera
     build: pip install -e ./agent-hub/ra-camera
@@ -21,7 +25,7 @@ nodes:
       - camera_result
       - terminal_output
     inputs:
-      command: ra-classify/classify_result
+      command: ra-classify/camera
     
   - id: ra-produce
     build: pip install -e ./agent-hub/ra-produce
@@ -30,7 +34,7 @@ nodes:
       - produce_result
       - terminal_output
     inputs:
-      command: ra-classify/classify_result
+      command: ra-classify/produce
 
   - id: ra-unit
     build: pip install -e ./agent-hub/ra-unit
@@ -39,7 +43,7 @@ nodes:
       - unit_result
       - terminal_output
     inputs:
-      command: ra-classify/classify_result
+      command: ra-classify/unit
 
   - id: ra-info
     build: pip install -e ./agent-hub/ra-info
@@ -48,20 +52,20 @@ nodes:
       - info_result
       - terminal_output
     inputs:
-      command: ra-classify/classify_result
+      command: ra-classify/info
     
   - id: ra-ai_assistant
     build: pip install -e ./agent-hub/ra-ai_assistant
-    path: ra-ai-assistant
+    path: ra-ai_assistant
     outputs:
       - ai_assistant_result
       - terminal_output
     inputs:
-      command: ra-classify/classify_result
+      data: ra-classify/assistant
 
-  - id: ra-show
-    build: pip install -e ./agent-hub/ra-show
-    path: ra-show
+  - id: show-result
+    build: pip install -e ./agent-hub/show-result
+    path: show-result
     inputs:
-      classify_output: ra-classify/terminal_output
+      data: ra-classify/assistant
 

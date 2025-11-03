@@ -105,6 +105,7 @@ def main():
     # 初始化LLM客户端
     _init()
 
+    print(f"node_name:{node_name}")
     agent = MofaAgent(agent_name=node_name)
     
     try:

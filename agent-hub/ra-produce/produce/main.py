@@ -42,7 +42,7 @@ async def produce_deal():
     global running, llm_client
 
     # 初始化LLM客户端
-    await _init()
+    _init()
     
     while running:
         try:
@@ -103,6 +103,7 @@ def _init():
         print(f"LLM初始化失败: {str(e)}")
         raise
 
+
 def main():
     agent = MofaAgent(agent_name=node_name)
     
@@ -120,4 +121,4 @@ def main():
         print(f"{node_name} 已完全停止")
 
 if __name__ == "__main__":
-    main()
+    main() 

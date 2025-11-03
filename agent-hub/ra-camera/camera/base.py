@@ -16,7 +16,7 @@ class BaseNode(ABC):
         self._tool_node = None
         self._tools = []
     
-    async def initialize(
+    def initialize(
         self, 
         model: str, 
         api_key: str, 
@@ -24,9 +24,6 @@ class BaseNode(ABC):
     ):
         """初始化节点"""
         try:
-            # 从配置获取LLM配置
-            llm_config = config.get_llm_config(self.workflow_type)
-            
             # 初始化LLM
             self._model = ChatOpenAI(
                 model=model, 
@@ -47,10 +44,10 @@ class BaseNode(ABC):
                 self._model_with_tools = self._model.bind_tools(self._tools)
                 # 创建工具节点
                 self._tool_node = ToolNode(self._tools)
-                print(f"{self.node_name} 节点初始化成功，使用模型 {llm_config.model}，绑定 {len(self._tools)} 个工具")
+                print(f"{self.node_name} 节点初始化成功，绑定 {len(self._tools)} 个工具")
             else:
                 self._model_with_tools = self._model
-                print(f"{self.node_name} 节点初始化成功，使用模型 {llm_config.model}，无工具绑定")
+                print(f"{self.node_name} 节点初始化成功，无工具绑定")
 
             self.tokens_usage = 0
                 
@@ -103,9 +100,9 @@ class BaseNode(ABC):
         
         # 构建消息状态
         state = {"messages": messages}
-        logger.info(f"调用工具: {messages[-1].tool_calls}")
+        print(f"调用工具: {messages[-1].tool_calls}")
         result = await self._tool_node.ainvoke(state)
-        logger.info(f"调用工具结果: {result}")
+        print(f"调用工具结果: {result}")
         return result
     
     async def execute_with_tools(self, user_input: str, max_iterations: int = 5) -> str:

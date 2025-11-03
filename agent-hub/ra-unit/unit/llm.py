@@ -3,6 +3,7 @@ import json
 from dotenv import load_dotenv
 from typing import Optional, Final, Tuple, List, Mapping
 from langchain_core.tools import BaseTool
+from langgraph.prebuilt import ToolNode
 from langchain_openai import ChatOpenAI
 from types import MappingProxyType
 
@@ -119,11 +120,11 @@ class LLMClient(BaseNode):
                 self._model_with_tools = self._model.bind_tools(self._tools)
                 # 创建工具节点
                 self._tool_node = ToolNode(self._tools)
-                print(f"{self.node_name} 节点初始化成功，使用模型 {llm_config.model}，绑定 {len(self._tools)} 个工具")
-                logger.debug(f"{self.node_name} 节点工具列表: {[tool.name for tool in self._tools]}")
+                print(f"{self.node_name} 节点初始化成功，使用模型 {model}，绑定 {len(self._tools)} 个工具")
+                print(f"{self.node_name} 节点工具列表: {[tool.name for tool in self._tools]}")
             else:
                 self._model_with_tools = self._model
-                print(f"{self.node_name} 节点初始化成功，使用模型 {llm_config.model}，无工具绑定")
+                print(f"{self.node_name} 节点初始化成功，使用模型 {model}，无工具绑定")
                 
         except Exception as e:
             print(f"{self.node_name} 节点初始化失败: {e}")

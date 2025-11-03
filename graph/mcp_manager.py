@@ -97,4 +97,4 @@ class MCPManager:
         #         logger.error(f"关闭MCP客户端失败: {e}")
 
 # 全局MCP管理器实例
-mcp_manager = MCPManager()
+mcp_manager = MCPManager("http://172.19.160.1")

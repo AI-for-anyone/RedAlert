@@ -1,22 +1,21 @@
-[tool.poetry]
+[project]
 name = "ra-info"
 version = "0.0.1"
 authors = [
-    "Mofa Bot"
+    {name = "Mofa Bot"}
 ]
 description = "ra-info"
-license = "MIT"
-# homepage = "https://github.com/moxin-org/mofa"
-# documentation = "https://github.com/moxin-org/mofa/blob/main/README.md"
-# readme = "README.md"
-packages = [{ include = "info" }]
+license = {text = "MIT"}
+dependencies = [
+    "python-dotenv>=1.0.0"
+]
+requires-python = ">=3.10,<3.13"
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-python-dotenv = "^1.0.0"
+[project.scripts]
+ra-info = "info.main:main"
 
-[tool.poetry.scripts]
-show-result = "info.main:main"
+[tool.setuptools.packages.find]
+include = ["info*"]
 
 [build-system]
 requires = ["setuptools>=65", "wheel"]

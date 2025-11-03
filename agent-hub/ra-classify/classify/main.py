@@ -11,10 +11,11 @@ node_name = "ra-classify"
 llm_client: LLMClient|None = None
 command_queue: queue.Queue = queue.Queue()
 running = True
+agent: MofaAgent|None = None
 
-def command_producer(agent: MofaAgent):
+def command_producer():
     """生产者线程：接收命令并放入队列"""
-    global running
+    global running, agent
     
     while running:
         try:
@@ -71,6 +72,7 @@ def process_command(command_data: Dict[str, Any]):
         if llm_client:
             task = llm_client.node(command)
             next_node = _determine_next_node(task["assistant"])
+            print(f"next_node：{next_node}")
             cmd = task["task"]
             agent.write_log(message=f"{node_name} LLM响应: {task}")
         else:
@@ -79,13 +81,15 @@ def process_command(command_data: Dict[str, Any]):
         # 下一步
         if next_node == "END":
             agent.write_log(message=f"{node_name} 命令失败")
+
+        print(f"{node_name} 数据发送: agent_output_name={next_node}, agent_result={cmd}")
         
         agent.send_output(
             agent_output_name=next_node,
             agent_result=cmd
         )
         
-        agent.write_log(message=f"{node_name} 数据发送完成: agent_output_name={next_node}, agent_result={cmd}")
+        print(f"{node_name} 数据发送完成: agent_output_name={next_node}, agent_result={cmd}")
         
     except Exception as e:
         error_message = f"处理命令时发生异常: {str(e)}"
@@ -95,27 +99,28 @@ def process_command(command_data: Dict[str, Any]):
             print(error_message)
 
 def _determine_next_node(task: str) -> str:
+        print(f"_determine_next_node:{task}")
         """根据任务内容确定工作流类型"""
         match task.lower():
             case "地图视角控制":
-                return "ra-camera"
+                return "camera"
             case "生产管理":
-                return "ra-produce"
+                return "produce"
             case "单位控制":
-                return "ra-unit"
+                return "unit"
             case "信息查询":
-                return "ra-info"
+                return "info"
             case "ai助手":
-                return "ra-ai_assistant"
+                return "assistant"
             case _:
-                logger.error(f"无法识别的任务类型: {task}")
+                print(f"无法识别的任务类型: {task}")
                 return "END"
 
 
 @run_agent
-def run(agent: MofaAgent):
+def run():
     """主运行函数，启动生产者和消费者线程"""
-    global running
+    global running, agent
     
     try:
         agent.write_log(message=f"{node_name} 启动队列处理系统")
@@ -127,7 +132,7 @@ def run(agent: MofaAgent):
         
         # 启动生产者线程（在主线程中运行）
         agent.write_log(message=f"{node_name} 生产者线程开始运行")
-        command_producer(agent)
+        command_producer()
         
     except KeyboardInterrupt:
         agent.write_log(message=f"{node_name} 收到中断信号，正在停止...")
@@ -152,13 +157,14 @@ def _init():
         raise
 
 def main():
+    global agent
     # 初始化LLM客户端
     _init()
     
     agent = MofaAgent(agent_name=node_name)
     
     try:
-        run(agent=agent)
+        run()
     except KeyboardInterrupt:
         print(f"\n{node_name} 收到中断信号，正在关闭...")
         global running

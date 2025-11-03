@@ -7,3 +7,7 @@ redalert.log
 .mcp_servers.pids
 .venv
 *.egg-info
+
+
+# mofa
+out

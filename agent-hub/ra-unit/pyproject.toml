@@ -16,8 +16,8 @@ python = ">=3.10,<3.13"
 python-dotenv = "^1.0.0"
 
 [tool.poetry.scripts]
-show-result = "unit.main:main"
+ra-unit = "unit.main:main"
 
 [build-system]
-requires = ["setuptools>=65", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
