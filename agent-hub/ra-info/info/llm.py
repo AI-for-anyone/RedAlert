@@ -52,7 +52,9 @@ class LLMClient(BaseNode):
     async def _initialize_client(self):
         try:
             await mcp_manager.initialize(
-                enable_tools= ["query_actor", "get_actor_by_id", "update_actor", "map_query", "screen_info_query", "player_base_info_query", "visible_query", "explorer_query", "unit_attribute_query"]            
+                enable_tools= ["get_game_state", "find_path", "get_actor_by_id", "update_actor", "visible_query", "explorer_query",
+                    "get_unexplored_nearby_positions", "unit_attribute_query", "unit_info_query", "map_query",
+                    "player_base_info_query", "screen_info_query", "query_actor", "get_ungrouped_actors", "get_groups", "control_point_query"]            
             )
         except Exception as e:
             print(f"{self.node_name} 节点初始化失败: {e}")

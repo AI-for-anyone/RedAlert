@@ -52,7 +52,8 @@ class LLMClient(BaseNode):
     async def _initialize_client(self):
         try:
             await mcp_manager.initialize(
-                enable_tools= ["move_camera_to", "camera_move_dir", "camera_move_to"]            
+                enable_tools= ["produce", "can_produce", "query_production", "manage_production", "ensure_can_produce",
+            "ensure_can_build", "生产", "deploy_mcv", "get_player_base_info",  "recycle_mcv" , "deploy_mcv_and_wait", "clean_queue"]            
             )
         except Exception as e:
             print(f"{self.node_name} 节点初始化失败: {e}")
@@ -71,16 +72,16 @@ class LLMClient(BaseNode):
         return llm_prompt
     
     async def node(self, task_input: str) -> str:
-        print("执行相机控制")
+        print("执行produce")
 
         # 使用LLM和工具执行任务
         try:
             result = await self.execute_with_tools(task_input)
-            print(f"相机控制执行结果: {result}")
+            print(f"执行produce: {result}")
             return f"{self.node_name} result: {result}"
 
         except Exception as e:
-            print(f"相机控制执行失败: {e}")
+            print(f"执行produce失败: {e}")
             return f"{self.node_name} error: {e}"
 
 def initialize_llm(env_path: str = ".env") -> LLMClient:

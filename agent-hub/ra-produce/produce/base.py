@@ -6,6 +6,7 @@ from typing import Dict, Any, List
 from abc import ABC, abstractmethod
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import ToolNode
+from langchain_core.messages import ToolMessage
 
 class BaseNode(ABC):
     """基础节点类，提供LLM和MCP工具集成"""
@@ -16,7 +17,7 @@ class BaseNode(ABC):
         self._tool_node = None
         self._tools = []
     
-    async def initialize(
+    def initialize(
         self, 
         model: str, 
         api_key: str, 
@@ -24,9 +25,6 @@ class BaseNode(ABC):
     ):
         """初始化节点"""
         try:
-            # 从配置获取LLM配置
-            llm_config = config.get_llm_config(self.workflow_type)
-            
             # 初始化LLM
             self._model = ChatOpenAI(
                 model=model, 
@@ -41,16 +39,21 @@ class BaseNode(ABC):
             
             # 获取相关工具
             self._tools = self._get_node_tools()
+            # 工具名到工具的映射，便于直接调用
+            try:
+                self._tool_map = {t.name: t for t in self._tools}
+            except Exception:
+                self._tool_map = {}
             
             if self._tools:
                 # 绑定工具到模型
                 self._model_with_tools = self._model.bind_tools(self._tools)
                 # 创建工具节点
                 self._tool_node = ToolNode(self._tools)
-                print(f"{self.node_name} 节点初始化成功，使用模型 {llm_config.model}，绑定 {len(self._tools)} 个工具")
+                print(f"{self.node_name} 节点初始化成功，绑定 {len(self._tools)} 个工具")
             else:
                 self._model_with_tools = self._model
-                print(f"{self.node_name} 节点初始化成功，使用模型 {llm_config.model}，无工具绑定")
+                print(f"{self.node_name} 节点初始化成功，无工具绑定")
 
             self.tokens_usage = 0
                 
@@ -97,16 +100,34 @@ class BaseNode(ABC):
         return {"messages": [response]}
     
     async def _call_tools(self, messages: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """调用工具"""
-        if self._tool_node is None:
+        """调用工具(直接执行，避免 ToolNode 配置依赖)"""
+        if not getattr(self, "_tool_map", None):
             raise RuntimeError(f"{self.node_name} 节点工具未初始化")
-        
-        # 构建消息状态
-        state = {"messages": messages}
-        logger.info(f"调用工具: {messages[-1].tool_calls}")
-        result = await self._tool_node.ainvoke(state)
-        logger.info(f"调用工具结果: {result}")
-        return result
+
+        tool_calls = getattr(messages[-1], "tool_calls", None) or messages[-1].get("tool_calls")
+        print(f"调用工具: {tool_calls}")
+
+        out_messages = []
+        if not tool_calls:
+            return {"messages": out_messages}
+
+        for call in tool_calls:
+            name = call.get("name")
+            args = call.get("args", {})
+            if isinstance(args, dict) and "properties" in args and isinstance(args["properties"], dict):
+                # 解包被 schema 包裹的参数
+                args = args["properties"]
+            tool = self._tool_map.get(name)
+            if not tool:
+                out_messages.append(ToolMessage(content=f"未找到工具: {name}", name=name or "unknown", tool_call_id=call.get("id")))
+                continue
+            try:
+                result = await tool.ainvoke(args)
+            except Exception as e:
+                result = f"工具执行失败: {e}"
+            out_messages.append(ToolMessage(content=str(result), name=name, tool_call_id=call.get("id")))
+
+        return {"messages": out_messages}
     
     async def execute_with_tools(self, user_input: str, max_iterations: int = 5) -> str:
         """使用工具执行任务"""

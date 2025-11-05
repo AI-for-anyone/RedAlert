@@ -29,7 +29,6 @@ def command_producer(agent: MofaAgent):
                     'agent': agent
                 }
                 command_queue.put(command_data)
-                print(f"{node_name} 命令已加入队列: {user_input}")
             
             time.sleep(0.1)  # 避免过度占用CPU
             

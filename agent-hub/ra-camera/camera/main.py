@@ -50,7 +50,7 @@ async def camera_deal():
             command_data = command_queue.get(timeout=1)
             
             if command_data:
-                result = await llm_client.node(command_data)
+                result = await llm_client.node(command_data['command'])
                 command_queue.task_done()
 
                 

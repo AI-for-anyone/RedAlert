@@ -43,6 +43,9 @@ async def produce_deal():
 
     # 初始化LLM客户端
     _init()
+
+    # 初始化LLM客户端
+    await llm_client._initialize_client()
     
     while running:
         try:
@@ -50,7 +53,7 @@ async def produce_deal():
             command_data = command_queue.get(timeout=1)
             
             if command_data:
-                result = await llm_client.node(command_data)
+                result = await llm_client.node(command_data['command'])
                 command_queue.task_done()
                 
                 
@@ -94,6 +97,7 @@ def run(agent: MofaAgent):
 
 def _init():
     global llm_client
+    print(f"{node_name} init")
 
     try:
         # 初始化llm

@@ -13,28 +13,33 @@ command_queue: queue.Queue = queue.Queue()
 running = True
 agent: MofaAgent|None = None
 
+is_busying: bool = False
+
 def command_producer():
     """生产者线程：接收命令并放入队列"""
-    global running, agent
+    global running, agent, is_busying
     
     while running:
+        if is_busying:
+            time.sleep(1)  # 避免过度占用CPU
+            continue
+
         try:
             # 接收命令参数
             user_input = agent.receive_parameter('command')
             if user_input:
                 command_data = {
                     'command': user_input,
-                    'timestamp': time.time(),
-                    'agent': agent
+                    'timestamp': time.time()
                 }
                 command_queue.put(command_data)
-                agent.write_log(message=f"{node_name} 命令已加入队列: {user_input}")
+                is_busying = True
             
             time.sleep(0.1)  # 避免过度占用CPU
             
         except Exception as e:
             error_message = f"生产者线程异常: {str(e)}"
-            agent.write_log(message=error_message, level='ERROR')
+            print(error_message, level='ERROR')
             time.sleep(1)  # 出错时等待一秒再重试
 
 
@@ -60,13 +65,11 @@ def command_consumer():
 
 
 def process_command(command_data: Dict[str, Any]):
+    global agent, is_busying
     """处理单个命令"""
     try:
         command = command_data['command']
-        agent = command_data['agent']
         timestamp = command_data['timestamp']
-        
-        agent.write_log(message=f"[{timestamp}]:{node_name} 开始处理命令: {command}")
         
         # 使用LLM处理命令
         if llm_client:
@@ -74,13 +77,13 @@ def process_command(command_data: Dict[str, Any]):
             next_node = _determine_next_node(task["assistant"])
             print(f"next_node：{next_node}")
             cmd = task["task"]
-            agent.write_log(message=f"{node_name} LLM响应: {task}")
+            print(f"{node_name} LLM响应: {task}")
         else:
-            agent.write_log(message=f"{node_name} LLM未初始化，无法处理命令", level='WARNING')
+            print(f"{node_name} LLM未初始化，无法处理命令", level='WARNING')
         
         # 下一步
         if next_node == "END":
-            agent.write_log(message=f"{node_name} 命令失败")
+            print(f"{node_name} 命令失败")
 
         print(f"{node_name} 数据发送: agent_output_name={next_node}, agent_result={cmd}")
         
@@ -92,11 +95,11 @@ def process_command(command_data: Dict[str, Any]):
         print(f"{node_name} 数据发送完成: agent_output_name={next_node}, agent_result={cmd}")
         
     except Exception as e:
-        error_message = f"处理命令时发生异常: {str(e)}"
-        if 'agent' in command_data:
-            command_data['agent'].write_log(message=error_message, level='ERROR')
-        else:
-            print(error_message)
+        error_message = f"{node_name}处理命令时发生异常: {str(e)}"
+        print(f"err:{error_message}")
+
+    finally:
+        is_busying = False
 
 def _determine_next_node(task: str) -> str:
         print(f"_determine_next_node:{task}")
@@ -123,27 +126,27 @@ def run():
     global running, agent
     
     try:
-        agent.write_log(message=f"{node_name} 启动队列处理系统")
+        print(f"{node_name} 启动队列处理系统")
         
         # 启动消费者线程
         consumer_thread = threading.Thread(target=command_consumer, daemon=True)
         consumer_thread.start()
-        agent.write_log(message=f"{node_name} 消费者线程已启动")
+        print(f"{node_name} 消费者线程已启动")
         
         # 启动生产者线程（在主线程中运行）
-        agent.write_log(message=f"{node_name} 生产者线程开始运行")
+        print(f"{node_name} 生产者线程开始运行")
         command_producer()
         
     except KeyboardInterrupt:
-        agent.write_log(message=f"{node_name} 收到中断信号，正在停止...")
+        print(f"{node_name} 收到中断信号，正在停止...")
         running = False
     except Exception as e:
         error_message = f"运行时发生异常: {str(e)}"
-        agent.write_log(message=error_message, level='ERROR')
+        print(error_message, level='ERROR')
         running = False
     finally:
         running = False
-        agent.write_log(message=f"{node_name} 系统已停止")
+        print(f"{node_name} 系统已停止")
 
 def _init():
     global llm_client

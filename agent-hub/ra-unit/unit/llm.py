@@ -74,11 +74,11 @@ class LLMClient(BaseNode):
     async def _initialize_client(self):
         try:
             await mcp_manager.initialize(
-                enable_tools= ["select_units", "form_group", 
-                "move_units_by_location", "move_units_by_direction", 
-                "move_units_by_path", "move_units_by_location_and_wait", 
-                "attack_target", "can_attack_target", "occupy_units", "repair_units", 
-                "stop", "find_path", "set_rally_point"]            
+                enable_tools= ["group_units", "move_units", "move_units_by_direction", "set_rally_point", "recycle_mcv", "investigation", "occupy_cp", 
+                    "army_gather", "army_designated_attack", "army_attack_direction", "army_attack_location",
+                    "army_attack_target_direction", "army_attack_target_location", "army", "army_move", 
+                    "map_query", "unit_info_query", "control_point_query"
+                ]            
             )
         except Exception as e:
             print(f"{self.node_name} 节点初始化失败: {e}")
@@ -114,6 +114,11 @@ class LLMClient(BaseNode):
             
             # 获取相关工具
             self._tools = self._get_node_tools()
+            # 构建工具名映射，供 BaseNode._call_tools 直接调用
+            try:
+                self._tool_map = {t.name: t for t in self._tools}
+            except Exception:
+                self._tool_map = {}
             
             if self._tools:
                 # 绑定工具到模型
@@ -125,6 +130,8 @@ class LLMClient(BaseNode):
             else:
                 self._model_with_tools = self._model
                 print(f"{self.node_name} 节点初始化成功，使用模型 {model}，无工具绑定")
+
+            self.tokens_usage = 0
                 
         except Exception as e:
             print(f"{self.node_name} 节点初始化失败: {e}")
@@ -171,7 +178,7 @@ class LLMClient(BaseNode):
             control_points_info += f"据点{index}: ({cp["x"]}, {cp["y"]})\n"
             index += 1
 
-        print(f"控制点信息: {control_points_info}")
+        # print(f"控制点信息: {control_points_info}")
 
         prompt = llm_prompt.format(
             map_info = map_info,
@@ -184,7 +191,7 @@ class LLMClient(BaseNode):
             ALL_UNITS = self.prompt_params["ALL_UNITS"] 
         )
         
-        print(f"单位控制系统提示词: {prompt}")   
+        # print(f"单位控制系统提示词: {prompt}")   
         return prompt
     
     async def execute_with_tools_with_base_info(self, user_input: str, max_iterations: int = 5) -> str:

@@ -63,7 +63,9 @@ class LLMClient(BaseNode):
     async def _initialize_client(self):
         try:
             await mcp_manager.initialize(
-                enable_tools= ["query_actor", "get_actor_by_id", "update_actor", "map_query", "screen_info_query", "player_base_info_query", "visible_query", "explorer_query", "unit_attribute_query"]            
+                enable_tools= ["player_base_info_query", "query_production_queue", 
+                "produce",  "ensure_can_produce", "unit_info_query", "do_nothing",
+                "ensure_can_build", "deploy_mcv"]            
             )
         except Exception as e:
             print(f"{self.node_name} 节点初始化失败: {e}")
@@ -143,9 +145,9 @@ class LLMClient(BaseNode):
             unit[i] += aircraft_unit[i]
             
 
-        print(f"unit_status: {unit}")
-        print(f"base_info: {base_info}")
-        print(f"building_queue: {building_queue}")
+        # print(f"unit_status: {unit}")
+        # print(f"base_info: {base_info}")
+        # print(f"building_queue: {building_queue}")
 
         # 反序列化base_info为PlayerBaseInfo对象
         
@@ -163,7 +165,7 @@ class LLMClient(BaseNode):
             PowerProvided=base_info_dict.get("powerProvided", 0)
         )
         
-        print(f"反序列化后的玩家信息: Cash={player_info.Cash}, Resources={player_info.Resources}, Power={player_info.Power}, PowerDrained={player_info.PowerDrained}, PowerProvided={player_info.PowerProvided}")
+        #print(f"反序列化后的玩家信息: Cash={player_info.Cash}, Resources={player_info.Resources}, Power={player_info.Power}, PowerDrained={player_info.PowerDrained}, PowerProvided={player_info.PowerProvided}")
 
         pt = llm_prompt.format(
             unit_status=unit,
@@ -172,7 +174,7 @@ class LLMClient(BaseNode):
             building_queue=building_queue
         )
 
-        print(f"AI 助手提示词: {pt}")
+        # print(f"AI 助手提示词: {pt}")
         return pt
 
     async def execute_with_tools_with_base_info(self, user_input: str, max_iterations: int = 5) -> str:

@@ -47,7 +47,11 @@ class MCPManager:
         try:
             print(f"使用配置初始化MCP客户端: {list(self._server_configs.keys())}")
             self._client = MultiServerMCPClient(self._server_configs)
+            print("MultiServerMCPClient 创建成功，开始获取工具...")
+            
             self._raw_tools = await self._client.get_tools()
+            print(f"获取到原始工具数量: {len(self._raw_tools)}")
+            
             self._tools = []
             
             # 过滤
@@ -60,7 +64,9 @@ class MCPManager:
             return self._tools
         except Exception as e:
             print(f"初始化MCP客户端失败: {e}")
-            print(f"服务器配置: {self._server_configs}")
+            print(f"错误类型: {type(e).__name__}")
+            import traceback
+            traceback.print_exc()
             raise
     
     def get_tools(self) -> List:
