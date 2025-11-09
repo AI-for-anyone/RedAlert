@@ -1,299 +1,178 @@
-# RedAlert AI 智能游戏助手
+# RedAlert MoFA 智能游戏助手
 
-基于 LangGraph 和 MCP (Model Context Protocol) 的红色警戒智能游戏助手，提供完整的异步架构和多模态AI控制能力。
+RedAlert 现已全面基于 **MoFA (Modular Framework for Agents)** 重构，通过 Dora 流水线在多进程环境下连接所有 Agent 节点，并继续依托 MCP (Model Context Protocol) 与 OpenRA 游戏进行交互。
 
-## 🎯 项目特色
+## ✨ 关键特性
 
-- **🤖 智能决策系统**: 基于 LangGraph 的状态图工作流，支持复杂的游戏策略决策
-- **⚡ 异步架构**: 完全异步化设计，支持高并发任务处理和实时响应
-- **🔧 MCP 工具集**: 丰富的游戏控制工具，包括单位控制、生产管理、情报收集等
-- **📊 Token 追踪**: 完整的 LLM Token 使用统计和成本分析系统
-- **📈 任务调度**: 智能任务管理和并发控制系统
+- **模块化 Agent Hub**：`agent-hub/` 中的每个子项目都是一个独立的 MoFA 节点，涵盖分类、生产、单位控制、情报查询等核心能力。
+- **Dora 实时流水线**：通过 `mofa-compose.yaml` 将所有节点串联，统一构建、启动和监控。
+- **跨平台联动**：Windows 负责运行 OpenRA 游戏与 MCP 工具，WSL 负责运行 Dora 与 MoFA Agent Hub，充分利用双环境优势。
+- **可观测性增强**：节点日志与终端输入输出解耦，便于排障与性能监控。
 
-## 🏗️ 系统架构
+## 🧱 目录结构
 
 ```
 RedAlert/
-├── graph/                 # LangGraph 工作流核心
-│   ├── base_node.py      # 基础节点类
-│   ├── classify.py       # 意图分类节点
-│   ├── camera.py         # 视觉识别节点
-│   ├── production.py     # 生产管理节点
-│   ├── unit_control.py   # 单位控制节点
-│   ├── intelligence.py   # 情报收集节点
-│   └── token_tracker.py  # Token 使用追踪
-├── mcp_tools/            # MCP 工具服务器
-│   ├── fight_mcp_server.py    # 战斗控制工具
-│   ├── produce_mcp_server.py  # 生产管理工具
-│   ├── unit_mcp_server.py     # 单位管理工具
-│   ├── info_mcp_server.py     # 信息查询工具
-│   └── camera_mcp_server.py   # 视觉识别工具
-├── task_scheduler/       # 任务调度系统
-├── config/              # 配置管理
-└── logs/                # 日志系统
+├── agent-hub/                 # MoFA Agent Hub（核心重构部分）
+│   ├── ra-classify/           # 指令分类节点 (MoFA Agent)
+│   ├── ra-produce/            # 生产管理节点
+│   ├── ra-unit/               # 单位控制节点
+│   ├── ra-info/               # 信息查询节点
+│   ├── ra-camera/             # 视角与情报节点
+│   ├── ra-ai_assistant/       # 对话/辅助节点
+│   ├── ra-terminal-input/     # 终端输入节点（Dora Source）
+│   └── show-result/           # 结果展示节点
+├── mofa-compose.yaml          # Dora 流水线定义（连接所有 MoFA 节点）
+├── mcp_tools/                 # MCP 工具服务器（运行在 Windows）
+├── .venv/                     # Python 虚拟环境（推荐在 WSL 中创建）
+├── requirements.txt           # 通用 Python 依赖
+└── ...
 ```
 
 ## ⚙️ 环境要求
 
-- **Python**: 3.10+
-- **操作系统**: Windows (支持 OpenRA 游戏)
-- **内存**: 建议 8GB+
-- **GPU**: 可选，用于视觉识别加速
+| 组件 | 说明 |
+| --- | --- |
+| 操作系统 | **Windows 11/10**（运行 OpenRA 与 MCP 服务） + **WSL2 (Ubuntu)**（运行 Dora + MoFA） |
+| Python | 3.10+（在 WSL 中创建 `.venv` 并激活） |
+| Rust 工具链 | 安装 `rustup`、`cargo`，用于构建 Dora 运行时 |
+| MoFA CLI | 通过 `pip install mofa-core` 安装 |
+| Dora CLI | 使用 `cargo install dora-cli` 安装 |
+| OpenRA | Windows 环境中安装并可正常运行 |
+
+> ⚠️ **重要：** 所有 Python 命令请在 `.venv` 虚拟环境内执行（遵循项目规范）。
 
 ## 🚀 快速开始
 
-### 前置要求
-
-- **OpenRA 游戏**: 确保已安装并能正常运行 [OpenRA](https://www.openra.net/)
-- **Python 3.10+**: 推荐使用 Python 3.11
-- **API 密钥**: 至少需要一个 LLM 服务的 API 密钥
-
-### 1. 克隆项目
+### 1. 克隆项目（Windows 和 WSL 均需要）
 
 ```bash
 git clone <repository-url>
 cd RedAlert
 ```
 
-### 2. 创建虚拟环境
+### 2. 在 WSL 和 windows 中创建并激活虚拟环境
 
 ```bash
-# 创建虚拟环境
 python -m venv .venv
-
-# 激活虚拟环境
-.venv\Scripts\activate  # Windows
-# 或
-source .venv/bin/activate  # Linux/macOS
+source .venv/bin/activate        # WSL / Linux Shell
+# 若在 Windows PowerShell： .\.venv\Scripts\Activate.ps1
 ```
 
-### 3. 安装依赖
+### 3. 安装 Python 依赖
 
 ```bash
-# 升级 pip
 python -m pip install --upgrade pip
-
-# 安装项目依赖
 pip install -r requirements.txt
 ```
 
-### 4. 配置环境变量
-
-复制示例配置文件并编辑：
+### 4. 安装 MoFA CLI（仍在 `.venv` 中）
 
 ```bash
-copy .env_example .env  # Windows
-# 或
-cp .env_example .env    # Linux/macOS
+pip install mofa-core
+mofa --help    # 验证安装
 ```
 
-编辑 `.env` 文件，配置你的 API 密钥：
-
-```env
-# OpenAI API 配置 (推荐)
-OPENAI_API_KEY=sk-your-openai-api-key-here
-OPENAI_BASE_URL=https://api.openai.com/v1
-
-# DeepSeek API 配置 (经济实惠的选择)
-DEEPSEEK_API_KEY=your-deepseek-api-key-here
-DEEPSEEK_BASE_URL=https://api.deepseek.com
-
-# 模型配置
-MODEL_NAME=gpt-4o-mini  # 或 deepseek-chat
-
-# 游戏配置 (可选)
-OPENRA_LOG_PATH=C:\Users\YourName\AppData\Roaming\OpenRA\Logs
-```
-
-### 5. 启动 OpenRA 游戏
-
-1. 启动 OpenRA 游戏
-2. 选择 "Red Alert" 模组
-3. 开始一局游戏（单人或多人）
-
-### 6. 启动mcp服务器和AI助手
-
-启动mcp服务器
-```bash
-cd mcp_tools
-python start.py
-```
-
-启动助手
-```bash
-# 标准模式启动 (推荐新手)
-python main.py
-
-# 或指定启动模式
-python main.py --mode stdio --log-level INFO
-```
-
-### 7. 首次使用
-
-启动成功后,可以尝试输入一些基础指令：
-
-```
->>> 查看当前游戏状态
->>> 建造一个电厂
->>> 生产5个步兵
->>> 帮我分析当前局势
-```
-
-### 🎯 启动模式说明
+### 5. 安装 Dora 运行时（建议在 WSL 内执行）
 
 ```bash
-# 标准输入输出模式 (默认，适合开发和调试)
-python main.py --mode stdio
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# 安装过程保持默认配置（直接按 Enter）
+source "$HOME/.cargo/env"       # 安装完成后重新加载环境变量
+cargo install dora-cli
 
-# SSE 流式模式 (适合 Web 集成)
-python main.py --mode sse
-
-# HTTP API 模式 (适合外部调用)
-python main.py --mode http
-
-# 调试模式 (显示详细日志)
-python main.py --log-level DEBUG
+rustc --version
+cargo --version
+dora --version                    # 确认全部安装成功
 ```
 
-### ⚠️ 常见启动问题
+### 6. 配置 LLM 与游戏环境
 
-**问题 1**: `ModuleNotFoundError`
 ```bash
-# 确保虚拟环境已激活
-.venv\Scripts\activate
-pip install -r requirements.txt
+cp .env_example .env
 ```
 
-**问题 2**: API 密钥错误
-```bash
-# 检查 .env 文件配置
-python validate_config.py
-```
+在 `.env` 中填写各类 API Key、OpenRA 日志路径等配置，MoFA 节点会通过环境变量读取这些信息。
 
-**问题 3**: OpenRA 连接失败
-- 确保 OpenRA 游戏正在运行
-- 检查游戏日志路径配置是否正确
+### 7. 准备 OpenRA 游戏（Windows）
 
-**问题 4**: 权限错误
-```bash
-# 以管理员身份运行 (Windows)
-# 或检查文件权限 (Linux/macOS)
-```
+1. 启动 OpenRA 并选择 "Red Alert" 模组。
+2. 进入任意对局、确保游戏界面处于运行状态。
 
-## 🎮 功能模块
+## ▶️ 运行流程
 
-### 🧠 智能决策系统
-- **意图分类**: 自动识别用户指令类型（生产、战斗、侦察等）
-- **状态管理**: 基于 LangGraph 的全局状态跟踪
-- **工作流编排**: 复杂任务的自动分解和执行
+1. **在 Windows 终端中启动 MCP Server**（确保游戏已运行）：
+   ```bash
+   cd <项目根目录>\mcp_tools
+   python start.py
+   ```
+   该脚本会并行启动单位、生产、情报、视角等 MCP 工具，保持终端开启以便查看日志。
 
-### ⚔️ 战斗控制
-- **单位编组**: 智能单位分组和阵型管理
-- **战术执行**: 攻击、防守、撤退等战术指令
-- **目标识别**: 自动识别和优先攻击目标
+2. **切换到 WSL 终端（已激活 `.venv`）并启动 Dora**：
+   ```bash
+   dora up
+   dora build mofa-compose.yaml       # 仅第一次或依赖变化时需要
+   dora start mofa-compose.yaml
+   ```
+   Dora 会根据 `mofa-compose.yaml` 自动以可编辑模式安装并启动各个 MoFA 节点。
 
-### 🏭 生产管理
-- **建筑建造**: 自动选择最优建造位置
-- **单位生产**: 智能生产队列管理
-- **资源优化**: 基于当前资源状况的生产决策
+3. **开启终端指令输入节点**：
+   ```bash
+   ra-terminal-input
+   ```
+   在弹出的终端中输入自然语言指令（如“生产 5 个步兵”），数据会流入 `ra-classify` 节点并在流水线上依次处理。
 
-### 👁️ 视觉识别
-- **屏幕分析**: 实时游戏画面识别
-- **单位检测**: 自动识别友军和敌军单位
-- **地图分析**: 地形和资源点识别
+4. **查看执行结果**：
+   - `show-result` 节点会将指令输出至终端或写入日志。
+   - 游戏内行为由各 MCP 工具与 OpenRA 交互完成，若无响应请检查对应节点日志。
 
-### 📊 数据分析
-- **Token 统计**: 详细的 LLM 使用统计和成本分析
-- **性能监控**: 系统性能和响应时间监控
-- **日志记录**: 完整的操作日志和错误追踪
+> 提示：`dora start` 会阻塞当前终端；如需停止流程，按 `Ctrl+C` 结束 Dora，再停止 MCP Server。
 
-## 🛠️ 使用示例
+## 🧩 Agent Hub 节点概览
 
-### 基础指令
-```
->>> 建造一个电厂
->>> 生产5个步兵
->>> 攻击敌人基地
->>> 查看当前资源状况
->>> 侦察地图右上角
-```
+| 节点 ID | 说明 |
+| --- | --- |
+| `ra-terminal-input` | Dora Source，读取终端输入并广播指令 |
+| `ra-classify` | 使用 LLM 判定指令类型并指派至下一节点 |
+| `ra-produce` | 生产管理（建筑/单位队列） |
+| `ra-unit` | 单位调度与战术执行 |
+| `ra-info` | 情报查询、状态汇报 |
+| `ra-camera` | 地图视角与侦察控制 |
+| `ra-ai_assistant` | 对话式辅助与分析反馈 |
+| `show-result` | 汇总节点输出，方便调试 |
 
-### 高级功能
-```
->>> 创建一个攻击编组，包含坦克和步兵
->>> 在主基地周围建立防御阵地
->>> 分析当前战场形势
->>> 制定经济发展策略
-```
+所有节点均基于 `mofa.agent_build.base.MofaAgent` 实现，可通过 `pip install -e ./agent-hub/<node>` 独立调试。
 
-## 📈 Token 使用统计
+## 🔍 调试与排障
 
-系统内置完整的 Token 追踪功能：
+1. **节点日志**：每个 MoFA 节点会输出日志到其所属终端，可在 `agent.write_log` 中查看详细上下文。
+2. **Dora 状态**：
+   ```bash
+   dora list pipelines
+   dora stop <pipeline-id>
+   ```
+3. **常见问题**
+   - *未找到 `mofa.agent_build`*：确认 `.venv` 已激活并安装 `mofa-core`。
+   - *Dora 构建失败*：确保 Rust 工具链安装正确，必要时执行 `rustup update`。
+   - *OpenRA 未响应*：确认 Windows 端 MCP Server 仍在运行且游戏处于前台。
 
-```python
-from graph.token_stats import show_session_summary, show_cost_analysis
+## 🧪 开发建议
 
-# 查看会话统计
-show_session_summary()
-
-# 查看成本分析
-show_cost_analysis()
-
-# 导出详细报告
-export_report()
-```
-
-## 🔧 技术栈
-
-- **核心框架**: LangGraph, LangChain
-- **异步处理**: asyncio, aiohttp
-- **MCP 协议**: Model Context Protocol
-- **AI 模型**: OpenAI GPT, DeepSeek, Claude 等
-- **游戏接口**: OpenRA Game API
-- **日志系统**: 结构化日志和性能监控
-
-## 📝 开发说明
-
-### 添加新的 MCP 工具
-1. 在 `mcp_tools/` 目录创建新的服务器文件
-2. 继承 `BaseNode` 类实现业务逻辑
-3. 在 `config/config.py` 中注册新工具
-
-### 扩展工作流节点
-1. 在 `graph/` 目录创建新节点类
-2. 实现 `process` 方法定义节点逻辑
-3. 在 `graph.py` 中添加到状态图
-
-## 🐛 故障排除
-
-### 常见问题
-- **MCP 连接失败**: 检查 MCP 服务器是否正常启动
-- **API 调用错误**: 验证 `.env` 文件中的 API 密钥配置
-- **游戏连接问题**: 确保 OpenRA 游戏正在运行
-
-### 日志查看
-```bash
-# 查看系统日志
-tail -f logs/system.log
-
-# 查看 Token 使用日志
-tail -f graph/logs/token_usage.jsonl
-```
-
-## 🤝 贡献指南
-
-1. Fork 项目仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
+- 新增节点：在 `agent-hub/` 创建子包，遵循现有 `main.py` 模板编写 Agent，更新 `mofa-compose.yaml` 即可加入流水线。
+- 调试单个节点：
+  ```bash
+  pip install -e ./agent-hub/ra-produce
+  python -m produce.main
+  ```
+- 更新依赖后，重新执行一次 `dora build mofa-compose.yaml`。
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+项目遵循 [MIT License](LICENSE)。
 
 ## 🙏 致谢
 
-- [LangGraph](https://github.com/langchain-ai/langgraph) - 工作流编排框架
-- [OpenRA](https://www.openra.net/) - 开源即时战略游戏引擎
-- [MCP](https://modelcontextprotocol.io/) - 模型上下文协议
+- [MoFA](https://github.com/mofa-framework) —— 模块化智能体框架
+- [Dora](https://dora.incubator.apache.org/) —— 实时数据编排引擎
+- [OpenRA](https://www.openra.net/) —— 开源即时战略游戏引擎
+- [Model Context Protocol](https://modelcontextprotocol.io/) —— 上下文工具与模型互操作协议
